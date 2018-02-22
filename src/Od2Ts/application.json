@@ -1,0 +1,24 @@
+{
+    "MetadataPath": "http://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
+    "EndpointName": "DpsApi",
+    "Output": "Output",
+    "PurgeOutput": true,
+    "Templates": {
+        "EntityTypeTemplate": "Templates/EntityTypeTemplate.tst",
+        "EntityPropertyTemplate": "Templates/FieldTemplate.tst",
+        "ImportsTemplate": "Templates/ImportTemplate.tst",
+        "EnumTypeTemplate": "Templates/EnumTypeTemplate.tst",
+        "EnumMemberTemplate": "Templates/EnumMemberTemplate.tst",
+        "ContextTemplate": "Templates/ContextTemplate.tst",
+        "CustomActionTemplate": "Templates/CustomActionTemplate.tst",
+        "CustomFunctionTemplate": "Templates/CustomFunctionTemplate.tst"
+    },
+    "AngularTemplates": {
+        "EntitySetServiceTemplate": "Templates/AngularEntitySetService.tst",
+        "ModuleTemplate": "Templates/AngularModuleTemplate.tst"
+    },
+    "AureliaTemplates": {
+        "EntitySetServiceTemplate": "Templates/AureliaEntitySetService.tst",
+        "ModuleTemplate": "Templates/AureliaModuleTemplate.tst"
+    }
+}
