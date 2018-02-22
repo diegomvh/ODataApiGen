@@ -2,11 +2,14 @@
 using System.IO;
 using Od2Ts.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Od2Ts
 {
     class Program
     {
+        public static ILoggerFactory LoggerFactory {get;} = new LoggerFactory();
+        public static ILogger CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
         public static IConfiguration Configuration {get; set;}
         public static string MetadataPath {get; set;}
         public static string EndpointName {get; set;}
@@ -15,6 +18,10 @@ namespace Od2Ts
 
         static void Main(string[] args)
         {
+            LoggerFactory
+                .AddConsole()
+                .AddDebug();
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("application.json");
@@ -25,6 +32,7 @@ namespace Od2Ts
             Output = Configuration.GetValue<string>("Output");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
 
+            var directoryManager = new DirectoryManager(Output);
             var templateRenderer = new TemplateRenderer(Output);
 
             Configuration.GetSection("Templates").Bind(templateRenderer);
@@ -35,8 +43,6 @@ namespace Od2Ts
             {
                 Configuration.GetSection("AureliaTemplates").Bind(templateRenderer);
             }
-
-            Console.WriteLine("Hello World!");
         }
     }
 }
