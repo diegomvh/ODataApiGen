@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Od2Ts.Abstracts;
 using Od2Ts.Extensions;
 using Od2Ts.Interfaces;
@@ -12,21 +13,35 @@ namespace Od2Ts
 {
     public class TemplateRenderer
     {
-            public string Output {get; private set;}
-            public string EntityTypeTemplate {get; set;}
-            public string EntityPropertyTemplate {get; set;}
-            public string ImportsTemplate {get; set;}
-            public string EnumTypeTemplate {get; set;}
-            public string EnumMemberTemplate {get; set;}
-            public string EntitySetServiceTemplate {get; set;}
-            public string ContextTemplate {get; set;}
-            public string ModuleTemplate {get; set;}
-            public string CustomActionTemplate {get; set;}
-            public string CustomFunctionTemplate {get; set;}
-        
+        private ILogger Logger { get; } = Program.CreateLogger<TemplateRenderer>();
+        public string Output { get; private set; }
+        public string EntityTypeTemplate { get; set; }
+        public string EntityPropertyTemplate { get; set; }
+        public string ImportsTemplate { get; set; }
+        public string EnumTypeTemplate { get; set; }
+        public string EnumMemberTemplate { get; set; }
+        public string EntitySetServiceTemplate { get; set; }
+        public string ContextTemplate { get; set; }
+        public string ModuleTemplate { get; set; }
+        public string CustomActionTemplate { get; set; }
+        public string CustomFunctionTemplate { get; set; }
+        private char PathSep {get;} = Path.DirectorySeparatorChar;
+
         public TemplateRenderer(string output)
         {
             this.Output = output;
+        }
+        public void LoadTemplates() {
+            EntityTypeTemplate = File.ReadAllText(EntityTypeTemplate);
+            EntityPropertyTemplate = File.ReadAllText(EntityPropertyTemplate);
+            ImportsTemplate = File.ReadAllText(ImportsTemplate);
+            EnumTypeTemplate = File.ReadAllText(EnumTypeTemplate);
+            EnumMemberTemplate = File.ReadAllText(EnumMemberTemplate);
+            EntitySetServiceTemplate = File.ReadAllText(EntitySetServiceTemplate);
+            ContextTemplate = File.ReadAllText(ContextTemplate);
+            ModuleTemplate = File.ReadAllText(ModuleTemplate);
+            CustomActionTemplate = File.ReadAllText(CustomActionTemplate);
+            CustomFunctionTemplate = File.ReadAllText(CustomFunctionTemplate);
         }
 
         private string ParseImports(IHasImports entity)
@@ -39,7 +54,7 @@ namespace Od2Ts
 
         private void DoRender(IRenderableElement entity, string template, string fileName = null)
         {
-            var ns = entity.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+            var ns = entity.NameSpace.Replace('.', PathSep);
             if (fileName == null)
                 fileName = entity.Name;
 
@@ -54,7 +69,7 @@ namespace Od2Ts
                 .Replace("$Name$", entity.Name)
                 .Replace("$NameSpace$", entity.NameSpace);
 
-            File.WriteAllText($"{Output}\\{ns}\\{fileName}.ts", template);
+            File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", template);
         }
 
         public void CreateEntityTypes(IEnumerable<EntityType> types)
@@ -139,7 +154,7 @@ namespace Od2Ts
                     ? "ExecCustomCollectionAction"
                     : "ExecCustomAction";
 
-                var entityArgument = customAction.IsCollectionAction ? "" : customAction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a))+"Id";
+                var entityArgument = customAction.IsCollectionAction ? "" : customAction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
                 var argumentWithType = customAction.IsCollectionAction ? "" : $"{entityArgument}: any";
 
                 result += CustomActionTemplate.Clone().ToString()
@@ -168,7 +183,7 @@ namespace Od2Ts
                     ? "ExecCustomCollectionFunction"
                     : "ExecCustomFunction";
 
-                var entityArgument = customFunction.IsCollectionAction ? "" : customFunction.BindingParameter.Split('.').Last(a=>!string.IsNullOrWhiteSpace(a))+"Id";
+                var entityArgument = customFunction.IsCollectionAction ? "" : customFunction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
                 var argumentWithType = customFunction.IsCollectionAction ? "" : $"{entityArgument}: any";
 
                 result += CustomFunctionTemplate.Clone().ToString()
@@ -206,7 +221,7 @@ namespace Od2Ts
         public void CreateAngularModule(AngularModule module)
         {
             var template = ModuleTemplate.Clone().ToString()
-                .Replace("$moduleProviders$", string.Join(",\r\n\t",module.EntitySets.Select(a=>a.Name)))
+                .Replace("$moduleProviders$", string.Join(",\r\n\t", module.EntitySets.Select(a => a.Name)))
                 .Replace("$moduleName$", module.Name);
 
             DoRender(module, template);
