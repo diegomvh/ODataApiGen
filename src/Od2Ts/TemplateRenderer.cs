@@ -93,7 +93,7 @@ namespace Od2Ts
             var props = entityType.Properties.Select(prop =>
                 EntityPropertyTemplate.Clone()
                     .ToString()
-                    .Replace("$propertyName$", prop.Name)
+                    .Replace("$propertyName$", prop.TypescriptName)
                     .Replace("$propertyType$", prop.TypescriptType));
 
 
@@ -186,6 +186,12 @@ namespace Od2Ts
                 var entityArgument = customFunction.IsCollectionAction ? "" : customFunction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
                 var argumentWithType = customFunction.IsCollectionAction ? "" : $"{entityArgument}: any";
 
+                var parameters = customFunction.Parameters;
+                if (parameters.Count() > 0) {
+                    entityArgument += (String.IsNullOrEmpty(entityArgument)? "" : ", ") + String.Join(", ", parameters.Select(p => p.Name));
+                    argumentWithType += (String.IsNullOrEmpty(argumentWithType) ? "" : ", ") + String.Join(", ", parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
+                }
+
                 result += CustomFunctionTemplate.Clone().ToString()
                     .Replace("$functionName$", customFunction.Name)
                     .Replace("$functionFullName$", customFunction.NameSpace + "." + customFunction.Name)
@@ -215,7 +221,7 @@ namespace Od2Ts
                 .Replace("$metadataPath$", metadataPath)
                 .Replace("$CreationDate$", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
                 .Replace("$ODataVersion$", odataVersion);
-            File.WriteAllText($"{Output}\\ODataContext.ts", template);
+            File.WriteAllText($"{Output}{PathSep}ODataContext.ts", template);
         }
 
         public void CreateAngularModule(AngularModule module)

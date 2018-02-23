@@ -9,7 +9,8 @@ namespace Od2Ts.Models
 {
     public class EntitySet : IHasImports
     {
-        public EntitySet(XElement xElement, IEnumerable<CustomAction> customActions, IEnumerable<CustomFunction> functions)
+        public EntitySet(XElement xElement, 
+        IEnumerable<CustomAction> customActions, IEnumerable<CustomFunction> customFunctions)
         {
             EntitySetName = xElement.Attribute("Name")?.Value;
             Name = char.ToUpper(EntitySetName[0]) + EntitySetName.Substring(1) + "ODataService";
@@ -17,7 +18,7 @@ namespace Od2Ts.Models
             NameSpace =
                 xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
             CustomActions = customActions.Where(a=>a.BindingParameter == EntityType);
-            CustomFunctions = functions.Where(a => a.BindingParameter == EntityType);
+            CustomFunctions = customFunctions.Where(a => a.BindingParameter == EntityType);
         }
 
         public string Name { get; private set; }

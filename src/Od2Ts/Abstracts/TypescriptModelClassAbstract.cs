@@ -25,7 +25,7 @@ namespace Od2Ts.Abstracts
                 .Select(propElement => new Property()
                 {
                     Name = propElement.Attribute("Name")?.Value,
-                    IsRequired = propElement.Attribute("Nullable")?.Value == "true",
+                    IsRequired = propElement.Attribute("Nullable")?.Value == "false",
                     Type = propElement.Attribute("Type")?.Value
                 }).ToList();
 

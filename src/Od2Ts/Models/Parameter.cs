@@ -2,7 +2,7 @@
 
 namespace Od2Ts.Models
 {
-    public class Property
+    public class Parameter
     {
         public string Name { get; set; }
         public string Type { get; set; }
