@@ -37,14 +37,6 @@ namespace Od2Ts
             var templateRenderer = new TemplateRenderer(Output);
 
             Configuration.GetSection("Templates").Bind(templateRenderer);
-            if (true)
-            {
-                Configuration.GetSection("AngularTemplates").Bind(templateRenderer);
-            }
-            else
-            {
-                Configuration.GetSection("AureliaTemplates").Bind(templateRenderer);
-            }
             templateRenderer.LoadTemplates();
             
             var xml = Loader.Load(MetadataPath);
