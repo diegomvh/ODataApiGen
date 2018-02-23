@@ -157,6 +157,12 @@ namespace Od2Ts
                 var entityArgument = customAction.IsCollectionAction ? "" : customAction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
                 var argumentWithType = customAction.IsCollectionAction ? "" : $"{entityArgument}: any";
 
+                var parameters = customAction.Parameters;
+                if (parameters.Count() > 0) {
+                    entityArgument += (String.IsNullOrEmpty(entityArgument)? "" : ", ") + String.Join(", ", parameters.Select(p => p.Name));
+                    argumentWithType += (String.IsNullOrEmpty(argumentWithType) ? "" : ", ") + String.Join(", ", parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
+                }
+
                 result += CustomActionTemplate.Clone().ToString()
                     .Replace("$actionName$", customAction.Name)
                     .Replace("$actionFullName$", customAction.NameSpace + "." + customAction.Name)
