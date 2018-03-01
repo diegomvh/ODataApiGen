@@ -27,6 +27,7 @@ namespace Od2Ts.Models
                     case "Edm.Int64":
                     case "Edm.Double":
                     case "Edm.Decimal":
+                    case "Edm.Single":
                         return "number";
                     case "Edm.Boolean":
                         return "boolean";

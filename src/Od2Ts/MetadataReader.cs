@@ -11,7 +11,6 @@ namespace Od2Ts
         private ILogger Logger {get;} = Program.CreateLogger<MetadataReader>();
         public List<EntityType> EntityTypes { get; private set; }
         public List<ComplexType> ComplexTypes { get; private set; }
-
         public List<EnumType> EnumTypes { get; private set; }
         public List<EntitySet> EntitySets { get; private set; }
         public List<CustomAction> CustomActions { get; private set; }
@@ -109,7 +108,7 @@ namespace Od2Ts
         }
 
 
-        public MetadataReader(XDocument xdoc)
+        public MetadataReader(XDocument xdoc, bool useInterface)
         {
             ReadEntityTypes(xdoc);
             ReadComplexTypes(xdoc);

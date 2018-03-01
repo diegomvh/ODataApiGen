@@ -1,1 +1,1 @@
-﻿    public $propertyName$: $propertyType$;
+﻿    $accessibility$$propertyName$: $propertyType$;

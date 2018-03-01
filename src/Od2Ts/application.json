@@ -3,7 +3,10 @@
     "EndpointName": "DpsApi",
     "Output": "Output",
     "PurgeOutput": true,
+    "UseInterface": true,
     "Templates": {
+        "EntitySetServiceTemplate": "./Templates/AngularEntitySetService.tst",
+        "ModuleTemplate": "./Templates/AngularModuleTemplate.tst",
         "EntityTypeTemplate": "./Templates/EntityTypeTemplate.tst",
         "EntityPropertyTemplate": "./Templates/FieldTemplate.tst",
         "ImportsTemplate": "./Templates/ImportTemplate.tst",
@@ -12,13 +15,5 @@
         "ContextTemplate": "./Templates/ContextTemplate.tst",
         "CustomActionTemplate": "./Templates/CustomActionTemplate.tst",
         "CustomFunctionTemplate": "./Templates/CustomFunctionTemplate.tst"
-    },
-    "AngularTemplates": {
-        "EntitySetServiceTemplate": "./Templates/AngularEntitySetService.tst",
-        "ModuleTemplate": "./Templates/AngularModuleTemplate.tst"
-    },
-    "AureliaTemplates": {
-        "EntitySetServiceTemplate": "./Templates/AureliaEntitySetService.tst",
-        "ModuleTemplate": "./Templates/AureliaModuleTemplate.tst"
     }
 }

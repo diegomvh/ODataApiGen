@@ -5,6 +5,6 @@ namespace Od2Ts.Interfaces
 {
     public interface IHasImports : IHasUri
     {
-        IEnumerable<Uri> Imports { get; }
+        IEnumerable<Uri> Imports(bool useInterface);
     }
 }

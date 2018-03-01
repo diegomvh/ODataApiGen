@@ -3,6 +3,7 @@ using System.IO;
 using Od2Ts.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Od2Ts
 {
@@ -16,6 +17,7 @@ namespace Od2Ts
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
         public static bool PurgeOutput { get; set; }
+        public static bool UseInterface { get; set; }
 
         static void Main(string[] args)
         {
@@ -25,22 +27,28 @@ namespace Od2Ts
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json");
+                .AddJsonFile("application.json")
+                .AddCommandLine(args, new Dictionary<string, string>() {
+                    {"-MetadataPath", "MetadataPath"},
+                    {"-EndpointName", "EndpointName"},
+                    {"-UseInterface", "UseInterface"}
+                });
             Configuration = builder.Build();
 
             MetadataPath = Configuration.GetValue<string>("MetadataPath");
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
+            UseInterface = Configuration.GetValue<bool>("UseInterface");
 
-            var directoryManager = new DirectoryManager(Output);
-            var templateRenderer = new TemplateRenderer(Output);
+            var directoryManager = new DirectoryManager(Output, UseInterface);
+            var templateRenderer = new TemplateRenderer(Output, UseInterface);
 
             Configuration.GetSection("Templates").Bind(templateRenderer);
             templateRenderer.LoadTemplates();
-            
+
             var xml = Loader.Load(MetadataPath);
-            var metadataReader = new MetadataReader(xml);
+            var metadataReader = new MetadataReader(xml, UseInterface);
 
             directoryManager.PrepareOutput(PurgeOutput);
 

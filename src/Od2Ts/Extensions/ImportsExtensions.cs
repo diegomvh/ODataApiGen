@@ -13,12 +13,16 @@ namespace Od2Ts.Extensions
 
     public static class ImportsExtensions
     {
-        public static IEnumerable<ImportRecord> GetImportRecords(this IHasImports element)
+        public static IEnumerable<ImportRecord> GetImportRecords(this IHasImports element, bool useInterface)
         {
-            var records = element.Imports.Where(a=>a != element.Uri).Select(a => new ImportRecord
+            var records = element.Imports(useInterface).Where(a => a != element.Uri).Select(a =>
             {
-                RelativeNamespace = element.Uri.MakeRelativeUri(a),
-                ElementTypeName = a.Segments.Last()
+                var record = new ImportRecord()
+                {
+                    RelativeNamespace = element.Uri.MakeRelativeUri(a),
+                    ElementTypeName = a.Segments.Last()
+                };
+                return record;
             });
             return records;
         }

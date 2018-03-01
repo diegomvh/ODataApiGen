@@ -25,11 +25,13 @@ namespace Od2Ts
         public string ModuleTemplate { get; set; }
         public string CustomActionTemplate { get; set; }
         public string CustomFunctionTemplate { get; set; }
+        public bool UseInterface { get; set; }
         private char PathSep {get;} = Path.DirectorySeparatorChar;
 
-        public TemplateRenderer(string output)
+        public TemplateRenderer(string output, bool useInterface)
         {
             this.Output = output;
+            this.UseInterface = useInterface;
         }
         public void LoadTemplates() {
             EntityTypeTemplate = File.ReadAllText(EntityTypeTemplate);
@@ -46,9 +48,10 @@ namespace Od2Ts
 
         private string ParseImports(IHasImports entity)
         {
-            return string.Join("", entity.GetImportRecords().Select(a =>
+            var useInterface = UseInterface && !(entity is AngularModule);
+            return string.Join("", entity.GetImportRecords(useInterface).Select(a =>
                 ImportsTemplate.Clone().ToString()
-                    .Replace("$moduleNames$", a.ElementTypeName)
+                    .Replace("$moduleNames$", useInterface ? $"I{a.ElementTypeName}" : a.ElementTypeName)
                     .Replace("$relativePaths$", "./" + a.RelativeNamespace)));
         }
 
@@ -64,9 +67,12 @@ namespace Od2Ts
                 template = template.Replace("$imports$", ParseImports(imports));
             }
 
+            var useInterface = UseInterface && !(entity is AngularModule);
             template = template
                 .Replace("$EntityType$", entity.Name)
-                .Replace("$Name$", entity.Name)
+                .Replace("$Name$", 
+                    useInterface ? $"I{entity.Name}" : entity.Name)
+                .Replace("$Type$", UseInterface ? "interface" : "class")
                 .Replace("$NameSpace$", entity.NameSpace);
 
             File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", template);
@@ -93,6 +99,7 @@ namespace Od2Ts
             var props = entityType.Properties.Select(prop =>
                 EntityPropertyTemplate.Clone()
                     .ToString()
+                    .Replace("$accessibility$", UseInterface? "" : "public ")
                     .Replace("$propertyName$", prop.TypescriptName)
                     .Replace("$propertyType$", prop.TypescriptType));
 
@@ -100,8 +107,12 @@ namespace Od2Ts
             var refs = entityType.NavigationProperties.Select(nav =>
                 EntityPropertyTemplate.Clone()
                     .ToString()
+                    .Replace("$accessibility$", UseInterface? "" : "public ")
                     .Replace("$propertyName$", nav.Name)
-                    .Replace("$propertyType$", nav.Type.Split('.').Last() + (nav.IsCollection ? "[]" : ""))
+                    .Replace("$propertyType$", 
+                        (UseInterface ? "I" : "") +
+                        nav.Type.Split('.').Last() + 
+                        (nav.IsCollection ? "[]" : ""))
             );
 
             var template = EntityTypeTemplate.Clone().ToString()
@@ -213,7 +224,7 @@ namespace Od2Ts
         {
             var template = EntitySetServiceTemplate.Clone().ToString()
                 .Replace("$entitySetUrl$", entitySet.EntitySetName)
-                .Replace("$entityTypeName$", entitySet.EntityType.Split('.').Last())
+                .Replace("$entityTypeName$", UseInterface ? $"I{entitySet.EntityType.Split('.').Last()}" : $"{entitySet.EntityType.Split('.').Last()}")
                 .Replace("$customActions$", GetCustomActionsTemplate(entitySet.CustomActions.ToList()))
                 .Replace("$customFunctions$", GetCustomFunctionsTemplate(entitySet.CustomFunctions.ToList()));
             DoRender(entitySet, template);
