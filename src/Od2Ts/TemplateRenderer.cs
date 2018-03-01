@@ -222,9 +222,11 @@ namespace Od2Ts
 
         private void CreateServiceForEntitySet(EntitySet entitySet)
         {
+            var entityTypeName = entitySet.EntityType.Split('.').Last();
             var template = EntitySetServiceTemplate.Clone().ToString()
+                .Replace("$entitySetName$", entitySet.Name)
                 .Replace("$entitySetUrl$", entitySet.EntitySetName)
-                .Replace("$entityTypeName$", UseInterface ? $"I{entitySet.EntityType.Split('.').Last()}" : $"{entitySet.EntityType.Split('.').Last()}")
+                .Replace("$entityTypeName$", UseInterface ? $"I{entityTypeName}" : $"{entityTypeName}")
                 .Replace("$customActions$", GetCustomActionsTemplate(entitySet.CustomActions.ToList()))
                 .Replace("$customFunctions$", GetCustomFunctionsTemplate(entitySet.CustomFunctions.ToList()));
             DoRender(entitySet, template);
