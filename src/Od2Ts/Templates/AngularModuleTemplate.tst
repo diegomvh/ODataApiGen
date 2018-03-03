@@ -5,7 +5,7 @@ $imports$
 
 @NgModule({
   providers: [
-        $moduleProviders$
+    $moduleProviders$
   ]
 })
 export class $moduleName$ { }

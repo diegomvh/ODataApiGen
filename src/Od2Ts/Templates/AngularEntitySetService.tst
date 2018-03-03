@@ -1,14 +1,14 @@
 ﻿$imports$
 
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { AngularODataServiceBase } from '../AngularOdataServiceBase';
+import { HttpClient } from '@angular/common/http';
+import { ODataConfiguration } from '../angularODataConfiguration';
+import { ODataService } from '../angularODataService';
 
 @Injectable()
-export class $entitySetName$ extends AngularODataServiceBase<$entityTypeName$> {
-    public entitySetUrlSegment = '$entitySetUrl$';
-$customActions$$customFunctions$
-    constructor(protected http: Http) {
-        super();
+export class $entitySetName$ extends ODataService<$entityTypeName$> {
+    constructor(http: HttpClient, config: ODataConfiguration) {
+        super('$entitySetUrl$', http, config);
     }
+$customActions$$customFunctions$
 }
