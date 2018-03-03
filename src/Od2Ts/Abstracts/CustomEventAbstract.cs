@@ -54,16 +54,20 @@ namespace Od2Ts.Abstracts
         private Uri _uri;
         public Uri Uri => _uri ?? (_uri = new Uri("r://" + NameSpace.Replace(".", Path.DirectorySeparatorChar.ToString()) + Path.DirectorySeparatorChar + Name, UriKind.Absolute));
 
-        public IEnumerable<Uri> Imports(bool useInterface)
+        public IEnumerable<Import> Imports(bool useInterface)
         {
-            var uriList = new List<Uri>();
+            var uriList = new List<Import>();
             if (!string.IsNullOrWhiteSpace(ReturnType))
             {
-                uriList.Add(new Uri("r://" + ReturnType.Replace(".", Path.DirectorySeparatorChar.ToString())));
+                uriList.Add(new Import(
+                    new Uri("r://" + ReturnType.Replace(".", Path.DirectorySeparatorChar.ToString())))
+                    );
             }
             if (!string.IsNullOrWhiteSpace(BindingParameter))
             {
-                uriList.Add(new Uri("r://" + BindingParameter.Replace(".", Path.DirectorySeparatorChar.ToString())));
+                uriList.Add(new Import(
+                    new Uri("r://" + BindingParameter.Replace(".", Path.DirectorySeparatorChar.ToString())))
+                    );
             }
             return uriList;
         }

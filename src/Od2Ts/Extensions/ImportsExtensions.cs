@@ -15,12 +15,12 @@ namespace Od2Ts.Extensions
     {
         public static IEnumerable<ImportRecord> GetImportRecords(this IHasImports element, bool useInterface)
         {
-            var records = element.Imports(useInterface).Where(a => a != element.Uri).Select(a =>
+            var records = element.Imports(useInterface).Where(a => a.Uri != element.Uri).Select(a =>
             {
                 var record = new ImportRecord()
                 {
-                    RelativeNamespace = element.Uri.MakeRelativeUri(a),
-                    ElementTypeName = a.Segments.Last()
+                    RelativeNamespace = element.Uri.MakeRelativeUri(a.Uri),
+                    ElementTypeName = a.Uri.Segments.Last()
                 };
                 return record;
             });

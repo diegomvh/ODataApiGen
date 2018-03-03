@@ -22,9 +22,9 @@ namespace Od2Ts.Models
 
         public Uri Uri => _uri ?? (_uri = new Uri("r://"  + Name, UriKind.Absolute));
 
-        public IEnumerable<Uri> Imports(bool useInterface)
+        public IEnumerable<Import> Imports(bool useInterface)
         {
-            return EntitySets.Select(a => a.Uri);
+            return EntitySets.Select(a => new Import(a.Uri));
         }
     }
 }
