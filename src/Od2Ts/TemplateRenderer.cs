@@ -51,7 +51,7 @@ namespace Od2Ts
             var useInterface = UseInterface && !(entity is AngularModule);
             return string.Join("", entity.GetImportRecords(useInterface).Select(a =>
                 ImportsTemplate.Clone().ToString()
-                    .Replace("$moduleNames$", useInterface ? $"I{a.ElementTypeName}" : a.ElementTypeName)
+                    .Replace("$names$", useInterface ? $"I{a.ElementTypeName}" : a.ElementTypeName)
                     .Replace("$relativePaths$", "./" + a.RelativeNamespace)));
         }
 
@@ -69,11 +69,10 @@ namespace Od2Ts
 
             var useInterface = UseInterface && !(entity is AngularModule);
             template = template
-                .Replace("$EntityType$", entity.Name)
-                .Replace("$Name$", 
+                .Replace("$entityType$", entity.Name)
+                .Replace("$name$", 
                     useInterface ? $"I{entity.Name}" : entity.Name)
-                .Replace("$Type$", UseInterface ? "interface" : "class")
-                .Replace("$NameSpace$", entity.NameSpace);
+                .Replace("$nameSpace$", entity.NameSpace);
 
             File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", template);
         }
@@ -82,7 +81,7 @@ namespace Od2Ts
         {
             foreach (var entityType in types)
             {
-                CreateTypescriptModelClass(entityType);
+                CreateTypescriptModelType(entityType);
             }
         }
 
@@ -90,11 +89,11 @@ namespace Od2Ts
         {
             foreach (var complexType in types)
             {
-                CreateTypescriptModelClass(complexType);
+                CreateTypescriptModelType(complexType);
             }
         }
 
-        private void CreateTypescriptModelClass(TypescriptModelClassAbstract entityType)
+        private void CreateTypescriptModelType(TypescriptModelClassAbstract entityType)
         {
             var props = entityType.Properties.Select(prop =>
                 EntityPropertyTemplate.Clone()
@@ -117,6 +116,7 @@ namespace Od2Ts
 
             var template = EntityTypeTemplate.Clone().ToString()
                 .Replace("$properties$", string.Join("", props))
+                .Replace("$typeName$", UseInterface ? "interface" : "class")
                 .Replace("$navigationProperties$", string.Join("", refs));
 
             DoRender(entityType, template);

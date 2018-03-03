@@ -1,5 +1,5 @@
 ﻿$imports$
-export $Type$ $Name$ {
+export $typeName$ $name$ {
 
     /* Navigation properties */
 $navigationProperties$

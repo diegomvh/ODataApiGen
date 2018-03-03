@@ -1,3 +1,3 @@
-﻿export enum $Name$ {
+﻿export enum $name$ {
 $members$
 }
