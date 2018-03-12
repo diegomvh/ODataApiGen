@@ -95,7 +95,7 @@ namespace Od2Ts
             var props = entityType.Properties.Select(prop =>
                 EntityPropertyTemplate.Clone()
                     .ToString()
-                    .Replace("$accessor$", !UseInterfaces ? "public" : "")
+                    .Replace("$accessor$", !UseInterfaces ? "public " : "")
                     .Replace("$propertyName$", prop.TypescriptName)
                     .Replace("$propertyType$", prop.TypescriptType));
 
@@ -103,7 +103,7 @@ namespace Od2Ts
             var refs = entityType.NavigationProperties.Select(nav =>
                 EntityPropertyTemplate.Clone()
                     .ToString()
-                    .Replace("$accessor$", !UseInterfaces ? "public" : "")
+                    .Replace("$accessor$", !UseInterfaces ? "public " : "")
                     .Replace("$propertyName$", nav.Name)
                     .Replace("$propertyType$", 
                         nav.Type.Split('.').Last() + 
@@ -245,7 +245,7 @@ namespace Od2Ts
                 .Replace("$moduleProviders$", string.Join(",\r\n\t", module.EntitySets.Select(a => a.Name)))
                 .Replace("$moduleName$", module.Name);
 
-            DoRender(module, template);
+            DoRender(module, template, $"{module.Name.ToLower()}.module");
 
         }
     }

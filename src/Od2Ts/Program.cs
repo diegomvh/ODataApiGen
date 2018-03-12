@@ -39,6 +39,7 @@ namespace Od2Ts
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
+            UseIntrefaces = Configuration.GetValue<bool>("UseInterfaces");
             
             var directoryManager = new DirectoryManager(Output);
             var templateRenderer = new TemplateRenderer(Output, UseIntrefaces);

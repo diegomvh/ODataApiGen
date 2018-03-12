@@ -1,12 +1,13 @@
 {
-    "MetadataPath": "http://nb-mdp-dev02:57970/$metadata",
-    "EndpointName": "SIU",
+    "MetadataPath": "http://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
+    "EndpointName": "SiuApi",
     "Output": "Output",
     "PurgeOutput": true,
-    "UseInterface": true,
+    "UseInterfaces": true,
     "Templates": {
-        "EntitySetServiceTemplate": "./Templates/AngularEntitySetService.tst",
-        "ModuleTemplate": "./Templates/AngularModuleTemplate.tst",
+        "EntitySetServiceTemplate": "./Templates/EntitySetService.tst",
+        "ModuleTemplate": "./Templates/ModuleTemplate.tst",
+        "IndexTemplate": "./Templates/IndexTemplate.tst",
         "EntityTypeTemplate": "./Templates/EntityTypeTemplate.tst",
         "EntityPropertyTemplate": "./Templates/FieldTemplate.tst",
         "ImportsTemplate": "./Templates/ImportTemplate.tst",
