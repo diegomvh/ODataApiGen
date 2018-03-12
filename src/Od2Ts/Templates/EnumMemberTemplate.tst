@@ -1,1 +1,1 @@
-﻿    $memberName$ = $memberValue$,
+﻿  $memberName$ = $memberValue$,

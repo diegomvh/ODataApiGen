@@ -1,8 +1,7 @@
 ﻿$imports$
 export $type$ $name$ {
-
-    /* Navigation properties */
+  /* Navigation properties */
 $navigationProperties$
-    /* Properties */
+  /* Properties */
 $properties$
 }
