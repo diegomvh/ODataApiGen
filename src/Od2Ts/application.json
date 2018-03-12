@@ -1,5 +1,5 @@
 {
-    "MetadataPath": "http://nb-mdp-dev01:57970/$metadata",
+    "MetadataPath": "http://nb-mdp-dev02:57970/$metadata",
     "EndpointName": "SIU",
     "Output": "Output",
     "PurgeOutput": true,

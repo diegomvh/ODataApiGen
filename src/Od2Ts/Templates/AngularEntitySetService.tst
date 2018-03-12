@@ -2,8 +2,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataConfiguration } from '../angularODataConfiguration';
-import { ODataService } from '../angularODataService';
+import { ODataConfiguration, ODataService } from "angular-odata-es5";
 
 @Injectable()
 export class $entitySetName$ extends ODataService<$entityTypeName$> {

@@ -13,9 +13,9 @@ namespace Od2Ts.Extensions
 
     public static class ImportsExtensions
     {
-        public static IEnumerable<ImportRecord> GetImportRecords(this IHasImports element, bool useInterface)
+        public static IEnumerable<ImportRecord> GetImportRecords(this IHasImports element)
         {
-            var records = element.Imports(useInterface).Where(a => a.Uri != element.Uri).Select(a =>
+            var records = element.Imports.Where(a => a.Uri != element.Uri).Select(a =>
             {
                 var record = new ImportRecord()
                 {

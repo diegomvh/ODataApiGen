@@ -29,9 +29,11 @@ namespace Od2Ts.Models
         private Uri _uri;
         public Uri Uri => _uri ?? (_uri = new Uri("r://" + NameSpace.Replace(".", Path.DirectorySeparatorChar.ToString()) + Path.DirectorySeparatorChar + Name, UriKind.Absolute));
 
-        public IEnumerable<Import> Imports(bool useInterface)
+        public IEnumerable<Import> Imports
         {
-            var list = new List<Import>
+            get
+            {
+                var list = new List<Import>
                 {
                     new Import(
                         new Uri("r://" + EntityType.Replace(".", Path.DirectorySeparatorChar.ToString()), UriKind.Absolute)
@@ -40,9 +42,10 @@ namespace Od2Ts.Models
                         new Uri("r://ODataContext", UriKind.Absolute)
                     )
                 };
-            list.AddRange(CustomActions.SelectMany(a => a.Imports(useInterface)));
-            list.AddRange(CustomFunctions.SelectMany(a => a.Imports(useInterface)));
-            return list.Distinct();
+                list.AddRange(CustomActions.SelectMany(a => a.Imports));
+                list.AddRange(CustomFunctions.SelectMany(a => a.Imports));
+                return list.Distinct();
+            }
         }
 
         public IEnumerable<CustomAction> CustomActions { get; set; }

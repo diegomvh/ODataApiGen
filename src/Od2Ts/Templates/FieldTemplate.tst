@@ -1,1 +1,1 @@
-﻿    $accessibility$$propertyName$: $propertyType$;
+﻿    $accessor$$propertyName$: $propertyType$;

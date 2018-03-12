@@ -108,7 +108,7 @@ namespace Od2Ts
         }
 
 
-        public MetadataReader(XDocument xdoc, bool useInterface)
+        public MetadataReader(XDocument xdoc)
         {
             ReadEntityTypes(xdoc);
             ReadComplexTypes(xdoc);

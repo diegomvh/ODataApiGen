@@ -65,7 +65,7 @@ namespace Od2Ts
             }
         }
 
-        public DirectoryManager(string outFolder, bool useInterface)
+        public DirectoryManager(string outFolder)
         {
             Output = outFolder;
             DirectoryInfo = new DirectoryInfo(outFolder);

@@ -16,8 +16,8 @@ namespace Od2Ts
         public static string MetadataPath { get; set; }
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
+        public static bool UseIntrefaces { get; set; }
         public static bool PurgeOutput { get; set; }
-        public static bool UseInterface { get; set; }
 
         static void Main(string[] args)
         {
@@ -31,7 +31,7 @@ namespace Od2Ts
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-MetadataPath", "MetadataPath"},
                     {"-EndpointName", "EndpointName"},
-                    {"-UseInterface", "UseInterface"}
+                    {"-UseInterfaces", "UseInterfaces"}
                 });
             Configuration = builder.Build();
 
@@ -39,16 +39,15 @@ namespace Od2Ts
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
-            UseInterface = Configuration.GetValue<bool>("UseInterface");
-
-            var directoryManager = new DirectoryManager(Output, UseInterface);
-            var templateRenderer = new TemplateRenderer(Output, UseInterface);
+            
+            var directoryManager = new DirectoryManager(Output);
+            var templateRenderer = new TemplateRenderer(Output, UseIntrefaces);
 
             Configuration.GetSection("Templates").Bind(templateRenderer);
             templateRenderer.LoadTemplates();
 
             var xml = Loader.Load(MetadataPath);
-            var metadataReader = new MetadataReader(xml, UseInterface);
+            var metadataReader = new MetadataReader(xml);
 
             directoryManager.PrepareOutput(PurgeOutput);
 

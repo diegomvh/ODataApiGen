@@ -20,11 +20,14 @@ namespace Od2Ts.Models
         private Uri _uri;
         public readonly IEnumerable<EntitySet> EntitySets;
 
-        public Uri Uri => _uri ?? (_uri = new Uri("r://"  + Name, UriKind.Absolute));
+        public Uri Uri => _uri ?? (_uri = new Uri("r://" + Name, UriKind.Absolute));
 
-        public IEnumerable<Import> Imports(bool useInterface)
+        public IEnumerable<Import> Imports
         {
-            return EntitySets.Select(a => new Import(a.Uri));
+            get
+            {
+                return EntitySets.Select(a => new Import(a.Uri));
+            }
         }
     }
 }

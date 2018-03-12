@@ -46,16 +46,19 @@ namespace Od2Ts.Abstracts
         public List<Property> Properties { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
 
-        public IEnumerable<Import> Imports(bool useInterface)
+        public IEnumerable<Import> Imports
         {
-            var namespaces = NavigationProperties.Select(a => a.Type).Where(a => a != NameSpace + "." + Name).ToList();
-            /*For Not-EDM types (e.g. enums with namespaces, complex types*/
-            namespaces.AddRange(Properties.Where(a => !a.Type.StartsWith("Edm.")).Select(a => a.Type));
+            get
+            {
+                var namespaces = NavigationProperties.Select(a => a.Type).Where(a => a != NameSpace + "." + Name).ToList();
+                /*For Not-EDM types (e.g. enums with namespaces, complex types*/
+                namespaces.AddRange(Properties.Where(a => !a.Type.StartsWith("Edm.")).Select(a => a.Type));
 
-            var uris = namespaces.Distinct().Select(a => new Import(
-                new Uri("r://" + a.Replace(".", "/"), UriKind.Absolute))
-            );
-            return uris;
+                var uris = namespaces.Distinct().Select(a => new Import(
+                    new Uri("r://" + a.Replace(".", "/"), UriKind.Absolute))
+                );
+                return uris;
+            }
         }
 
         private Uri _uri;
