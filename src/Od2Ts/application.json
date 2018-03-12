@@ -1,5 +1,5 @@
 {
-    "MetadataPath": "http://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
+    "MetadataPath": "http://nb-mdp-dev02:57970/$metadata",
     "EndpointName": "SiuApi",
     "Output": "Output",
     "PurgeOutput": true,
@@ -10,7 +10,8 @@
         "IndexTemplate": "./Templates/IndexTemplate.tst",
         "EntityTypeTemplate": "./Templates/EntityTypeTemplate.tst",
         "EntityPropertyTemplate": "./Templates/FieldTemplate.tst",
-        "ImportsTemplate": "./Templates/ImportTemplate.tst",
+        "ImportTemplate": "./Templates/ImportTemplate.tst",
+        "ExportTemplate": "./Templates/ExportTemplate.tst",
         "EnumTypeTemplate": "./Templates/EnumTypeTemplate.tst",
         "EnumMemberTemplate": "./Templates/EnumMemberTemplate.tst",
         "ContextTemplate": "./Templates/ContextTemplate.tst",

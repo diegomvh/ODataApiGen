@@ -18,16 +18,17 @@ namespace Od2Ts
         public bool UseInterfaces { get; private set; }
         public string EntityTypeTemplate { get; set; }
         public string EntityPropertyTemplate { get; set; }
-        public string ImportsTemplate { get; set; }
+        public string ImportTemplate { get; set; }
+        public string ExportTemplate { get; set; }
         public string EnumTypeTemplate { get; set; }
         public string EnumMemberTemplate { get; set; }
         public string EntitySetServiceTemplate { get; set; }
         public string ContextTemplate { get; set; }
         public string ModuleTemplate { get; set; }
+        public string IndexTemplate { get; set; }
         public string CustomActionTemplate { get; set; }
         public string CustomFunctionTemplate { get; set; }
         private char PathSep {get;} = Path.DirectorySeparatorChar;
-
         public TemplateRenderer(string output, bool useInterfaces)
         {
             this.Output = output;
@@ -36,22 +37,29 @@ namespace Od2Ts
         public void LoadTemplates() {
             EntityTypeTemplate = File.ReadAllText(EntityTypeTemplate);
             EntityPropertyTemplate = File.ReadAllText(EntityPropertyTemplate);
-            ImportsTemplate = File.ReadAllText(ImportsTemplate);
+            ImportTemplate = File.ReadAllText(ImportTemplate);
+            ExportTemplate = File.ReadAllText(ExportTemplate);
             EnumTypeTemplate = File.ReadAllText(EnumTypeTemplate);
             EnumMemberTemplate = File.ReadAllText(EnumMemberTemplate);
             EntitySetServiceTemplate = File.ReadAllText(EntitySetServiceTemplate);
             ContextTemplate = File.ReadAllText(ContextTemplate);
             ModuleTemplate = File.ReadAllText(ModuleTemplate);
+            IndexTemplate = File.ReadAllText(IndexTemplate);
             CustomActionTemplate = File.ReadAllText(CustomActionTemplate);
             CustomFunctionTemplate = File.ReadAllText(CustomFunctionTemplate);
         }
-
         private string ParseImports(IHasImports entity)
         {
             return string.Join("", entity.GetImportRecords().Select(a =>
-                ImportsTemplate.Clone().ToString()
+                ImportTemplate.Clone().ToString()
                     .Replace("$names$", a.ElementTypeName)
                     .Replace("$relativePaths$", "./" + a.RelativeNamespace)));
+        }
+       private string ParseExports(IHasImports entity)
+        {
+            return ExportTemplate.Clone().ToString()
+                .Replace("$relativePaths$", 
+                "./" + entity.NameSpace.Replace(".", Path.DirectorySeparatorChar.ToString()) + $"{PathSep}{entity.Name}" );
         }
 
         private void DoRender(IRenderableElement entity, string template, string fileName = null)
@@ -158,25 +166,26 @@ namespace Od2Ts
                 var returnTypeName = !string.IsNullOrWhiteSpace(customAction.ReturnType) ? customAction.ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a))
                     + (customAction.ReturnsCollection ? "[]" : "") : "any";
                 var baseExecFunctionName = customAction.IsCollectionAction
-                    ? "ExecCustomCollectionAction"
-                    : "ExecCustomAction";
-
-                var entityArgument = customAction.IsCollectionAction ? "" : customAction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
-                var argumentWithType = customAction.IsCollectionAction ? "" : $"{entityArgument}: any";
+                    ? "CustomCollectionAction"
+                    : "CustomAction";
 
                 var parameters = customAction.Parameters;
-                if (parameters.Count() > 0) {
-                    entityArgument += (String.IsNullOrEmpty(entityArgument)? "" : ", ") + String.Join(", ", parameters.Select(p => p.Name));
-                    argumentWithType += (String.IsNullOrEmpty(argumentWithType) ? "" : ", ") + String.Join(", ", parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
-                }
+                var argumentWithType = new List<string>();
+                var boundArgument = customAction.IsCollectionAction ? "" : customAction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
+
+                if (!customAction.IsCollectionAction)
+                    argumentWithType.Add($"{boundArgument}: any");
+
+                argumentWithType.AddRange(parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
 
                 result += CustomActionTemplate.Clone().ToString()
                     .Replace("$actionName$", customAction.Name)
                     .Replace("$actionFullName$", customAction.NameSpace + "." + customAction.Name)
                     .Replace("$returnType$", returnTypeName)
+                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", ", " + entityArgument)
-                    .Replace("$argumentWithType$", argumentWithType);
+                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
+                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType));
             }
             return result;
         }
@@ -193,25 +202,26 @@ namespace Od2Ts
                 var returnTypeName = customFunction.ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a))
                     + (customFunction.ReturnsCollection ? "[]" : "");
                 var baseExecFunctionName = customFunction.IsCollectionAction
-                    ? "ExecCustomCollectionFunction"
-                    : "ExecCustomFunction";
-
-                var entityArgument = customFunction.IsCollectionAction ? "" : customFunction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
-                var argumentWithType = customFunction.IsCollectionAction ? "" : $"{entityArgument}: any";
+                    ? "CustomCollectionFunction"
+                    : "CustomFunction";
 
                 var parameters = customFunction.Parameters;
-                if (parameters.Count() > 0) {
-                    entityArgument += (String.IsNullOrEmpty(entityArgument)? "" : ", ") + String.Join(", ", parameters.Select(p => p.Name));
-                    argumentWithType += (String.IsNullOrEmpty(argumentWithType) ? "" : ", ") + String.Join(", ", parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
-                }
+                var argumentWithType = new List<string>();
+                var boundArgument = customFunction.IsCollectionAction ? "" : customFunction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
+
+                if (!customFunction.IsCollectionAction)
+                    argumentWithType.Add($"{boundArgument}: any");
+
+                argumentWithType.AddRange(parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
 
                 result += CustomFunctionTemplate.Clone().ToString()
                     .Replace("$functionName$", customFunction.Name)
                     .Replace("$functionFullName$", customFunction.NameSpace + "." + customFunction.Name)
                     .Replace("$returnType$", returnTypeName)
+                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", ", " + entityArgument)
-                    .Replace("$argumentWithType$", argumentWithType);
+                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
+                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType));
             }
             return result;
         }
@@ -246,7 +256,16 @@ namespace Od2Ts
                 .Replace("$moduleName$", module.Name);
 
             DoRender(module, template, $"{module.Name.ToLower()}.module");
+        }
 
+        public void CreateAngularIndex(AngularModule module) 
+        {
+            var template = IndexTemplate.Clone().ToString()
+                .Replace("$exportTypes$", string.Join("", module.EntityTypes.Distinct().Select(e => ParseExports(e))))
+                .Replace("$exportServices$", string.Join("", module.EntitySets.Distinct().Select(e => ParseExports(e))))
+                .Replace("$moduleName$", $"{module.Name.ToLower()}.module");
+
+            File.WriteAllText($"{Output}{PathSep}index.ts", template);
         }
     }
 }

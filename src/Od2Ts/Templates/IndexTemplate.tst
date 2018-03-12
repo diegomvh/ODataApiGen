@@ -1,4 +1,3 @@
-﻿$imports$
-
-$exportTypes$
+﻿$exportTypes$
 $exportServices$
+export * from './$moduleName$'

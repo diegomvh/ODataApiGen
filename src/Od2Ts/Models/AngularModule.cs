@@ -7,9 +7,10 @@ namespace Od2Ts.Models
 {
     public class AngularModule : IHasImports
     {
-        public AngularModule(string endpointName, IEnumerable<EntitySet> entitySets)
+        public AngularModule(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
         {
             EntitySets = entitySets;
+            EntityTypes = entityTypes;
             Name = endpointName;
             NameSpace = string.Empty;
         }
@@ -19,6 +20,7 @@ namespace Od2Ts.Models
 
         private Uri _uri;
         public readonly IEnumerable<EntitySet> EntitySets;
+        public readonly IEnumerable<EntityType> EntityTypes;
 
         public Uri Uri => _uri ?? (_uri = new Uri("r://" + Name, UriKind.Absolute));
 
