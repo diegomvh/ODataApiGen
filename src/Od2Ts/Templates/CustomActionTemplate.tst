@@ -1,3 +1,4 @@
-﻿  public async $actionName$($argumentWithType$): Promise<$returnType$> {
-    return await this.$execName$($bound$'$actionFullName$'$argument$).toPromise<$returnType$>();
+﻿  public $actionName$($argumentWithType$) {
+    return this.Query()$bound$
+      .actionCall({'$actionFullName$': $argument$});
   }

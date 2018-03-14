@@ -182,9 +182,9 @@ namespace Od2Ts
                     .Replace("$actionName$", customAction.Name)
                     .Replace("$actionFullName$", customAction.NameSpace + "." + customAction.Name)
                     .Replace("$returnType$", returnTypeName)
-                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ")
+                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"\n      .entityKey({boundArgument})")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
+                    .Replace("$argument$", parameters.Any()? "{ " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
                     .Replace("$argumentWithType$", String.Join(", ", argumentWithType));
             }
             return result;
@@ -218,9 +218,9 @@ namespace Od2Ts
                     .Replace("$functionName$", customFunction.Name)
                     .Replace("$functionFullName$", customFunction.NameSpace + "." + customFunction.Name)
                     .Replace("$returnType$", returnTypeName)
-                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ")
+                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"\n      .entityKey({boundArgument})")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
+                    .Replace("$argument$", parameters.Any()? "{ " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
                     .Replace("$argumentWithType$", String.Join(", ", argumentWithType));
             }
             return result;
