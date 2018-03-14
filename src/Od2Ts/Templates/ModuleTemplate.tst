@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 $imports$
 @NgModule({
   providers: [
-    $moduleProviders$
+    $moduleProviders$,
+    { provide: ODataContext, useClass: ODataContext }
   ]
 })
 export class $moduleName$Module { }

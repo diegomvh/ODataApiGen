@@ -40,6 +40,9 @@ namespace Od2Ts.Models
                     ),
                     new Import(
                         new Uri("r://ODataContext", UriKind.Absolute)
+                    ),
+                    new Import(
+                        new Uri("r://ODataEntitySetService", UriKind.Absolute)
                     )
                 };
                 list.AddRange(CustomActions.SelectMany(a => a.Imports));

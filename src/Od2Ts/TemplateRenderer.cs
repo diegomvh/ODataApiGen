@@ -249,7 +249,7 @@ namespace Od2Ts
             File.WriteAllText($"{Output}{PathSep}ODataContext.ts", template);
         }
 
-        public void CreateAngularModule(AngularModule module)
+        public void CreateAngularModule(Module module)
         {
             var template = ModuleTemplate.Clone().ToString()
                 .Replace("$moduleProviders$", string.Join(",\r\n\t", module.EntitySets.Select(a => a.Name)))
@@ -258,7 +258,7 @@ namespace Od2Ts
             DoRender(module, template, $"{module.Name.ToLower()}.module");
         }
 
-        public void CreateAngularIndex(AngularModule module) 
+        public void CreateAngularIndex(Module module) 
         {
             var template = IndexTemplate.Clone().ToString()
                 .Replace("$exportTypes$", string.Join("", module.EntityTypes.Distinct().Select(e => ParseExports(e))))

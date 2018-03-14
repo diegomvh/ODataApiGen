@@ -5,9 +5,9 @@ using Od2Ts.Interfaces;
 
 namespace Od2Ts.Models
 {
-    public class AngularModule : IHasImports
+    public class Module : IHasImports
     {
-        public AngularModule(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
+        public Module(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
         {
             EntitySets = entitySets;
             EntityTypes = entityTypes;
@@ -28,7 +28,14 @@ namespace Od2Ts.Models
         {
             get
             {
-                return EntitySets.Select(a => new Import(a.Uri));
+                var list = new List<Import>
+                {
+                    new Import(
+                        new Uri("r://ODataContext", UriKind.Absolute)
+                    )
+                };
+                list.AddRange(EntitySets.Select(a => new Import(a.Uri)));
+                return list.Distinct();
             }
         }
     }

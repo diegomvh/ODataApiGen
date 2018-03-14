@@ -26,7 +26,7 @@ namespace Od2Ts.Abstracts
                 {
                     Name = propElement.Attribute("Name")?.Value,
                     IsRequired = propElement.Attribute("Nullable")?.Value == "false",
-                    Type = propElement.Attribute("Type")?.Value
+                    Type = propElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
                 }).ToList();
 
             NavigationProperties = sourceElement.Descendants().Where(a => a.Name.LocalName == "NavigationProperty")
