@@ -1,5 +1,5 @@
 import { ODataContext } from "./ODataContext";
-import { ODataService, ODataQuery } from "@app/odata";
+import { ODataService, ODataQuery } from "../odata";
 
 export class ODataEntitySetService<T> {
   constructor(
