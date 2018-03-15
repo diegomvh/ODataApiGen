@@ -1,5 +1,7 @@
-﻿  public $actionName$($argumentWithType$): Observable<ODataResponse> {
+﻿  public $actionName$($argumentWithType$): Promise<$returnType$> {
     return this.Query()$bound$
       .actionCall('$actionFullName$')
-      .post($argument$);
+      .post($argument$)
+      .toPromise()
+      $returnPromise$;
   }

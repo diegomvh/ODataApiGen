@@ -1,5 +1,7 @@
-﻿  public $functionName$($argumentWithType$): Observable<ODataResponse> {
+﻿  public $functionName$($argumentWithType$): Promise<$returnType$> {
     return this.Query()$bound$
       .functionCall({'$functionFullName$': $argument$})
-      .get();
+      .get()
+      .toPromise()
+      $returnPromise$;
   }

@@ -163,8 +163,8 @@ namespace Od2Ts
             var result = "\r\n\t/*Custom Actions*/\r\n";
             foreach (var customAction in actions)
             {
-                var returnTypeName = !string.IsNullOrWhiteSpace(customAction.ReturnType) ? customAction.ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a))
-                    + (customAction.ReturnsCollection ? "[]" : "") : "any";
+                var returnTypeName = !String.IsNullOrWhiteSpace(customAction.ReturnType) ? customAction.ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) : "any";
+                var returnType = returnTypeName + (customAction.ReturnsCollection ? "[]" : "");
                 var baseExecFunctionName = customAction.IsCollectionAction
                     ? "CustomCollectionAction"
                     : "CustomAction";
@@ -181,11 +181,14 @@ namespace Od2Ts
                 result += CustomActionTemplate.Clone().ToString()
                     .Replace("$actionName$", customAction.Name)
                     .Replace("$actionFullName$", customAction.NameSpace + "." + customAction.Name)
-                    .Replace("$returnType$", returnTypeName)
+                    .Replace("$returnType$", returnType)
                     .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"\n      .entityKey({boundArgument})")
                     .Replace("$execName$", baseExecFunctionName)
                     .Replace("$argument$", parameters.Any()? "{ " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
-                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType));
+                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
+                    .Replace("$returnPromise$", customAction.ReturnsCollection ? 
+                        $".then(resp => resp.toEntitySet<${returnTypeName}>().getEntities())" : 
+                        $".then(resp => resp.toEntity<${returnTypeName}>())");
             }
             return result;
         }
@@ -199,8 +202,8 @@ namespace Od2Ts
             var result = "\r\n\t/*Custom Functions*/\r\n";
             foreach (var customFunction in functions)
             {
-                var returnTypeName = customFunction.ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a))
-                    + (customFunction.ReturnsCollection ? "[]" : "");
+                var returnTypeName = customFunction.ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a));
+                var returnType = returnTypeName + (customFunction.ReturnsCollection ? "[]" : "");
                 var baseExecFunctionName = customFunction.IsCollectionAction
                     ? "CustomCollectionFunction"
                     : "CustomFunction";
@@ -217,11 +220,14 @@ namespace Od2Ts
                 result += CustomFunctionTemplate.Clone().ToString()
                     .Replace("$functionName$", customFunction.Name)
                     .Replace("$functionFullName$", customFunction.NameSpace + "." + customFunction.Name)
-                    .Replace("$returnType$", returnTypeName)
+                    .Replace("$returnType$", returnType)
                     .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"\n      .entityKey({boundArgument})")
                     .Replace("$execName$", baseExecFunctionName)
                     .Replace("$argument$", parameters.Any()? "{ " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
-                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType));
+                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
+                    .Replace("$returnPromise$", customFunction.ReturnsCollection ? 
+                        $".then(resp => resp.toEntitySet<${returnTypeName}>().getEntities())" : 
+                        $".then(resp => resp.toEntity<${returnTypeName}>())");
             }
             return result;
         }
