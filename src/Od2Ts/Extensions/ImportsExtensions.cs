@@ -15,8 +15,9 @@ namespace Od2Ts.Extensions
     {
         public static IEnumerable<ImportRecord> GetImportRecords(this IHasImports element)
         {
-            var records = element.Imports.Where(a => a.Uri != element.Uri).Select(a =>
+            var records = element.Imports.Where(a => a.Uri != element.Uri).GroupBy(i=> i.Uri).Select(group =>
             {
+                var a = group.First();
                 var record = new ImportRecord()
                 {
                     RelativeNamespace = element.Uri.MakeRelativeUri(a.Uri),

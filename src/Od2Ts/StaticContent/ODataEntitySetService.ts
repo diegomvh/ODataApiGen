@@ -1,5 +1,5 @@
 import { ODataContext } from "./ODataContext";
-import { ODataService, ODataQuery } from "../odata";
+import { ODataService, ODataQuery } from "./../odata";
 
 import * as builder from './ODataQueryBuilder';
 
@@ -47,6 +47,6 @@ export class ODataEntitySetService<T> {
       .entityKey(key)
       .get()
       .toPromise()
-      .then(res => res.toEntity<T>());
+      .then(resp => resp.toEntity<T>());
   }
 }

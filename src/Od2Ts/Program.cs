@@ -70,8 +70,8 @@ namespace Od2Ts
             templateRenderer.CreateServicesForEntitySets(metadataReader.EntitySets);
 
             var module = new Module(EndpointName, metadataReader.EntityTypes, metadataReader.EntitySets);
-            templateRenderer.CreateAngularModule(module);
-            templateRenderer.CreateAngularIndex(module);
+            templateRenderer.CreateModule(module);
+            templateRenderer.CreateIndex(module);
         }
     }
 }

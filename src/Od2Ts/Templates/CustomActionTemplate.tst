@@ -1,6 +1,5 @@
 ﻿  public $actionName$($argumentWithType$): Promise<$returnType$> {
-    return this.Query()$bound$
-      .actionCall('$actionFullName$')
+    return this.Query({action: '$actionFullName$'})$bound$
       .post($argument$)
       .toPromise()
       $returnPromise$;

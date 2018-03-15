@@ -47,7 +47,7 @@ namespace Od2Ts.Models
                 };
                 list.AddRange(CustomActions.SelectMany(a => a.Imports));
                 list.AddRange(CustomFunctions.SelectMany(a => a.Imports));
-                return list.Distinct();
+                return list;
             }
         }
 

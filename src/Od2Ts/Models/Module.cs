@@ -35,7 +35,7 @@ namespace Od2Ts.Models
                     )
                 };
                 list.AddRange(EntitySets.Select(a => new Import(a.Uri)));
-                return list.Distinct();
+                return list;
             }
         }
     }

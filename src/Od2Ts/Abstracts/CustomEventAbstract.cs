@@ -44,7 +44,6 @@ namespace Od2Ts.Abstracts
         }
         public string Name { get; }
         public string NameSpace { get; }
-
         public string ReturnType { get; }
         public string BindingParameter { get; }
         public IEnumerable<Parameter> Parameters { get; }
@@ -72,6 +71,37 @@ namespace Od2Ts.Abstracts
                         );
                 }
                 return uriList;
+            }
+        }
+        public string ReturnTypescriptType
+        {
+            get
+            {
+                switch (ReturnType)
+                {
+                    case "Edm.String":
+                    case "Edm.Duration":
+                    case "Edm.Guid":
+                    case "Edm.Binary":
+                        return "string";
+                    case "Edm.Int16":
+                    case "Edm.Int32":
+                    case "Edm.Int64":
+                    case "Edm.Double":
+                    case "Edm.Decimal":
+                    case "Edm.Single":
+                        return "number";
+                    case "Edm.Boolean":
+                        return "boolean";
+                    case "Edm.DateTimeOffset":
+                        return "Date";
+                    default:
+                        {
+                            return (!String.IsNullOrWhiteSpace(ReturnType) && ReturnType.Contains(".")) ?
+                        ReturnType.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) :
+                        "any";
+                        }
+                }
             }
         }
     }
