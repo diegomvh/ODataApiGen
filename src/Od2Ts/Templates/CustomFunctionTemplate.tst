@@ -1,6 +1,4 @@
 ﻿  public $functionName$($argumentWithType$): Promise<$returnType$> {
-    return this.Query({func: {'$functionFullName$': $argument$}})$bound$
-      .get()
-      .toPromise()
+    return this.$execName$('$functionFullName$'$bound$$argument$)
       $returnPromise$;
   }

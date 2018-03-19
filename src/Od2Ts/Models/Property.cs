@@ -6,6 +6,7 @@ namespace Od2Ts.Models
     {
         public string Name { get; set; }
         public string Type { get; set; }
+        public bool IsCollection { get; set; }
         public string TypescriptName {
             get {
                 return IsRequired ? Name : $"{Name}?";

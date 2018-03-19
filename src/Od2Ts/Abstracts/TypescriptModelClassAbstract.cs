@@ -24,6 +24,7 @@ namespace Od2Ts.Abstracts
             Properties = sourceElement.Descendants().Where(a => a.Name.LocalName == "Property")
                 .Select(propElement => new Property()
                 {
+                    IsCollection = propElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                     Name = propElement.Attribute("Name")?.Value,
                     IsRequired = propElement.Attribute("Nullable")?.Value == "false",
                     Type = propElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
@@ -45,7 +46,6 @@ namespace Od2Ts.Abstracts
         public string KeyName { get; set; }
         public List<Property> Properties { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
-
         public IEnumerable<Import> Imports
         {
             get

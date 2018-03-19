@@ -182,9 +182,9 @@ namespace Od2Ts
                     .Replace("$actionName$", customAction.Name)
                     .Replace("$actionFullName$", customAction.NameSpace + "." + customAction.Name)
                     .Replace("$returnType$", returnType)
-                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"\n      .entityKey({boundArgument})")
+                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? "{ " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
+                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
                     .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
                     .Replace("$returnPromise$", customAction.ReturnsCollection ? 
                         $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
@@ -221,9 +221,9 @@ namespace Od2Ts
                     .Replace("$functionName$", customFunction.Name)
                     .Replace("$functionFullName$", customFunction.NameSpace + "." + customFunction.Name)
                     .Replace("$returnType$", returnType)
-                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"\n      .entityKey({boundArgument})")
+                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? "{ " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
+                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
                     .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
                     .Replace("$returnPromise$", customFunction.ReturnsCollection ? 
                         $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
