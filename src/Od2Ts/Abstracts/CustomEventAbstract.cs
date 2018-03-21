@@ -48,6 +48,7 @@ namespace Od2Ts.Abstracts
         public string BindingParameter { get; }
         public IEnumerable<Parameter> Parameters { get; }
         public bool IsCollectionAction { get; }
+        public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }
         public bool ReturnsCollection { get; }
 
         private Uri _uri;
@@ -58,7 +59,7 @@ namespace Od2Ts.Abstracts
             get
             {
                 var uriList = new List<Import>();
-                if (!string.IsNullOrWhiteSpace(ReturnType))
+                if (!string.IsNullOrWhiteSpace(ReturnType) && !IsEdmReturnType)
                 {
                     uriList.Add(new Import(
                         new Uri("r://" + ReturnType.Replace(".", Path.DirectorySeparatorChar.ToString())))

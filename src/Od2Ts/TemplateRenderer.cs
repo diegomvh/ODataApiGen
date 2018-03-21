@@ -36,7 +36,6 @@ namespace Od2Ts
         }
         public void LoadTemplates() {
             EntityTypeTemplate = File.ReadAllText(EntityTypeTemplate);
-            EntityPropertyTemplate = File.ReadAllText(EntityPropertyTemplate);
             ImportTemplate = File.ReadAllText(ImportTemplate);
             ExportTemplate = File.ReadAllText(ExportTemplate);
             EnumTypeTemplate = File.ReadAllText(EnumTypeTemplate);
@@ -101,22 +100,10 @@ namespace Od2Ts
         private void CreateTypescriptModelType(TypescriptModelClassAbstract entityType)
         {
             var props = entityType.Properties.Select(prop =>
-                EntityPropertyTemplate.Clone()
-                    .ToString()
-                    .Replace("$accessor$", !UseInterfaces ? "public " : "")
-                    .Replace("$propertyName$", prop.TypescriptName)
-                    .Replace("$propertyType$", prop.TypescriptType));
-
+                prop.AsField());
 
             var refs = entityType.NavigationProperties.Select(nav =>
-                EntityPropertyTemplate.Clone()
-                    .ToString()
-                    .Replace("$accessor$", !UseInterfaces ? "public " : "")
-                    .Replace("$propertyName$", nav.Name)
-                    .Replace("$propertyType$", 
-                        nav.Type.Split('.').Last() + 
-                        (nav.IsCollection ? "[]" : ""))
-            );
+                nav.AsField());
 
             var template = EntityTypeTemplate.Clone().ToString()
                 .Replace("$type$", UseInterfaces ? "interface" : "class")
@@ -176,7 +163,9 @@ namespace Od2Ts
                 if (!customAction.IsCollectionAction)
                     argumentWithType.Add($"{boundArgument}: any");
 
-                argumentWithType.AddRange(parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
+                argumentWithType.AddRange(parameters.Select(p => 
+                    p.AsDefinition()
+                ));
 
                 result += CustomActionTemplate.Clone().ToString()
                     .Replace("$actionName$", customAction.Name)
@@ -184,9 +173,11 @@ namespace Od2Ts
                     .Replace("$returnType$", returnType)
                     .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
+                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
                     .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
-                    .Replace("$returnPromise$", customAction.ReturnsCollection ? 
+                    .Replace("$returnPromise$", customAction.IsEdmReturnType ? 
+                        $".then(resp => resp.toPropertyValue<{returnTypeName}>())" : 
+                    customAction.ReturnsCollection ? 
                         $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
                         $".then(resp => resp.toEntity<{returnTypeName}>())");
             }
@@ -215,7 +206,9 @@ namespace Od2Ts
                 if (!customFunction.IsCollectionAction)
                     argumentWithType.Add($"{boundArgument}: any");
 
-                argumentWithType.AddRange(parameters.Select(p => $"{p.TypescriptName}: {p.TypescriptType}"));
+                argumentWithType.AddRange(parameters.Select(p => 
+                    p.AsDefinition()
+                ));
 
                 result += CustomFunctionTemplate.Clone().ToString()
                     .Replace("$functionName$", customFunction.Name)
@@ -223,9 +216,11 @@ namespace Od2Ts
                     .Replace("$returnType$", returnType)
                     .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}")
                     .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "{}")
+                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
                     .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
-                    .Replace("$returnPromise$", customFunction.ReturnsCollection ? 
+                    .Replace("$returnPromise$", customFunction.IsEdmReturnType ? 
+                        $".then(resp => resp.toPropertyValue<{returnTypeName}>())" : 
+                    customFunction.ReturnsCollection ? 
                         $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
                         $".then(resp => resp.toEntity<{returnTypeName}>())");
             }

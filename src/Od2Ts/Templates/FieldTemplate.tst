@@ -1,1 +1,0 @@
-﻿  $accessor$$propertyName$: $propertyType$;

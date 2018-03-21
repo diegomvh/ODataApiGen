@@ -9,7 +9,6 @@
         "ModuleTemplate": "./Templates/ModuleTemplate.tst",
         "IndexTemplate": "./Templates/IndexTemplate.tst",
         "EntityTypeTemplate": "./Templates/EntityTypeTemplate.tst",
-        "EntityPropertyTemplate": "./Templates/FieldTemplate.tst",
         "ImportTemplate": "./Templates/ImportTemplate.tst",
         "ExportTemplate": "./Templates/ExportTemplate.tst",
         "EnumTypeTemplate": "./Templates/EnumTypeTemplate.tst",

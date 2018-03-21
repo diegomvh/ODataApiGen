@@ -7,11 +7,6 @@ namespace Od2Ts.Models
         public string Name { get; set; }
         public string Type { get; set; }
         public bool IsCollection { get; set; }
-        public string TypescriptName {
-            get {
-                return IsRequired ? Name : $"{Name}?";
-            }
-        }
         public string TypescriptType
         {
             get
@@ -41,7 +36,10 @@ namespace Od2Ts.Models
                 }
             }
         }
-
         public bool IsRequired { get; set; }
+
+        public string AsField() {
+            return (this.IsRequired ? $"{this.Name}" : $"{this.Name}?") + $" {this.TypescriptType};";
+        }
     }
 }
