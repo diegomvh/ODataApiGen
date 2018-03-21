@@ -95,7 +95,7 @@ export class ODataEntitySetService<T> {
   }
 
   // Function and actions
-  public CustomAction(name: string, key: any, postdata: any): Promise<ODataResponse> {
+  public CustomAction(name: string, key: any, postdata: any = {}): Promise<ODataResponse> {
     let query = this.Query();
     query.entityKey(builder.buildEntityKey(key));
     query.actionCall(builder.buildAction(name));
@@ -104,7 +104,7 @@ export class ODataEntitySetService<T> {
       .toPromise();
   }
 
-  public CustomCollectionAction(name: string, postdata: any): Promise<ODataResponse> {
+  public CustomCollectionAction(name: string, postdata: any = {}): Promise<ODataResponse> {
     let query = this.Query();
     query.actionCall(builder.buildAction(name));
     return query
