@@ -22,12 +22,12 @@ namespace Od2Ts.Angular {
 
             var imports = this.RenderImports(this);
             return $@"{String.Join("\n", imports)}
-            export {this.GetModelType()} {this.EdmStructuredType.Name} {{
-                /* Navigation properties */
-                {String.Join("\n", navigations)}
-                /* Properties */
-                {String.Join("\n", properties)}
-            }}"; 
+export {this.GetModelType()} {this.EdmStructuredType.Name} {{
+  /* Navigation properties */
+  {String.Join("\n  ", navigations)}
+  /* Properties */
+  {String.Join("\n  ", properties)}
+}}"; 
         }
 
         public string GetModelType() {

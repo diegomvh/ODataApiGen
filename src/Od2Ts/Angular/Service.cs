@@ -23,18 +23,18 @@ namespace Od2Ts.Angular
             var imports = this.RenderImports(this);
 
             return $@"{String.Join("\n", imports)}
-            import {{ Injectable }} from '@angular/core';
-            import {{ HttpClient }} from '@angular/common/http';
-            import {{ ODataService, ODataResponse }} from './../../odata';
+import {{ Injectable }} from '@angular/core';
+import {{ HttpClient }} from '@angular/common/http';
+import {{ ODataService, ODataResponse }} from './../../odata';
 
-            @Injectable()
-            export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeName}> {{
-                constructor(odata: ODataService, context: ODataContext) {{
-                    super(odata, context, '{this.EdmEntitySet.EntitySetName}');
-                }} 
-                {String.Join("\n", actions)}
-                {String.Join("\n", functions)}
-            }}";
+@Injectable()
+export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeName}> {{
+  constructor(odata: ODataService, context: ODataContext) {{
+    super(odata, context, '{this.EdmEntitySet.EntitySetName}');
+  }} 
+  {String.Join("\n\n  ", actions)}
+  {String.Join("\n\n  ", functions)}
+}}";
         }
         public IEnumerable<Import> Imports
         {
@@ -74,14 +74,14 @@ namespace Od2Ts.Angular
                 ));
 
                 yield return $@"public {action.Name}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-                    return this.{baseExecFunctionName}('{action.NameSpace}.{action.Name}'" +
-                    (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}") +
-                    (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
-                    (action.IsEdmReturnType ? 
-                        $".then(resp => resp.toPropertyValue<{returnTypeName}>())" : 
-                    action.ReturnsCollection ?
-                        $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
-                        $".then(resp => resp.toEntity<{returnTypeName}>())");
+    return this.{baseExecFunctionName}('{action.NameSpace}.{action.Name}'" +
+    (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}") +
+    (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
+    (action.IsEdmReturnType ? 
+    $"\n    .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
+    action.ReturnsCollection ?
+    $"\n    .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
+    $"\n    .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
             }
         }
         private IEnumerable<string> RenderCustomFunctions()

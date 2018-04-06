@@ -13,6 +13,8 @@ namespace Od2Ts.Abstracts
         public abstract string Render();
         public string GetTypescriptType(string type)
         {
+            if (String.IsNullOrWhiteSpace(type))
+                return "any";
             switch (type)
             {
                 case "Edm.String":
