@@ -17,8 +17,8 @@ namespace Od2Ts.Angular
         }
         public override string Render()
         {
-            var actions = this.RenderCustomActions();
-            var functions = this.RenderCustomFunctions();
+            var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
+            var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
             var entityTypeName = EdmEntitySet.EntityType.Split('.').Last();
             var imports = this.RenderImports(this);
 
@@ -51,69 +51,38 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeN
                 return list;
             }
         }
-
-        private IEnumerable<string> RenderCustomActions()
+        private IEnumerable<string> RenderCallables(IEnumerable<Callable> callables)
         {
-            foreach (var action in this.EdmEntitySet.CustomActions)
+            foreach (var callable in callables)
             {
-                var returnTypeName = this.GetTypescriptType(action.ReturnType);
-                var returnType = returnTypeName + (action.ReturnsCollection ? "[]" : "");
-                var baseExecFunctionName = action.IsCollectionAction
-                    ? "CustomCollectionAction"
-                    : "CustomAction";
+                var returnTypeName = this.GetTypescriptType(callable.ReturnType);
+                var returnType = returnTypeName + (callable.ReturnsCollection ? "[]" : "");
+                var baseExecFunctionName = callable.IsCollectionAction
+                    ? $"CustomCollection{callable.Type}"
+                    : $"Custom{callable.Type}";
 
-                var parameters = action.Parameters;
+                var parameters = callable.Parameters;
                 var argumentWithType = new List<string>();
-                var boundArgument = action.IsCollectionAction ? "" : action.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
+                var boundArgument = callable.IsCollectionAction ? 
+                    "" : 
+                    callable.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)).ToLower() + "Id";
 
-                if (!action.IsCollectionAction)
+                if (!callable.IsCollectionAction)
                     argumentWithType.Add($"{boundArgument}: any");
 
                 argumentWithType.AddRange(parameters.Select(p => 
-                    $"{p.Name}: {this.GetTypescriptType(p.Type)}"
+                    $"{p.Name}: {this.GetTypescriptType(p.Type)}" + (p.IsCollection? "[]" : "")
                 ));
 
-                yield return $@"public {action.Name}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-    return this.{baseExecFunctionName}('{action.NameSpace}.{action.Name}'" +
-    (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}") +
-    (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
-    (action.IsEdmReturnType ? 
-    $"\n    .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
-    action.ReturnsCollection ?
-    $"\n    .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
-    $"\n    .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
-            }
-        }
-        private IEnumerable<string> RenderCustomFunctions()
-        {
-            foreach (var function in this.EdmEntitySet.CustomFunctions)
-            {
-                var returnTypeName = this.GetTypescriptType(function.ReturnType);
-                var returnType = returnTypeName + (function.ReturnsCollection ? "[]" : "");
-                var baseExecFunctionName = function.IsCollectionAction
-                    ? "CustomCollectionFunction"
-                    : "CustomFunction";
-
-                var parameters = function.Parameters;
-                var argumentWithType = new List<string>();
-                var boundArgument = function.IsCollectionAction ? "" : function.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
-
-                if (!function.IsCollectionAction)
-                    argumentWithType.Add($"{boundArgument}: any");
-
-                argumentWithType.AddRange(parameters.Select(p => 
-                    $"{p.Name}: {this.GetTypescriptType(p.Type)}"
-                ));
-
-                yield return $@"public {function.Name}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-                    return this.{baseExecFunctionName}('{function.NameSpace}.{function.Name}'" +
+                yield return $@"public {callable.Name}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
+  return this.{baseExecFunctionName}('{callable.NameSpace}.{callable.Name}'" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}") +
                     (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
-                    (function.IsEdmReturnType ? 
-                        $".then(resp => resp.toPropertyValue<{returnTypeName}>())" : 
-                    function.ReturnsCollection ?
-                        $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
-                        $".then(resp => resp.toEntity<{returnTypeName}>())");
+                    (callable.IsEdmReturnType ? 
+                        $"\n    .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
+                    callable.ReturnsCollection ?
+                        $"\n    .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
+                        $"\n    .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
             }
         }
 

@@ -7,6 +7,7 @@ namespace Od2Ts.Models
     {
         public CustomFunction(XElement xElement) : base(xElement)
         {
+            this.Type = "Function";
         }
     }
 }

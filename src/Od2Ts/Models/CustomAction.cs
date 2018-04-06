@@ -7,7 +7,7 @@ namespace Od2Ts.Models
     {
         public CustomAction(XElement xElement) : base(xElement)
         {
-
+            this.Type = "Action";
         }
     }
 }

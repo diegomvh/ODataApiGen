@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Od2Ts.Abstracts;
+using Od2Ts.Extensions;
 using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular
@@ -16,12 +17,15 @@ namespace Od2Ts.Angular
         }
         public readonly IEnumerable<Models.EntitySet> EntitySets;
         public readonly IEnumerable<Models.EntityType> EntityTypes;
-        public Uri Uri { get { return this.BuildUri(NameSpace, Name); }}
+        public Uri Uri { get { return this.BuildUri(Name); }}
         public IEnumerable<Import> Imports
         {
             get
             {
-                return Enumerable.Empty<Import>();
+                var imports = new List<Import>();
+                imports.AddRange(this.EntityTypes.Select(type => new Import(this.BuildUri(type.NameSpace, type.Name))));
+                imports.AddRange(this.EntitySets.Select(set => new Import(this.BuildUri(set.NameSpace, set.Name))));
+                return imports;
             }
         }
         public string EndpointName {get; private set;}
@@ -30,12 +34,10 @@ namespace Od2Ts.Angular
         public override string NameSpace => String.Empty;
         public override string Render()
         {
-            var exportModels = this.EntityTypes.Select(type => this.BuildUri(type.NameSpace, type.Name));
-            var exportServices = this.EntitySets.Select(set => this.BuildUri(set.NameSpace, set.Name));
+            var exports = this.GetImportRecords().Select(record => $"export * from './{record.RelativeNamespace}';");
 
-            return $@"{String.Join("\n", exportModels)}
-            {String.Join("\n", exportServices)}
-            export * from './{this.EndpointName.ToLower()}.module'";
+            return $@"{String.Join("\n", exports)}
+export * from './{this.EndpointName.ToLower()}.module'";
         }
     }
 }

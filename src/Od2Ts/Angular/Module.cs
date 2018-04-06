@@ -16,7 +16,7 @@ namespace Od2Ts.Angular
         }
         public readonly IEnumerable<Models.EntitySet> EntitySets;
         public readonly IEnumerable<Models.EntityType> EntityTypes;
-        public Uri Uri { get { return this.BuildUri(NameSpace, Name); }}
+        public Uri Uri { get { return this.BuildUri(Name); }}
         public IEnumerable<Import> Imports
         {
             get
@@ -38,15 +38,16 @@ namespace Od2Ts.Angular
             var imports = this.RenderImports(this);
 
             return $@"import {{ NgModule }} from '@angular/core';
-            import {{ CommonModule }} from '@angular/common';
-            {String.Join("\n", imports)}
-            @NgModule({{
-                providers: [
-                    {String.Join(",\n", this.EntitySets.Select(set => set.Name))},
-                    {{ provide: ODataContext, useClass: ODataContext }}
-                ]
-            }})
-            export class {this.Name}Module {{ }}";
+import {{ CommonModule }} from '@angular/common';
+{String.Join("\n", imports)}
+
+@NgModule({{
+  providers: [
+    {String.Join("\n    ", this.EntitySets.Select(set => $"{set.Name},"))},
+    {{ provide: ODataContext, useClass: ODataContext }}
+  ]
+}})
+export class {this.Name}Module {{ }}";
         }
     }
 }

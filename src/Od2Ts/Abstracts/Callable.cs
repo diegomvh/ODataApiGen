@@ -22,7 +22,8 @@ namespace Od2Ts.Abstracts
                 {
                     Name = paramElement.Attribute("Name")?.Value,
                     IsRequired = paramElement.Attribute("Nullable")?.Value == "false",
-                    Type = paramElement.Attribute("Type")?.Value
+                    Type = paramElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
+                    IsCollection = paramElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                 }).ToList();
 
             ReturnType = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReturnType")?.Attribute("Type")?.Value;
@@ -42,6 +43,7 @@ namespace Od2Ts.Abstracts
             NameSpace =
                 xElement.Ancestors().First(a => a.Attribute("Namespace") != null)?.Attribute("Namespace")?.Value;
         }
+        public string Type { get; protected set;}
         public string Name { get; }
         public string NameSpace { get; }
         public string ReturnType { get; }
