@@ -45,9 +45,6 @@ namespace Od2Ts
             var directoryManager = new DirectoryManager(Output);
             var templateRenderer = new TemplateRenderer(Output, UseIntrefaces);
 
-            Configuration.GetSection("Templates").Bind(templateRenderer);
-            templateRenderer.LoadTemplates();
-
             var xml = Loader.Load(MetadataPath);
             var metadataReader = new MetadataReader(xml);
 

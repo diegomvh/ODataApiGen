@@ -1,1 +1,0 @@
-﻿  $memberName$ = $memberValue$,

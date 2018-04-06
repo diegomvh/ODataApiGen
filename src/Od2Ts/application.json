@@ -3,18 +3,5 @@
     "EndpointName": "SiuApi",
     "Output": "siuapi",
     "PurgeOutput": true,
-    "UseInterfaces": true,
-    "Templates": {
-        "EntitySetServiceTemplate": "./Templates/EntitySetService.tst",
-        "ModuleTemplate": "./Templates/ModuleTemplate.tst",
-        "IndexTemplate": "./Templates/IndexTemplate.tst",
-        "EntityTypeTemplate": "./Templates/EntityTypeTemplate.tst",
-        "ImportTemplate": "./Templates/ImportTemplate.tst",
-        "ExportTemplate": "./Templates/ExportTemplate.tst",
-        "EnumTypeTemplate": "./Templates/EnumTypeTemplate.tst",
-        "EnumMemberTemplate": "./Templates/EnumMemberTemplate.tst",
-        "ContextTemplate": "./Templates/ContextTemplate.tst",
-        "CustomActionTemplate": "./Templates/CustomActionTemplate.tst",
-        "CustomFunctionTemplate": "./Templates/CustomFunctionTemplate.tst"
-    }
+    "UseInterfaces": true
 }
