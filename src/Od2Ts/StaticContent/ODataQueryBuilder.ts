@@ -20,7 +20,7 @@ export const buildFunction = (func) => {
     segment = `${func}`;
   } else if (func instanceof Object) {
     const [funcName] = Object.keys(func);
-    const funcParams = Object.keys(func[funcName]).map(p => `${p}=${func[funcName][p]}`).join(',')
+    const funcParams = convertObjectToString(func[funcName]);
 
     segment = `${funcName}`;
     if (funcParams.length) {
@@ -233,4 +233,132 @@ export const buildOrderBy = (orderBy) => {
   } else if (Array.isArray(orderBy)) {
     return `${orderBy.map(o => buildOrderBy(o)).join(',')}`;
   }
+}
+
+export const buildUrl = (path, params) => {
+  if (Object.keys(params).length) {
+    return path + '?' + Object.keys(params).map(key => `${key}=${params[key]}`).join('&');
+  } else {
+    return path;
+  }
+}
+
+export const build = (data: any = {}) => {
+  let {select, filter, search, groupBy, transform, orderBy, top, skip, key, count, expand, action, func } = data;
+  let path = '';
+  const params: any = {};
+
+  if (select) {
+    params.$select = select
+  }
+
+  if (filter || count instanceof Object) {
+    const builtFilter = buildFilter(count instanceof Object ? count : filter)
+    if (builtFilter !== undefined) {
+      params.$filter = builtFilter
+    }
+  }
+
+  if (search) {
+    params.$search = search
+  }
+
+  if (transform) {
+    const builtTransforms = buildTransforms(transform);
+    if (builtTransforms !== undefined) {
+      params.$apply = builtTransforms
+    }
+  }
+
+  if (top) {
+    params.$top = top
+  }
+
+  if (skip) {
+    params.$skip = skip
+  }
+
+  if (key) {
+    if (typeof(key) === 'object') {
+      const keys = Object.keys(key).map(k => `${k}=${key[k]}`).join(',')
+      path += `(${keys})`;
+    } else {
+      path += `(${key})`;
+    }
+  }
+
+  if (count) {
+    if (typeof(count) === 'boolean') {
+      params.$count = true
+    } else {
+      path += '/$count';
+    }
+  }
+
+  if (action) {
+    path += `/${action}`;
+  }
+
+  if (func) {
+    if (typeof(func) === 'string') {
+      path += `/${func}`;
+    } else if (typeof(func) === 'object') {
+      const [funcName] = Object.keys(func);
+      const funcParams = Object.keys(func[funcName]).map(p => `${p}=${func[funcName][p]}`).join(',')
+
+      path += `/${funcName}`;
+      if (funcParams.length) {
+        path += `(${funcParams})`;
+      }
+    }
+  }
+
+  if (expand) {
+    params.$expand = buildExpand(expand)
+  }
+
+  if (orderBy) {
+    params.$orderby = buildOrderBy(orderBy)
+  }
+
+  return buildUrl(path, params)
+}
+
+export const convertObjectToString = (obj: any): string => {
+  const properties: string[] = [];
+
+  for (const prop in obj) {
+    if (obj.hasOwnProperty(prop) && obj[prop] !== undefined) {
+      const value: any = quoteValue(obj[prop]);
+
+      properties.push(`${prop}=${value}`);
+    }
+  }
+  return properties.join(',');
+}
+
+export const quoteValue = (value: number | string | boolean | any): string => {
+  // check if GUID (UUID) type
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) {
+    return value;
+  }
+
+  // check if string
+  if (typeof value === 'string') {
+    const escaped = value.replace(/'/g, '\'\'');
+    return `'${escaped}'`;
+  }
+
+  // check if boolean or number
+  if (typeof value === 'boolean' || typeof value === 'number') {
+    return `${value}`;
+  }
+
+  const parts: string[] = [];
+  Object.getOwnPropertyNames(value).forEach((propertyName: string) => {
+    const propertyValue: any = value[propertyName];
+    parts.push(`${propertyName}=${quoteValue(propertyValue)}`);
+  });
+
+  return parts.length > 0 ? parts.join(', ') : `${value}`;
 }

@@ -7,9 +7,9 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Abstracts
 {
-    public abstract class TypescriptModelClassAbstract : IHasImports
+    public abstract class StructuredType 
     {
-        public TypescriptModelClassAbstract(XElement sourceElement)
+        public StructuredType(XElement sourceElement)
         {
             Name = sourceElement.Attribute("Name")?.Value;
             KeyName =
@@ -33,6 +33,7 @@ namespace Od2Ts.Abstracts
             NavigationProperties = sourceElement.Descendants().Where(a => a.Name.LocalName == "NavigationProperty")
                 .Select(prop => new NavigationProperty()
                 {
+                    Name = prop.Attribute("Name")?.Value.Split(".").Last(),
                     FullName = prop.Attribute("Name")?.Value,
                     IsCollection = prop.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                     Type = prop.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
@@ -46,22 +47,5 @@ namespace Od2Ts.Abstracts
         public string KeyName { get; set; }
         public List<Property> Properties { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
-        public IEnumerable<Import> Imports
-        {
-            get
-            {
-                var namespaces = NavigationProperties.Select(a => a.Type).Where(a => a != NameSpace + "." + Name).ToList();
-                /*For Not-EDM types (e.g. enums with namespaces, complex types*/
-                namespaces.AddRange(Properties.Where(a => !a.Type.StartsWith("Edm.")).Select(a => a.Type));
-
-                var uris = namespaces.Distinct().Select(a => new Import(
-                    new Uri("r://" + a.Replace(".", "/"), UriKind.Absolute))
-                );
-                return uris;
-            }
-        }
-
-        private Uri _uri;
-        public Uri Uri => _uri ?? (_uri = new Uri("r://" + NameSpace.Replace(".", "/") + "/" + Name, UriKind.Absolute));
     }
 }

@@ -5,14 +5,12 @@ using Od2Ts.Interfaces;
 
 namespace Od2Ts.Models
 {
-    public class EnumType : IRenderableElement
+    public class EnumType
     {
-
         public string Name { get; private set; }
-
         public string NameSpace { get; private set; }
         public IEnumerable<EnumMember> Members { get; private set; }
-
+        
         public EnumType(XElement sourceElement)
         {
             Name = sourceElement.Attribute("Name")?.Value;

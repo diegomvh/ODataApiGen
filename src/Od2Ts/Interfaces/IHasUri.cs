@@ -2,7 +2,7 @@
 
 namespace Od2Ts.Interfaces
 {
-    public interface IHasUri : IRenderableElement
+    public interface IHasUri
     {
         Uri Uri { get; }
     }

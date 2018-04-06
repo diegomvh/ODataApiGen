@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Od2Ts.Abstracts;
 using Od2Ts.Interfaces;
 
 namespace Od2Ts
@@ -51,7 +52,7 @@ namespace Od2Ts
             }
         }
 
-        public void PrepareNamespaceFolders(IEnumerable<IRenderableElement> namespaces)
+        public void PrepareNamespaceFolders(IEnumerable<Renderable> namespaces)
         {
             var nsList = namespaces.ToList().OrderBy(a => a.NameSpace);
             foreach (var ns in nsList)

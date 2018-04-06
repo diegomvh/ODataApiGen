@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Od2Ts.Models
+namespace Od2Ts.Abstracts
 {
     public class Import
     {

@@ -47,38 +47,14 @@ namespace Od2Ts
             CustomActionTemplate = File.ReadAllText(CustomActionTemplate);
             CustomFunctionTemplate = File.ReadAllText(CustomFunctionTemplate);
         }
-        private string ParseImports(IHasImports entity)
-        {
-            return string.Join("", entity.GetImportRecords().Select(a =>
-                ImportTemplate.Clone().ToString()
-                    .Replace("$names$", a.ElementTypeName)
-                    .Replace("$relativePaths$", "./" + a.RelativeNamespace)));
-        }
-       private string ParseExports(IHasImports entity)
-        {
-            return ExportTemplate.Clone().ToString()
-                .Replace("$relativePaths$", 
-                "./" + entity.NameSpace.Replace(".", Path.DirectorySeparatorChar.ToString()) + $"{PathSep}{entity.Name}" );
-        }
 
-        private void DoRender(IRenderableElement entity, string template, string fileName = null)
+        private void DoRender(Renderable entity, string fileName = null)
         {
             var ns = entity.NameSpace.Replace('.', PathSep);
             if (fileName == null)
                 fileName = entity.Name;
 
-            var imports = entity as IHasImports;
-            if (imports != null)
-            {
-                template = template.Replace("$imports$", ParseImports(imports));
-            }
-
-            template = template
-                .Replace("$entityType$", entity.Name)
-                .Replace("$name$", entity.Name)
-                .Replace("$nameSpace$", entity.NameSpace);
-
-            File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", template);
+            File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", entity.Render());
         }
 
         public void CreateEntityTypes(IEnumerable<EntityType> types)
@@ -97,20 +73,9 @@ namespace Od2Ts
             }
         }
 
-        private void CreateTypescriptModelType(TypescriptModelClassAbstract entityType)
+        private void CreateTypescriptModelType(StructuredType entityType)
         {
-            var props = entityType.Properties.Select(prop =>
-                prop.AsField());
-
-            var refs = entityType.NavigationProperties.Select(nav =>
-                nav.AsField());
-
-            var template = EntityTypeTemplate.Clone().ToString()
-                .Replace("$type$", UseInterfaces ? "interface" : "class")
-                .Replace("$properties$", string.Join("", props))
-                .Replace("$navigationProperties$", string.Join("", refs));
-
-            DoRender(entityType, template);
+            DoRender(new Angular.Model(entityType));
         }
 
         public void CreateEnums(IEnumerable<EnumType> types)
@@ -123,15 +88,8 @@ namespace Od2Ts
 
         private void CreateEnum(EnumType enumType)
         {
-            var members = enumType.Members.Select(m => EnumMemberTemplate.Clone().ToString()
-                .Replace("$memberName$", m.Name)
-                .Replace("$memberValue$", m.Value));
-
-            var template = EnumTypeTemplate.Clone().ToString()
-                .Replace("$members$", string.Join("", members).TrimEnd(','));
-            DoRender(enumType, template);
+            DoRender(new Angular.Enum(enumType));
         }
-
 
         public void CreateServicesForEntitySets(IEnumerable<EntitySet> entitySets)
         {
@@ -141,107 +99,13 @@ namespace Od2Ts
             }
         }
 
-        private string GetCustomActionsTemplate(List<CustomAction> actions)
-        {
-            if (!actions.Any())
-            {
-                return string.Empty;
-            }
-            var result = "\r\n\t/*Custom Actions*/\r\n";
-            foreach (var customAction in actions)
-            {
-                var returnTypeName = customAction.ReturnTypescriptType;
-                var returnType = returnTypeName + (customAction.ReturnsCollection ? "[]" : "");
-                var baseExecFunctionName = customAction.IsCollectionAction
-                    ? "CustomCollectionAction"
-                    : "CustomAction";
-
-                var parameters = customAction.Parameters;
-                var argumentWithType = new List<string>();
-                var boundArgument = customAction.IsCollectionAction ? "" : customAction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
-
-                if (!customAction.IsCollectionAction)
-                    argumentWithType.Add($"{boundArgument}: any");
-
-                argumentWithType.AddRange(parameters.Select(p => 
-                    p.AsDefinition()
-                ));
-
-                result += CustomActionTemplate.Clone().ToString()
-                    .Replace("$actionName$", customAction.Name)
-                    .Replace("$actionFullName$", customAction.NameSpace + "." + customAction.Name)
-                    .Replace("$returnType$", returnType)
-                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}")
-                    .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
-                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
-                    .Replace("$returnPromise$", customAction.IsEdmReturnType ? 
-                        $".then(resp => resp.toPropertyValue<{returnTypeName}>())" : 
-                    customAction.ReturnsCollection ? 
-                        $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
-                        $".then(resp => resp.toEntity<{returnTypeName}>())");
-            }
-            return result;
-        }
-
-        private string GetCustomFunctionsTemplate(List<CustomFunction> functions)
-        {
-            if (!functions.Any())
-            {
-                return string.Empty;
-            }
-            var result = "\r\n\t/*Custom Functions*/\r\n";
-            foreach (var customFunction in functions)
-            {
-                var returnTypeName = customFunction.ReturnTypescriptType;
-                var returnType = returnTypeName + (customFunction.ReturnsCollection ? "[]" : "");
-                var baseExecFunctionName = customFunction.IsCollectionAction
-                    ? "CustomCollectionFunction"
-                    : "CustomFunction";
-
-                var parameters = customFunction.Parameters;
-                var argumentWithType = new List<string>();
-                var boundArgument = customFunction.IsCollectionAction ? "" : customFunction.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)) + "Id";
-
-                if (!customFunction.IsCollectionAction)
-                    argumentWithType.Add($"{boundArgument}: any");
-
-                argumentWithType.AddRange(parameters.Select(p => 
-                    p.AsDefinition()
-                ));
-
-                result += CustomFunctionTemplate.Clone().ToString()
-                    .Replace("$functionName$", customFunction.Name)
-                    .Replace("$functionFullName$", customFunction.NameSpace + "." + customFunction.Name)
-                    .Replace("$returnType$", returnType)
-                    .Replace("$bound$", String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}")
-                    .Replace("$execName$", baseExecFunctionName)
-                    .Replace("$argument$", parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " }" : "")
-                    .Replace("$argumentWithType$", String.Join(", ", argumentWithType))
-                    .Replace("$returnPromise$", customFunction.IsEdmReturnType ? 
-                        $".then(resp => resp.toPropertyValue<{returnTypeName}>())" : 
-                    customFunction.ReturnsCollection ? 
-                        $".then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())" : 
-                        $".then(resp => resp.toEntity<{returnTypeName}>())");
-            }
-            return result;
-        }
-
         private void CreateServiceForEntitySet(EntitySet entitySet)
         {
-            var entityTypeName = entitySet.EntityType.Split('.').Last();
-            var template = EntitySetServiceTemplate.Clone().ToString()
-                .Replace("$entitySetName$", entitySet.Name)
-                .Replace("$entitySetUrl$", entitySet.EntitySetName)
-                .Replace("$entityTypeName$", entityTypeName)
-                .Replace("$customActions$", GetCustomActionsTemplate(entitySet.CustomActions.ToList()))
-                .Replace("$customFunctions$", GetCustomFunctionsTemplate(entitySet.CustomFunctions.ToList()));
-            DoRender(entitySet, template);
+            DoRender(new Angular.Service(entitySet));
         }
 
         public void CreateContext(string metadataPath, string odataVersion)
         {
-
             var template = ContextTemplate.Clone().ToString()
                 .Replace("$odataRootPath$", metadataPath.TrimEnd("$metadata".ToCharArray()))
                 .Replace("$metadataPath$", metadataPath)
@@ -250,23 +114,14 @@ namespace Od2Ts
             File.WriteAllText($"{Output}{PathSep}ODataContext.ts", template);
         }
 
-        public void CreateModule(Module module)
+        public void CreateModule(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
         {
-            var template = ModuleTemplate.Clone().ToString()
-                .Replace("$moduleProviders$", string.Join(",\r\n\t", module.EntitySets.Select(a => a.Name)))
-                .Replace("$moduleName$", module.Name);
-
-            DoRender(module, template, $"{module.Name.ToLower()}.module");
+            DoRender(new Angular.Module(endpointName, entityTypes, entitySets), $"{endpointName.ToLower()}.module");
         }
 
-        public void CreateIndex(Module module) 
+        public void CreateIndex(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
         {
-            var template = IndexTemplate.Clone().ToString()
-                .Replace("$exportTypes$", string.Join("", module.EntityTypes.Distinct().Select(e => ParseExports(e))))
-                .Replace("$exportServices$", string.Join("", module.EntitySets.Distinct().Select(e => ParseExports(e))))
-                .Replace("$moduleName$", $"{module.Name.ToLower()}.module");
-
-            File.WriteAllText($"{Output}{PathSep}index.ts", template);
+            DoRender(new Angular.Index(endpointName, entityTypes, entitySets), $"index.ts");
         }
     }
 }

@@ -1,5 +1,5 @@
 import { ODataContext } from "./ODataContext";
-import { ODataService, ODataQuery, ODataResponse } from "./../odata";
+import { ODataService, ODataQuery, ODataResponse, EntitySet } from "./../odata";
 
 import * as builder from './ODataQueryBuilder';
 
@@ -46,6 +46,27 @@ export class ODataEntitySetService<T> {
     return query
       .get()
       .toPromise();
+  }
+
+  public FetchAll(options: {select?, filter?, search?, groupBy?, 
+      transform?, orderby?, top?, skip?, 
+      count?, expand?, action?, func?} = {}): Promise<T[]> {
+    return this.Fetch(options)
+      .then(resp => resp.toEntitySet<T>().getEntities());
+  }
+
+  public FetchOne(options: {key?, select?, filter?, search?, groupBy?, 
+      transform?, orderby?, top?, skip?, 
+      count?, expand?, action?, func?} = {}): Promise<T> {
+    return this.Fetch(options)
+      .then(resp => resp.toEntity<T>());
+  }
+
+  public FetchValue<V>(options: {key?, select?, filter?, search?, groupBy?, 
+      transform?, orderby?, top?, skip?, 
+      count?, expand?, action?, func?} = {}): Promise<V> {
+    return this.Fetch(options)
+      .then(resp => resp.toPropertyValue<V>());
   }
 
   // HTTP Actions

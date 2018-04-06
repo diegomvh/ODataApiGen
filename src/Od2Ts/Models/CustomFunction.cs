@@ -3,7 +3,7 @@ using Od2Ts.Abstracts;
 
 namespace Od2Ts.Models
 {
-    public class CustomFunction : CustomEventAbstract
+    public class CustomFunction : Callable
     {
         public CustomFunction(XElement xElement) : base(xElement)
         {
