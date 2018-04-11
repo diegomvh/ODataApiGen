@@ -37,9 +37,14 @@ export {this.GetModelType()} {this.EdmStructuredType.Name} {{
         {
             get
             {
-                var namespaces = this.EdmStructuredType.NavigationProperties.Select(a => a.Type).Where(a => a != this.EdmStructuredType.NameSpace + "." + this.EdmStructuredType.Name).ToList();
+                var namespaces = this.EdmStructuredType.NavigationProperties
+                    .Select(a => a.Type)
+                    .Where(a => a != this.EdmStructuredType.NameSpace + "." + this.EdmStructuredType.Name)
+                    .ToList();
                 /*For Not-EDM types (e.g. enums with namespaces, complex types*/
-                namespaces.AddRange(this.EdmStructuredType.Properties.Where(a => !a.Type.StartsWith("Edm.")).Select(a => a.Type));
+                namespaces.AddRange(this.EdmStructuredType.Properties
+                    .Where(a => !a.IsEdmType)
+                    .Select(a => a.Type));
 
                 var uris = namespaces.Distinct().Select(a => new Import(
                     new Uri("r://" + a.Replace(".", "/"), UriKind.Absolute))

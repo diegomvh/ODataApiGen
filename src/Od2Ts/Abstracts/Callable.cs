@@ -46,11 +46,11 @@ namespace Od2Ts.Abstracts
         public string Type { get; protected set;}
         public string Name { get; }
         public string NameSpace { get; }
+        public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }
         public string ReturnType { get; }
         public string BindingParameter { get; }
         public IEnumerable<Parameter> Parameters { get; }
         public bool IsCollectionAction { get; }
-        public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }
         public bool ReturnsCollection { get; }
     }
 }
