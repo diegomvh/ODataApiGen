@@ -45,8 +45,8 @@ namespace Od2Ts
             var directoryManager = new DirectoryManager(Output);
             var templateRenderer = new TemplateRenderer(Output, UseIntrefaces);
 
-            var xml = Loader.Load(MetadataPath);
-            var metadataReader = new MetadataReader(xml);
+            var metadataReader = new MetadataReader(
+                System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
 
@@ -57,23 +57,21 @@ namespace Od2Ts
             var services = metadataReader.EntitySets.Select(es => new Angular.Service(es));
             directoryManager.PrepareNamespaceFolders(services);
             
-            var types = metadataReader.EntityTypes.Select(entity => new Angular.Model(entity));
-            directoryManager.PrepareNamespaceFolders(types);
+            var entityModels = metadataReader.EntityTypes.Select(entity => new Angular.Model(entity, UseIntrefaces));
+            directoryManager.PrepareNamespaceFolders(entityModels);
 
-            types = metadataReader.ComplexTypes.Select(complex => new Angular.Model(complex));
-            directoryManager.PrepareNamespaceFolders(types);
+            var complexModels = metadataReader.ComplexTypes.Select(complex => new Angular.Model(complex, UseIntrefaces));
+            directoryManager.PrepareNamespaceFolders(complexModels);
 
+            Logger.LogInformation("Copy static content");
             directoryManager.DirectoryCopy("./StaticContent", Output, true);
 
+            Logger.LogInformation("Render");
             templateRenderer.CreateContext(MetadataPath, "4.0");
-
-            templateRenderer.CreateEntityTypes(metadataReader.EntityTypes);
-            templateRenderer.CreateComplexTypes(metadataReader.ComplexTypes);
-
-            templateRenderer.CreateEnums(metadataReader.EnumTypes);
-
-            templateRenderer.CreateServicesForEntitySets(metadataReader.EntitySets);
-
+            templateRenderer.CreateModels(entityModels);
+            templateRenderer.CreateModels(complexModels);
+            templateRenderer.CreateEnums(enums);
+            templateRenderer.CreateServices(services);
             templateRenderer.CreateModule(EndpointName, metadataReader.EntityTypes, metadataReader.EntitySets);
             templateRenderer.CreateIndex(EndpointName, metadataReader.EntityTypes, metadataReader.EntitySets);
         }

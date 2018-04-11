@@ -32,53 +32,27 @@ namespace Od2Ts
             File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", entity.Render());
         }
 
-        public void CreateEntityTypes(IEnumerable<EntityType> types)
+        public void CreateModels(IEnumerable<Angular.Model> models)
         {
-            foreach (var entityType in types)
+            foreach (var model in models)
             {
-                CreateTypescriptModelType(entityType);
+                DoRender(model);
             }
         }
-
-        public void CreateComplexTypes(IEnumerable<ComplexType> types)
+        public void CreateEnums(IEnumerable<Angular.Enum> enumss)
         {
-            foreach (var complexType in types)
+            foreach (var enumm in enumss)
             {
-                CreateTypescriptModelType(complexType);
+                DoRender(enumm);
             }
         }
-
-        private void CreateTypescriptModelType(StructuredType entityType)
+        public void CreateServices(IEnumerable<Angular.Service> services)
         {
-            DoRender(new Angular.Model(entityType));
-        }
-
-        public void CreateEnums(IEnumerable<EnumType> types)
-        {
-            foreach (var enumType in types)
+            foreach (var service in services)
             {
-                CreateEnum(enumType);
+                DoRender(service);
             }
         }
-
-        private void CreateEnum(EnumType enumType)
-        {
-            DoRender(new Angular.Enum(enumType));
-        }
-
-        public void CreateServicesForEntitySets(IEnumerable<EntitySet> entitySets)
-        {
-            foreach (var entitySet in entitySets)
-            {
-                CreateServiceForEntitySet(entitySet);
-            }
-        }
-
-        private void CreateServiceForEntitySet(EntitySet entitySet)
-        {
-            DoRender(new Angular.Service(entitySet));
-        }
-
         public void CreateContext(string metadataPath, string odataVersion)
         {
             var context = $@"export class ODataContext {{

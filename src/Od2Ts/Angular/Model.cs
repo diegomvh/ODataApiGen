@@ -5,11 +5,12 @@ using Od2Ts.Abstracts;
 using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular {
-    class Model : Renderable, IHasImports {
+    public class Model : Renderable, IHasImports {
         public StructuredType EdmStructuredType {get; private set;}
         public bool Interface {get; set;} = false;
-        public Model(StructuredType type) {
+        public Model(StructuredType type, bool inter) {
             EdmStructuredType = type;
+            Interface = inter;
         }
         public override string Render() {
             var properties = EdmStructuredType.Properties.Select(prop =>
@@ -29,7 +30,6 @@ export {this.GetModelType()} {this.EdmStructuredType.Name} {{
   {String.Join("\n  ", properties)}
 }}"; 
         }
-
         public string GetModelType() {
             return this.Interface ? "interface" : "class";
         }

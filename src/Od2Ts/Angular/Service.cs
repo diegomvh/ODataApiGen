@@ -7,7 +7,7 @@ using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular
 {
-    class Service : Renderable, IHasImports
+    public class Service : Renderable, IHasImports
     {
         public Models.EntitySet EdmEntitySet { get; private set; }
         public bool Interface { get; set; } = false;
