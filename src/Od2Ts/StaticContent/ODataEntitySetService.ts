@@ -1,155 +1,158 @@
+import { HttpParams, HttpOptions } from "@angular/common/http";
 import { ODataContext } from "./ODataContext";
 import { ODataService, ODataQuery, ODataResponse, EntitySet } from "./../odata";
+import { ODataQueryBuilder } from "./ODataQueryBuilder";
 
 import * as builder from './ODataQueryBuilder';
 
 export class ODataEntitySetService<T> {
+  private static readonly ODATA_ETAG = '@odata.etag';
+  private static readonly ODATA_ID = '@odata.id';
+
   constructor(
     protected odataService: ODataService,
     protected context: ODataContext,
     protected entitySetName: string) {
   }
 
-  public Query(): ODataQuery {
-    return new ODataQuery(this.odataService, this.context.ODataRootPath)
-      .entitySet(this.entitySetName);
+  public entity(key): ODataQueryBuilder {
+    return new ODataQueryBuilder(this.entitySetName).key(key);
   }
 
-  public Fetch(options: {select?, filter?, search?, groupBy?, 
-      transform?, orderby?, top?, skip?, 
-      key?, count?, expand?, action?, func?} = {}): Promise<ODataResponse> {
-    let query = this.Query();
+  public collection(): ODataQueryBuilder {
+    return new ODataQueryBuilder(this.entitySetName);
+  }
 
-    if (options.select)
-      query.select(options.select);
-    if (options.filter)
-      query.filter(builder.buildFilter(options.filter) || "");
-    if (options.search)
-      query.search(options.search);
-    //transforms
-    if (options.top)
-      query.top(options.top);
-    if (options.skip)
-      query.skip(options.skip);
-    if (options.key)
-      query.entityKey(builder.buildEntityKey(options.key));
-    if (options.count) {
-      if (typeof (options.count) === 'boolean')
-        query.countOption(options.count);
-      else
-        query.countSegment();
-    }
-    if (options.expand)
-      query.expand(builder.buildExpand(options.expand));
-    if (options.orderby)
-      query.orderby(builder.buildOrderBy(options.orderby));
+  public fetch(builder: ODataQueryBuilder): Promise<ODataResponse> {
+    let query = builder.query(this.odataService, this.context.ODataRootPath);
     return query
       .get()
       .toPromise();
   }
 
-  public FetchAll(options: {select?, filter?, search?, groupBy?, 
-      transform?, orderby?, top?, skip?, 
-      count?, expand?, action?, func?} = {}): Promise<T[]> {
-    return this.Fetch(options)
+  public fetchAll(query: ODataQueryBuilder): Promise<T[]> {
+    return this.fetch(query)
       .then(resp => resp.toEntitySet<T>().getEntities());
   }
 
-  public FetchOne(options: {key?, select?, filter?, search?, groupBy?, 
-      transform?, orderby?, top?, skip?, 
-      count?, expand?, action?, func?} = {}): Promise<T> {
-    return this.Fetch(options)
+  public fetchOne(query: ODataQueryBuilder): Promise<T> {
+    return this.fetch(query)
       .then(resp => resp.toEntity<T>());
   }
 
-  public FetchValue<V>(options: {key?, select?, filter?, search?, groupBy?, 
-      transform?, orderby?, top?, skip?, 
-      count?, expand?, action?, func?} = {}): Promise<V> {
-    return this.Fetch(options)
+  public fetchValue<V>(query: ODataQueryBuilder): Promise<V> {
+    return this.fetch(query)
       .then(resp => resp.toPropertyValue<V>());
   }
 
   // HTTP Actions
-  public Get(key): Promise<T> {
-    return this.Query()
-      .entityKey(key)
+  public get(key): Promise<T> {
+    return this.entity(key)
+      .query(this.odataService, this.context.ODataRootPath)
       .get()
       .toPromise()
       .then(resp => resp.toEntity<T>());
   }
 
-  public Post(entity) {
-    return this.Query()
-      .post(entity)
+  public post(data) {
+    return this.collection()
+      .query(this.odataService, this.context.ODataRootPath)
+      .post(data)
       .toPromise()
       .then(resp => resp.toEntity<T>());
   }
 
-  public Put(entity): Promise<T> {
-    return this.Query()
-      .entityKey(entity.id)
+  public put(entity): Promise<T> {
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
       .put(entity)
       .toPromise()
       .then(resp => resp.toEntity<T>());
   }
 
-  public Patch(entity) {
-    return this.Query()
-      .entityKey(entity.id)
-      .patch(entity)
+  public patch(delta) {
+    return this.entity(delta.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .patch(delta)
       .toPromise();
   }
 
-  public Delete(entity) {
-    return this.Query()
-      .entityKey(entity.id)
+  public delete(entity) {
+    let etag = entity[ODataEntitySetService.ODATA_ETAG];
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
       .delete()
       .toPromise();
   }
 
   // Shortcuts
-  public Save(entity) {
+  public save(entity) {
     if (entity.id)
-      return this.Put(entity);
+      return this.put(entity);
     else
-      return this.Post(entity);
+      return this.post(entity);
+  }
+
+  public createRef(entity, property, target: ODataQueryBuilder) {
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .navigationProperty(property)
+      .ref()
+      .post({
+        ODATA_ID: target
+          .query(this.odataService, this.context.ODataRootPath)
+          .toString()
+      })
+      .toPromise();
+  }
+
+  public deleteRef(entity, property, target) {
+    let etag = entity[ODataEntitySetService.ODATA_ETAG];
+    let options = new HttpOptions();
+    options.params = new HttpParams();
+    options.params.append("id", target
+      .query(this.odataService, this.context.ODataRootPath)
+      .toString());
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .navigationProperty(property)
+      .ref()
+      .delete(etag, options)
+      .toPromise();
   }
 
   // Function and actions
-  public CustomAction(name: string, key: any, postdata: any = {}): Promise<ODataResponse> {
-    let query = this.Query();
-    query.entityKey(builder.buildEntityKey(key));
-    query.actionCall(builder.buildAction(name));
-    return query
+  public customAction(key: any, name: string, postdata: any = {}): Promise<ODataResponse> {
+    return this.entity(key)
+      .action(name)
+      .query(this.odataService, this.context.ODataRootPath)
       .post(postdata)
       .toPromise();
   }
 
-  public CustomCollectionAction(name: string, postdata: any = {}): Promise<ODataResponse> {
-    let query = this.Query();
-    query.actionCall(builder.buildAction(name));
-    return query
+  public customCollectionAction(name: string, postdata: any = {}): Promise<ODataResponse> {
+    return this.collection()
+      .action(name)
       .post(postdata)
       .toPromise();
   }
 
-  public CustomFunction(name: string, key: any, parameters: any = {}): Promise<ODataResponse> {
+  public customFunction(key: any, name: string, parameters: any = {}): Promise<ODataResponse> {
     let options = {};
-    let query = this.Query();
     options[name] = parameters;
-    query.entityKey(builder.buildEntityKey(key));
-    query.functionCall(builder.buildFunction(options));
-    return query
+    return this.entity(key)
+      .func(options)
+      .query(this.odataService, this.context.ODataRootPath)
       .get()
       .toPromise();
   }
 
-  public CustomCollectionFunction(name: string, parameters: any = {}): Promise<ODataResponse> {
+  public customCollectionFunction(name: string, parameters: any = {}): Promise<ODataResponse> {
     let options = {};
-    let query = this.Query();
     options[name] = parameters;
-    query.functionCall(builder.buildFunction(options));
-    return query
+    return this.collection()
+      .func(options)
+      .query(this.odataService, this.context.ODataRootPath)
       .get()
       .toPromise();
   }

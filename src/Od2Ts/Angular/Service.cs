@@ -9,17 +9,25 @@ namespace Od2Ts.Angular
 {
     public class Service : Renderable, IHasImports
     {
+        public Angular.Model Model {get; private set;}
+        public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
         public bool Interface { get; set; } = false;
         public Service(Models.EntitySet type)
         {
             EdmEntitySet = type;
+            EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
+
+        public void SetModel(Angular.Model model) {
+            this.Model = model;
+        }
+        
         public override string Render()
         {
+            Console.WriteLine(this.Model.Render());
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
-            var entityTypeName = EdmEntitySet.EntityType.Split('.').Last();
             var imports = this.RenderImports(this);
 
             return $@"{String.Join("\n", imports)}
@@ -28,7 +36,7 @@ import {{ HttpClient }} from '@angular/common/http';
 import {{ ODataService, ODataResponse }} from './../../odata';
 
 @Injectable()
-export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeName}> {{
+export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTypeName}> {{
   constructor(odata: ODataService, context: ODataContext) {{
     super(odata, context, '{this.EdmEntitySet.EntitySetName}');
   }} 
@@ -51,6 +59,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeN
                 return list;
             }
         }
+
         private IEnumerable<string> RenderCallables(IEnumerable<Callable> callables)
         {
             foreach (var callable in callables)
@@ -75,8 +84,9 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeN
                 ));
 
                 yield return $@"public {callable.Name}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-  return this.{baseExecFunctionName}('{callable.NameSpace}.{callable.Name}'" +
+  return this.{baseExecFunctionName}(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}") +
+                    "'{callable.NameSpace}.{callable.Name}'" +
                     (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
                     (callable.IsEdmReturnType ? 
                         $"\n    .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
@@ -84,6 +94,10 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{entityTypeN
                         $"\n    .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
                         $"\n    .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
             }
+        }
+
+        private IEnumerable<string> RenderRelations(IEnumerable<Models.Property> properties) {
+            yield return $@"";
         }
 
         public Uri Uri { get { return this.BuildUri(NameSpace, Name); } }

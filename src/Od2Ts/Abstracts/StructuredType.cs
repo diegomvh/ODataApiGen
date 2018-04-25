@@ -35,6 +35,7 @@ namespace Od2Ts.Abstracts
                 {
                     Name = prop.Attribute("Name")?.Value.Split(".").Last(),
                     FullName = prop.Attribute("Name")?.Value,
+                    IsRequired = false,
                     IsCollection = prop.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                     Type = prop.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
                     ReferentialConstraint = prop.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value,

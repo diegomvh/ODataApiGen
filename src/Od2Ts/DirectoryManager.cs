@@ -52,12 +52,13 @@ namespace Od2Ts
             }
         }
 
-        public void PrepareNamespaceFolders(IEnumerable<Renderable> namespaces)
+        public void PrepareNamespaceFolders(IEnumerable<string> namespaces)
         {
-            var nsList = namespaces.ToList().OrderBy(a => a.NameSpace);
+            var nsList = namespaces.ToList();
+            nsList.Sort();
             foreach (var ns in nsList)
             {
-                var path = ns.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+                var path = ns.Replace('.', Path.DirectorySeparatorChar);
                 if (!Directory.Exists( Path.Combine(DirectoryInfo.FullName, path)))
                 {
                     Logger.LogDebug($"Creating subdirectory '{path}'");

@@ -32,23 +32,23 @@ namespace Od2Ts
             File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", entity.Render());
         }
 
-        public void CreateModels(IEnumerable<Angular.Model> models)
+        public void CreateModels(Angular.Module module)
         {
-            foreach (var model in models)
+            foreach (var model in module.Models)
             {
                 DoRender(model);
             }
         }
-        public void CreateEnums(IEnumerable<Angular.Enum> enumss)
+        public void CreateEnums(Angular.Module module)
         {
-            foreach (var enumm in enumss)
+            foreach (var enumm in module.Enums)
             {
                 DoRender(enumm);
             }
         }
-        public void CreateServices(IEnumerable<Angular.Service> services)
+        public void CreateServices(Angular.Module module)
         {
-            foreach (var service in services)
+            foreach (var service in module.Services)
             {
                 DoRender(service);
             }
@@ -64,14 +64,14 @@ namespace Od2Ts
             File.WriteAllText($"{Output}{PathSep}ODataContext.ts", context);
         }
 
-        public void CreateModule(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
+        public void CreateModule(Angular.Module module)
         {
-            DoRender(new Angular.Module(endpointName, entityTypes, entitySets), $"{endpointName.ToLower()}.module");
+            DoRender(module, $"{module.EndpointName.ToLower()}.module");
         }
 
-        public void CreateIndex(string endpointName, IEnumerable<EntityType> entityTypes, IEnumerable<EntitySet> entitySets)
+        public void CreateIndex(Angular.Module module)
         {
-            DoRender(new Angular.Index(endpointName, entityTypes, entitySets), $"index");
+            DoRender(module, $"index");
         }
     }
 }
