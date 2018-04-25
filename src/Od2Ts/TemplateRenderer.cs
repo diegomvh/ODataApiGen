@@ -15,12 +15,10 @@ namespace Od2Ts
     {
         private ILogger Logger { get; } = Program.CreateLogger<TemplateRenderer>();
         public string Output { get; private set; }
-        public bool UseInterfaces { get; private set; }
         private char PathSep {get;} = Path.DirectorySeparatorChar;
-        public TemplateRenderer(string output, bool useInterfaces)
+        public TemplateRenderer(string output)
         {
             this.Output = output;
-            this.UseInterfaces = useInterfaces;
         }
 
         private void DoRender(Renderable entity, string fileName = null)

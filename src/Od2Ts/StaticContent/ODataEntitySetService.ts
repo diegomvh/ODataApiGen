@@ -93,7 +93,36 @@ export class ODataEntitySetService<T> {
       return this.post(entity);
   }
 
+  protected navigation(entity, name) {
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .navigationProperty(name)
+      .get()
+      .toPromise();
+    }
+    
+  protected property(entity, name) {
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .property(name)
+      .get()
+      .toPromise();
+    }
+
   protected createRef(entity, property, target: ODataQueryBuilder) {
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .navigationProperty(property)
+      .ref()
+      .put({
+        ODATA_ID: target
+          .query(this.odataService, this.context.ODataRootPath)
+          .toString()
+      })
+      .toPromise();
+  }
+
+  protected createCollectionRef(entity, property, target: ODataQueryBuilder) {
     return this.entity(entity.id)
       .query(this.odataService, this.context.ODataRootPath)
       .navigationProperty(property)
@@ -106,13 +135,24 @@ export class ODataEntitySetService<T> {
       .toPromise();
   }
 
-  protected deleteRef(entity, property, target) {
+  protected deleteRef(entity, property, target: ODataQueryBuilder) {
+    let etag = entity[ODataEntitySetService.ODATA_ETAG];
+    return this.entity(entity.id)
+      .query(this.odataService, this.context.ODataRootPath)
+      .navigationProperty(property)
+      .ref()
+      .delete(etag)
+      .toPromise();
+  }
+
+  protected deleteCollectionRef(entity, property, target: ODataQueryBuilder) {
     let etag = entity[ODataEntitySetService.ODATA_ETAG];
     let options = new HttpOptions();
-    options.params = new HttpParams();
-    options.params.append("id", target
-      .query(this.odataService, this.context.ODataRootPath)
-      .toString());
+    options.params = new HttpParams({fromObject: {
+      "$id": target
+        .query(this.odataService, this.context.ODataRootPath)
+        .toString()}
+      });
     return this.entity(entity.id)
       .query(this.odataService, this.context.ODataRootPath)
       .navigationProperty(property)

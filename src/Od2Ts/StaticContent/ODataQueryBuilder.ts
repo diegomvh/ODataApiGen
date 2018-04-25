@@ -9,7 +9,7 @@ const SUPPORTED_EXPAND_PROPERTIES = ['expand', 'select', 'top', 'orderby', 'filt
 
 const FUNCTION_REGEX = /\((.*)\)/;
 
-export const buildParams = function (options:
+export const buildPathParams = function (options:
   {
     select?, filter?, search?, groupBy?,
     transform?, orderBy?, top?, skip?,
@@ -80,7 +80,7 @@ export const buildParams = function (options:
     params.$orderby = buildOrderBy(orderBy)
   }
 
-  return params;
+  return [path, params];
 }
 
 export const buildAction = function (action: any) {
@@ -387,6 +387,12 @@ export class ODataQueryBuilder {
       else
         query.countSegment();
     }
+    if (this.options.action) {
+      query.actionCall(buildAction(this.options.action));
+    }
+    if (this.options.func) {
+      query.functionCall(buildFunction(this.options.func));
+    }
     if (this.options.expand)
       query.expand(buildExpand(this.options.expand));
     if (this.options.orderBy)
@@ -403,8 +409,8 @@ export class ODataQueryBuilder {
   }
 
   toString() {
-    let params = buildParams(this.options);
-    return `${buildUrl(this.entitySet, params)}`;
+    let [path, params] = buildPathParams(this.options);
+    return `${buildUrl(this.entitySet + path, params)}`;
   }
 
   static fromObject(options): ODataQueryBuilder {
@@ -414,17 +420,18 @@ export class ODataQueryBuilder {
   private wrapper(value, opts): ODataQueryBuilder | any {
     if (_.isUndefined(opts)) {
       return {
+        attrs: this.options,
         get: function (path) {
-          return _.get(this.options[value], path);
+          return _.get(this.attrs[value], path);
         },
         set: function (path, value) {
-          return _.set(this.options[value], path, value);
+          return _.set(this.attrs[value], path, value);
         },
         unset: function (path) {
-          return _.unset(this.options[value], path);
+          return _.unset(this.attrs[value], path);
         },
         update: function (path, updater) {
-          return _.unset(this.options[value], path, updater);
+          return _.unset(this.attrs[value], path, updater);
         }
       };
     }
