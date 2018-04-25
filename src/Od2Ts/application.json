@@ -3,5 +3,6 @@
     "EndpointName": "Northwind",
     "Output": "api",
     "PurgeOutput": true,
-    "UseInterfaces": true
+    "UseInterfaces": true,
+    "UseReferences": true
 }

@@ -28,7 +28,9 @@ namespace Od2Ts.Angular
         {
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
-            var relations = this.RenderRelations(this.Model.EdmStructuredType.NavigationProperties);
+            var relations = UseReferences ? 
+                this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties) :
+                new List<string>();
             var imports = this.RenderImports(this);
 
             return $@"{String.Join("\n", imports)}
@@ -103,7 +105,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
             }
         }
 
-        private IEnumerable<string> RenderRelations(IEnumerable<Models.Property> properties) {
+        private IEnumerable<string> RenderReferences(IEnumerable<Models.Property> properties) {
             foreach (var property in properties) {
                 var type = this.GetTypescriptType(property.Type);
                 var name = property.Name[0].ToString().ToUpper() + property.Name.Substring(1);
