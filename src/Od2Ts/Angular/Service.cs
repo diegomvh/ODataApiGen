@@ -10,24 +10,22 @@ namespace Od2Ts.Angular
     public class Service : Renderable, IHasImports
     {
         public Angular.Model Model {get; private set;}
-        public IEnumerable<Angular.Service> Services {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
-        public bool Interface { get; set; } = false;
-        public Service(Models.EntitySet type)
+        public bool UseReferences { get; set; } = false;
+        public Service(Models.EntitySet type, bool useReferences)
         {
             EdmEntitySet = type;
+            UseReferences = useReferences;
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
-        public void SetRelations(Angular.Model model, IEnumerable<Angular.Service> services) {
+        public void SetModel(Angular.Model model) {
             this.Model = model;
-            this.Services = services;
         }
         
         public override string Render()
         {
-            var services = this.Services.Select(s => $"private {s.EdmEntitySet.EntitySetName}Service:{s.EdmEntitySet.Name}");
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
             var relations = this.RenderRelations(this.Model.EdmStructuredType.NavigationProperties);
@@ -42,9 +40,8 @@ import {{ ODataService, ODataResponse }} from './../../odata';
 export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTypeName}> {{
   constructor(
     protected odata: ODataService, 
-    protected context: ODataContext" + (services.Count() > 0? ",\n    " : "\n    ") +
-    String.Join(",\n    ", services) +
-  $@") {{
+    protected context: ODataContext
+  ) {{
     super(odata, context, '{this.EdmEntitySet.EntitySetName}');
   }} 
   {String.Join("\n\n  ", actions)}
@@ -60,16 +57,11 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                 {
                     new Import(this.BuildUri(this.EdmEntitySet.EntityType)),
                     new Import(this.BuildUri("ODataContext")),
+                    new Import(this.BuildUri("ODataQueryBuilder")),
                     new Import(this.BuildUri("ODataEntitySetService"))
                 };
                 list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.BuildCallableImports(a)));
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.BuildCallableImports(a)));
-                list.AddRange(this.Model.EdmStructuredType.NavigationProperties
-                    .Select(a => a.Type)
-                    .Where(a => a != this.Model.EdmStructuredType.NameSpace + "." + this.Model.EdmStructuredType.Name)
-                    .ToList()
-                    .Select(a => new Import(this.BuildUri(a))));
-                list.AddRange(Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 return list;
             }
         }
@@ -81,7 +73,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                 var methodName = callable.Name[0].ToString().ToLower() + callable.Name.Substring(1);
                 var returnTypeName = this.GetTypescriptType(callable.ReturnType);
                 var returnType = returnTypeName + (callable.ReturnsCollection ? "[]" : "");
-                var baseExecFunctionName = callable.IsCollectionAction
+                var baseMethodName = callable.IsCollectionAction
                     ? $"customCollection{callable.Type}"
                     : $"custom{callable.Type}";
 
@@ -99,7 +91,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                 ));
 
                 yield return $@"public {methodName}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-    return this.{baseExecFunctionName}(" +
+    return this.{baseMethodName}(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
                     (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
@@ -113,19 +105,33 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
 
         private IEnumerable<string> RenderRelations(IEnumerable<Models.Property> properties) {
             foreach (var property in properties) {
-                var service = this.Services.FirstOrDefault(s => s.EdmEntitySet.EntityType == property.Type);
-                if (service != null) {
-                    var type = this.GetTypescriptType(property.Type);
-                    var name = property.Name[0].ToString().ToUpper() + property.Name.Substring(1);
-                    var methodCreateName = property.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
-                    var methodDeleteName = property.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
-                    yield return $@"{methodCreateName}(entity: {EdmEntityTypeName}, related: {type}) {{
-    return this.createRef(entity, '{property.Name}', this.{service.EdmEntitySet.EntitySetName}Service.entity(related.id))
+                var type = this.GetTypescriptType(property.Type);
+                var name = property.Name[0].ToString().ToUpper() + property.Name.Substring(1);
+                var methodRelationName = property.Name;
+                var methodCreateName = property.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
+                var methodDeleteName = property.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+                var baseMethodCreateName = property.IsCollection ? $"createCollectionRef" : $"createRef";
+                var baseMethodDeleteName = property.IsCollection ? $"deleteCollectionRef" : $"deleteRef";
+
+                if (property.IsCollection) {
+                    // Navigation
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}) {{
+    return this.navigation(entity, '{property.Name}');
   }}";
-                    yield return $@"{methodDeleteName}(entity: {EdmEntityTypeName}, related: {type}) {{
-    return this.deleteRef(entity, '{property.Name}', this.{service.EdmEntitySet.EntitySetName}Service.entity(related.id))
+                } else {
+                    // Property
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}) {{
+    return this.property(entity, '{property.Name}');
   }}";
                 }
+                // Link
+                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryBuilder) {{
+    return this.{baseMethodCreateName}(entity, '{property.Name}', target);
+  }}";
+                // Unlink
+                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryBuilder) {{
+    return this.{baseMethodDeleteName}(entity, '{property.Name}', target);
+  }}";
             }
         }
 

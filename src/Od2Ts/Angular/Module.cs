@@ -8,7 +8,8 @@ namespace Od2Ts.Angular
 {
     public class Module : Renderable, IHasImports
     {
-        public bool UseInterface {get; private set;}
+        public bool UseInterfaces {get; private set;}
+        public bool UseReferences {get; private set;}
         public string EndpointName {get; private set;}
         public override string Name => this.EndpointName;
         public override string NameSpace => String.Empty;
@@ -17,10 +18,11 @@ namespace Od2Ts.Angular
         public ICollection<Angular.Model> Models {get; private set;}
         public ICollection<Angular.Service> Services {get; private set;}
 
-        public Module(string endpointName, bool useInterface)
+        public Module(string endpointName, bool useInterfaces, bool useReferences)
         {
-            UseInterface = useInterface;
             EndpointName = endpointName;
+            UseInterfaces = useInterfaces;
+            UseReferences = useReferences;
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
             Models = new List<Angular.Model>();
@@ -37,7 +39,7 @@ namespace Od2Ts.Angular
         public void AddModels(IEnumerable<Models.EntityType> entities) {
             foreach (var m in entities)
             {
-                this.Models.Add(new Angular.Model(m, UseInterface));
+                this.Models.Add(new Angular.Model(m, UseInterfaces));
             }
             ResolveRelations();
         }
@@ -45,7 +47,7 @@ namespace Od2Ts.Angular
         public void AddModels(IEnumerable<Models.ComplexType> complexs) {
             foreach (var c in complexs)
             {
-                this.Models.Add(new Angular.Model(c, UseInterface));
+                this.Models.Add(new Angular.Model(c, UseInterfaces));
             }
             ResolveRelations();
         }
@@ -53,7 +55,7 @@ namespace Od2Ts.Angular
         public void AddServices(IEnumerable<Models.EntitySet> sets) {
             foreach (var s in sets)
             {
-                this.Services.Add(new Angular.Service(s));
+                this.Services.Add(new Angular.Service(s, UseReferences));
             }
             ResolveRelations();
         }
@@ -62,9 +64,7 @@ namespace Od2Ts.Angular
             foreach (var service in Services) {
                 var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
                 if (model != null) {
-                    var types = model.EdmStructuredType.NavigationProperties.Select(p => p.Type);
-                    var services = this.Services.Where(s => types.Contains(s.EdmEntitySet.EntityType));
-                    service.SetRelations(model, services);
+                    service.SetModel(model);
                 }
             }
         }

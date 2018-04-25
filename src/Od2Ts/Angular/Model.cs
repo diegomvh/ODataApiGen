@@ -7,10 +7,10 @@ using Od2Ts.Interfaces;
 namespace Od2Ts.Angular {
     public class Model : Renderable, IHasImports {
         public StructuredType EdmStructuredType {get; private set;}
-        public bool Interface {get; set;} = false;
+        public bool UseInterfaces {get; set;} = false;
         public Model(StructuredType type, bool inter) {
             EdmStructuredType = type;
-            Interface = inter;
+            UseInterfaces = inter;
         }
         public override string Render() {
             var properties = EdmStructuredType.Properties.Select(prop =>
@@ -31,7 +31,7 @@ export {this.GetModelType()} {this.EdmStructuredType.Name} {{
 }}"; 
         }
         public string GetModelType() {
-            return this.Interface ? "interface" : "class";
+            return this.UseInterfaces ? "interface" : "class";
         }
         public IEnumerable<Import> Imports
         {
