@@ -10,6 +10,7 @@ namespace Od2Ts.Angular
     public class Service : Renderable, IHasImports
     {
         public Angular.Model Model {get; private set;}
+        public IEnumerable<Angular.Service> Services {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
         public bool Interface { get; set; } = false;
@@ -19,15 +20,16 @@ namespace Od2Ts.Angular
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
-        public void SetModel(Angular.Model model) {
+        public void SetRelations(Angular.Model model, IEnumerable<Angular.Service> services) {
             this.Model = model;
+            this.Services = services;
         }
         
         public override string Render()
         {
-            Console.WriteLine(this.Model.Render());
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
+            var relations = this.RenderRelations(this.Model.EdmStructuredType.NavigationProperties);
             var imports = this.RenderImports(this);
 
             return $@"{String.Join("\n", imports)}
@@ -42,6 +44,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
   }} 
   {String.Join("\n\n  ", actions)}
   {String.Join("\n\n  ", functions)}
+  {String.Join("\n\n  ", relations)}
 }}";
         }
         public IEnumerable<Import> Imports
@@ -56,6 +59,11 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                 };
                 list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.BuildCallableImports(a)));
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.BuildCallableImports(a)));
+                list.AddRange(this.Model.EdmStructuredType.NavigationProperties
+                    .Select(a => a.Type)
+                    .Where(a => a != this.Model.EdmStructuredType.NameSpace + "." + this.Model.EdmStructuredType.Name)
+                    .ToList()
+                    .Select(a => new Import(this.BuildUri(a))));
                 return list;
             }
         }
@@ -64,11 +72,12 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
         {
             foreach (var callable in callables)
             {
+                var methodName = callable.Name[0].ToString().ToLower() + callable.Name.Substring(1);
                 var returnTypeName = this.GetTypescriptType(callable.ReturnType);
                 var returnType = returnTypeName + (callable.ReturnsCollection ? "[]" : "");
                 var baseExecFunctionName = callable.IsCollectionAction
-                    ? $"CustomCollection{callable.Type}"
-                    : $"Custom{callable.Type}";
+                    ? $"customCollection{callable.Type}"
+                    : $"custom{callable.Type}";
 
                 var parameters = callable.Parameters;
                 var argumentWithType = new List<string>();
@@ -83,10 +92,10 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                     $"{p.Name}: {this.GetTypescriptType(p.Type)}" + (p.IsCollection? "[]" : "")
                 ));
 
-                yield return $@"public {callable.Name}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
+                yield return $@"public {methodName}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
   return this.{baseExecFunctionName}(" +
-                    (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $", {boundArgument}") +
-                    "'{callable.NameSpace}.{callable.Name}'" +
+                    (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
+                    $"'{callable.NameSpace}.{callable.Name}'" +
                     (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
                     (callable.IsEdmReturnType ? 
                         $"\n    .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
@@ -97,7 +106,16 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
         }
 
         private IEnumerable<string> RenderRelations(IEnumerable<Models.Property> properties) {
-            yield return $@"";
+            foreach (var property in properties) {
+                var service = this.Services.FirstOrDefault(s => s.EdmEntitySet.EntityType == property.Type);
+                if (service != null) {
+                    var type = this.GetTypescriptType(property.Type);
+                    var methodName = property.IsCollection ? $"add{type}For{property.Name}" : $"set{type}For{property.Name}";
+                    yield return $@"{methodName}(from: {EdmEntityTypeName}, to: {type}) {{
+  return this.createRef(from, '{property.Name}', this.{service.EdmEntitySet.EntitySetName}Service.entity(to.id))
+                }}";
+                }
+            }
         }
 
         public Uri Uri { get { return this.BuildUri(NameSpace, Name); } }

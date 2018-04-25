@@ -38,7 +38,7 @@ namespace Od2Ts.Angular
             {
                 this.Models.Add(new Angular.Model(m, UseInterface));
             }
-            SetModelForService();
+            ResolveRelations();
         }
 
         public void AddModels(IEnumerable<Models.ComplexType> complexs) {
@@ -46,7 +46,7 @@ namespace Od2Ts.Angular
             {
                 this.Models.Add(new Angular.Model(c, UseInterface));
             }
-            SetModelForService();
+            ResolveRelations();
         }
 
         public void AddServices(IEnumerable<Models.EntitySet> sets) {
@@ -54,14 +54,17 @@ namespace Od2Ts.Angular
             {
                 this.Services.Add(new Angular.Service(s));
             }
-            SetModelForService();
+            ResolveRelations();
         }
 
-        private void SetModelForService() {
+        private void ResolveRelations() {
             foreach (var service in Services) {
                 var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
-                if (model != null)
-                    service.SetModel(model);
+                if (model != null) {
+                    var types = model.EdmStructuredType.NavigationProperties.Select(p => p.Type);
+                    var services = this.Services.Where(s => types.Contains(s.EdmEntitySet.EntityType));
+                    service.SetRelations(model, services);
+                }
             }
         }
 

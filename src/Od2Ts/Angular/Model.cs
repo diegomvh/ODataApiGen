@@ -46,10 +46,7 @@ export {this.GetModelType()} {this.EdmStructuredType.Name} {{
                     .Where(a => !a.IsEdmType)
                     .Select(a => a.Type));
 
-                var uris = namespaces.Distinct().Select(a => new Import(
-                    new Uri("r://" + a.Replace(".", "/"), UriKind.Absolute))
-                );
-                return uris;
+                return namespaces.Distinct().Select(a => new Import(this.BuildUri(a)));
             }
         }
 
