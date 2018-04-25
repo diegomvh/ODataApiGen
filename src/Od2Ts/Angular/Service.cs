@@ -27,6 +27,7 @@ namespace Od2Ts.Angular
         
         public override string Render()
         {
+            var services = this.Services.Select(s => $"private {s.EdmEntitySet.EntitySetName}Service:{s.EdmEntitySet.Name}");
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
             var relations = this.RenderRelations(this.Model.EdmStructuredType.NavigationProperties);
@@ -39,7 +40,11 @@ import {{ ODataService, ODataResponse }} from './../../odata';
 
 @Injectable()
 export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTypeName}> {{
-  constructor(odata: ODataService, context: ODataContext) {{
+  constructor(
+    protected odata: ODataService, 
+    protected context: ODataContext" + (services.Count() > 0? ",\n    " : "\n    ") +
+    String.Join(",\n    ", services) +
+  $@") {{
     super(odata, context, '{this.EdmEntitySet.EntitySetName}');
   }} 
   {String.Join("\n\n  ", actions)}
@@ -64,6 +69,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                     .Where(a => a != this.Model.EdmStructuredType.NameSpace + "." + this.Model.EdmStructuredType.Name)
                     .ToList()
                     .Select(a => new Import(this.BuildUri(a))));
+                list.AddRange(Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 return list;
             }
         }
@@ -93,15 +99,15 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                 ));
 
                 yield return $@"public {methodName}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-  return this.{baseExecFunctionName}(" +
+    return this.{baseExecFunctionName}(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
                     (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
                     (callable.IsEdmReturnType ? 
-                        $"\n    .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
+                        $"\n      .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
                     callable.ReturnsCollection ?
-                        $"\n    .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
-                        $"\n    .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
+                        $"\n      .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
+                        $"\n      .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
             }
         }
 
@@ -110,10 +116,15 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
                 var service = this.Services.FirstOrDefault(s => s.EdmEntitySet.EntityType == property.Type);
                 if (service != null) {
                     var type = this.GetTypescriptType(property.Type);
-                    var methodName = property.IsCollection ? $"add{type}For{property.Name}" : $"set{type}For{property.Name}";
-                    yield return $@"{methodName}(from: {EdmEntityTypeName}, to: {type}) {{
-  return this.createRef(from, '{property.Name}', this.{service.EdmEntitySet.EntitySetName}Service.entity(to.id))
-                }}";
+                    var name = property.Name[0].ToString().ToUpper() + property.Name.Substring(1);
+                    var methodCreateName = property.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
+                    var methodDeleteName = property.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+                    yield return $@"{methodCreateName}(entity: {EdmEntityTypeName}, related: {type}) {{
+    return this.createRef(entity, '{property.Name}', this.{service.EdmEntitySet.EntitySetName}Service.entity(related.id))
+  }}";
+                    yield return $@"{methodDeleteName}(entity: {EdmEntityTypeName}, related: {type}) {{
+    return this.deleteRef(entity, '{property.Name}', this.{service.EdmEntitySet.EntitySetName}Service.entity(related.id))
+  }}";
                 }
             }
         }

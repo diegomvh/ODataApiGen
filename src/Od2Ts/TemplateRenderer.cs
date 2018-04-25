@@ -71,7 +71,7 @@ namespace Od2Ts
 
         public void CreateIndex(Angular.Module module)
         {
-            DoRender(module, $"index");
+            DoRender(module.Index, $"index");
         }
     }
 }

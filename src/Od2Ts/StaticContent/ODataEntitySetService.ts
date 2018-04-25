@@ -1,6 +1,6 @@
-import { HttpParams, HttpOptions } from "@angular/common/http";
+import { HttpParams } from "@angular/common/http";
 import { ODataContext } from "./ODataContext";
-import { ODataService, ODataQuery, ODataResponse, EntitySet } from "./../odata";
+import { ODataService, ODataQuery, ODataResponse, EntitySet, HttpOptions } from "./../odata";
 import { ODataQueryBuilder } from "./ODataQueryBuilder";
 
 import * as builder from './ODataQueryBuilder';
@@ -30,18 +30,18 @@ export class ODataEntitySetService<T> {
       .toPromise();
   }
 
-  public fetchAll(query: ODataQueryBuilder): Promise<T[]> {
-    return this.fetch(query)
+  public fetchAll(builder: ODataQueryBuilder): Promise<T[]> {
+    return this.fetch(builder)
       .then(resp => resp.toEntitySet<T>().getEntities());
   }
 
-  public fetchOne(query: ODataQueryBuilder): Promise<T> {
-    return this.fetch(query)
+  public fetchOne(builder: ODataQueryBuilder): Promise<T> {
+    return this.fetch(builder)
       .then(resp => resp.toEntity<T>());
   }
 
-  public fetchValue<V>(query: ODataQueryBuilder): Promise<V> {
-    return this.fetch(query)
+  public fetchValue<V>(builder: ODataQueryBuilder): Promise<V> {
+    return this.fetch(builder)
       .then(resp => resp.toPropertyValue<V>());
   }
 
@@ -93,7 +93,7 @@ export class ODataEntitySetService<T> {
       return this.post(entity);
   }
 
-  public createRef(entity, property, target: ODataQueryBuilder) {
+  protected createRef(entity, property, target: ODataQueryBuilder) {
     return this.entity(entity.id)
       .query(this.odataService, this.context.ODataRootPath)
       .navigationProperty(property)
@@ -106,7 +106,7 @@ export class ODataEntitySetService<T> {
       .toPromise();
   }
 
-  public deleteRef(entity, property, target) {
+  protected deleteRef(entity, property, target) {
     let etag = entity[ODataEntitySetService.ODATA_ETAG];
     let options = new HttpOptions();
     options.params = new HttpParams();
@@ -122,7 +122,7 @@ export class ODataEntitySetService<T> {
   }
 
   // Function and actions
-  public customAction(key: any, name: string, postdata: any = {}): Promise<ODataResponse> {
+  protected customAction(key: any, name: string, postdata: any = {}): Promise<ODataResponse> {
     return this.entity(key)
       .action(name)
       .query(this.odataService, this.context.ODataRootPath)
@@ -130,14 +130,14 @@ export class ODataEntitySetService<T> {
       .toPromise();
   }
 
-  public customCollectionAction(name: string, postdata: any = {}): Promise<ODataResponse> {
+  protected customCollectionAction(name: string, postdata: any = {}): Promise<ODataResponse> {
     return this.collection()
       .action(name)
       .post(postdata)
       .toPromise();
   }
 
-  public customFunction(key: any, name: string, parameters: any = {}): Promise<ODataResponse> {
+  protected customFunction(key: any, name: string, parameters: any = {}): Promise<ODataResponse> {
     let options = {};
     options[name] = parameters;
     return this.entity(key)
@@ -147,7 +147,7 @@ export class ODataEntitySetService<T> {
       .toPromise();
   }
 
-  public customCollectionFunction(name: string, parameters: any = {}): Promise<ODataResponse> {
+  protected customCollectionFunction(name: string, parameters: any = {}): Promise<ODataResponse> {
     let options = {};
     options[name] = parameters;
     return this.collection()

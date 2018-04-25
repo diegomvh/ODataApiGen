@@ -12,7 +12,7 @@ namespace Od2Ts.Angular
         public string EndpointName {get; private set;}
         public override string Name => this.EndpointName;
         public override string NameSpace => String.Empty;
-
+        public Angular.Index Index {get; private set;}
         public ICollection<Angular.Enum> Enums {get; private set;}
         public ICollection<Angular.Model> Models {get; private set;}
         public ICollection<Angular.Service> Services {get; private set;}
@@ -21,6 +21,7 @@ namespace Od2Ts.Angular
         {
             UseInterface = useInterface;
             EndpointName = endpointName;
+            Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
             Models = new List<Angular.Model>();
             Services = new List<Angular.Service>();
