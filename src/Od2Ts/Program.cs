@@ -18,6 +18,7 @@ namespace Od2Ts
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
         public static bool UseIntrefaces { get; set; }
+        public static bool UseReferences { get; set; }
         public static bool PurgeOutput { get; set; }
 
         static void Main(string[] args)
@@ -41,15 +42,16 @@ namespace Od2Ts
             Output = Configuration.GetValue<string>("Output");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
             UseIntrefaces = Configuration.GetValue<bool>("UseInterfaces");
+            UseReferences = Configuration.GetValue<bool>("UseReferences");
             
             var directoryManager = new DirectoryManager(Output);
-            var templateRenderer = new TemplateRenderer(Output, UseIntrefaces);
+            var templateRenderer = new TemplateRenderer(Output);
 
             var metadataReader = new MetadataReader(
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var module = new Angular.Module(EndpointName, UseIntrefaces);
+            var module = new Angular.Module(EndpointName, UseIntrefaces, UseReferences);
             module.AddEnums(metadataReader.EnumTypes);
             module.AddModels(metadataReader.EntityTypes);
             module.AddModels(metadataReader.ComplexTypes);
