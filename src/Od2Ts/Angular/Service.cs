@@ -36,15 +36,14 @@ namespace Od2Ts.Angular
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataService, ODataResponse }} from './../../odata';
+import {{ ODataEntityService, ODataService, ODataQuery }} from 'angular-odata';
 
 @Injectable()
-export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTypeName}> {{
+export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
   constructor(
-    protected odata: ODataService, 
-    protected context: ODataContext
+    protected odata: ODataService
   ) {{
-    super(odata, context, '{this.EdmEntitySet.EntitySetName}');
+    super(odata, '{this.EdmEntitySet.EntitySetName}');
   }} 
   {String.Join("\n\n  ", actions)}
   {String.Join("\n\n  ", functions)}
@@ -57,10 +56,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
             {
                 var list = new List<Import>
                 {
-                    new Import(this.BuildUri(this.EdmEntitySet.EntityType)),
-                    new Import(this.BuildUri("ODataContext")),
-                    new Import(this.BuildUri("ODataQueryBuilder")),
-                    new Import(this.BuildUri("ODataEntitySetService"))
+                    new Import(this.BuildUri(this.EdmEntitySet.EntityType))
                 };
                 list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.BuildCallableImports(a)));
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.BuildCallableImports(a)));
@@ -127,11 +123,11 @@ export class {this.EdmEntitySet.Name} extends ODataEntitySetService<{EdmEntityTy
   }}";
                 }
                 // Link
-                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryBuilder) {{
+                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQuery) {{
     return this.{baseMethodCreateName}(entity, '{property.Name}', target);
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryBuilder) {{
+                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQuery) {{
     return this.{baseMethodDeleteName}(entity, '{property.Name}', target);
   }}";
             }
