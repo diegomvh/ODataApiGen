@@ -33,6 +33,7 @@ namespace Od2Ts.Angular
             var exports = this.GetImportRecords().Select(record => $"export * from './{record.RelativeNamespace}';");
 
             return $@"{String.Join("\n", exports)}
+            
 export * from './{this.Module.EndpointName.ToLower()}.module'";
         }
     }

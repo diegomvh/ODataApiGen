@@ -28,6 +28,7 @@ namespace Od2Ts.Abstracts
                 case "Edm.Double":
                 case "Edm.Decimal":
                 case "Edm.Single":
+                case "Edm.Byte":
                     return "number";
                 case "Edm.Boolean":
                     return "boolean";

@@ -53,7 +53,9 @@ namespace Od2Ts
         }
         public void CreateContext(Angular.Module module, string metadataPath, bool secure, string odataVersion)
         {
-            var context = $@"export class {module.EndpointName}Context {{
+            var context = $@"import {{ ODataContext }} from 'angular-odata';
+
+export class {module.EndpointName}Context extends ODataContext {{
   public baseUrl = '{metadataPath.TrimEnd("$metadata".ToCharArray())}';
   public metadataUrl = '{metadataPath}';
   public withCredentials = {secure.ToString().ToLower()};

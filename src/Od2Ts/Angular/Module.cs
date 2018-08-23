@@ -95,6 +95,7 @@ namespace Od2Ts.Angular
 
             return $@"import {{ NgModule }} from '@angular/core';
 import {{ CommonModule }} from '@angular/common';
+
 {String.Join("\n", imports)}
 
 @NgModule({{

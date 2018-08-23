@@ -36,7 +36,7 @@ namespace Od2Ts.Angular
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataContext }} from 'angular-odata';
+import {{ ODataEntityService, ODataContext, ODataQueryAbstract }} from 'angular-odata';
 
 @Injectable()
 export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
@@ -139,11 +139,11 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
   }}";
                 }
                 // Link
-                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQuery) {{
+                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract) {{
     return this.{baseMethodCreateName}(entity, '{property.Name}', target);
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQuery) {{
+                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract) {{
     return this.{baseMethodDeleteName}(entity, '{property.Name}', target);
   }}";
             }

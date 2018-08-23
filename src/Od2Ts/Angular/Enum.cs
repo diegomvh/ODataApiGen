@@ -16,9 +16,10 @@ namespace Od2Ts.Angular {
             var imports = this.RenderImports(this);
 
             return $@"{String.Join("\n", imports)}
-            export enum {this.EdmEnumType.Name} {{
-                {String.Join(",\n", members)}
-            }}";
+
+export enum {this.EdmEnumType.Name} {{
+  {String.Join(",\n  ", members)}
+}}";
         }
 
         public IEnumerable<Import> Imports
