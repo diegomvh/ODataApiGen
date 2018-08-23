@@ -36,14 +36,15 @@ namespace Od2Ts.Angular
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataService, ODataQuery }} from 'angular-odata';
+import {{ ODataEntityService, ODataContext }} from 'angular-odata';
 
 @Injectable()
 export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
   constructor(
-    protected odata: ODataService
+    protected http: HttpClient,
+    protected context: ODataContext
   ) {{
-    super(odata, '{this.EdmEntitySet.EntitySetName}');
+    super(http, context, '{this.EdmEntitySet.EntitySetName}');
   }} 
   {String.Join("\n\n  ", actions)}
   {String.Join("\n\n  ", functions)}
@@ -64,18 +65,28 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
             }
         }
 
-        private IEnumerable<string> RenderCallables(IEnumerable<Callable> callables)
+        private IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
-            foreach (var callable in callables)
+            var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
+            foreach (var name in names)
             {
-                var methodName = callable.Name[0].ToString().ToLower() + callable.Name.Substring(1);
+                var callables = allCallables.Where(c => c.Name == name);
+                var overload = callables.Count() > 1;
+                var callable = callables.FirstOrDefault();
+                var methodName = name[0].ToString().ToLower() + name.Substring(1);
                 var returnTypeName = this.GetTypescriptType(callable.ReturnType);
                 var returnType = returnTypeName + (callable.ReturnsCollection ? "[]" : "");
                 var baseMethodName = callable.IsCollectionAction
                     ? $"customCollection{callable.Type}"
                     : $"custom{callable.Type}";
 
-                var parameters = callable.Parameters;
+                var parameters = new List<Models.Parameter>();
+                foreach (var cal in callables)
+                    parameters.AddRange(cal.Parameters);
+                var optionals = parameters.Where(p => 
+                    !callables.All(c => c.Parameters.Contains(p))).ToList();
+                parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
+
                 var argumentWithType = new List<string>();
                 var boundArgument = callable.IsCollectionAction ? 
                     "" : 
@@ -85,14 +96,19 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
                     argumentWithType.Add($"{boundArgument}: any");
 
                 argumentWithType.AddRange(parameters.Select(p => 
-                    $"{p.Name}: {this.GetTypescriptType(p.Type)}" + (p.IsCollection? "[]" : "")
+                    $"{p.Name}: {this.GetTypescriptType(p.Type)}" + 
+                    (p.IsCollection? "[]" : "") + 
+                    (optionals.Contains(p)? " = null" : "")
                 ));
 
-                yield return $@"public {methodName}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{
-    return this.{baseMethodName}(" +
+                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{" +
+                    $"\n    var body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                    $"\n      .filter(pair => pair[1] !== null)" +
+                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
+                    $"\n    return this.{baseMethodName}(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
-                    (parameters.Any()? ", { " + String.Join(", ", parameters.Select(p => p.Name)) + " })" : ")") + 
+                    (parameters.Any()? ", body)" : ")") + 
                     (callable.IsEdmReturnType ? 
                         $"\n      .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
                     callable.ReturnsCollection ?

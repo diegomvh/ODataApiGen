@@ -51,15 +51,16 @@ namespace Od2Ts
                 DoRender(service);
             }
         }
-        public void CreateContext(string metadataPath, string odataVersion)
+        public void CreateContext(Angular.Module module, string metadataPath, bool secure, string odataVersion)
         {
-            var context = $@"export class ODataContext {{
-  public MetadataPath = '{metadataPath}';
-  public ODataRootPath = '{metadataPath.TrimEnd("$metadata".ToCharArray())}';
-  public CreationDate = '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}';
-  public ODataVersion = '{odataVersion}';
+            var context = $@"export class {module.EndpointName}Context {{
+  public baseUrl = '{metadataPath.TrimEnd("$metadata".ToCharArray())}';
+  public metadataUrl = '{metadataPath}';
+  public withCredentials = {secure.ToString().ToLower()};
+  public creation = new Date('{DateTime.Now.ToString("o")}');
+  public version = '{odataVersion}';
 }}";
-            File.WriteAllText($"{Output}{PathSep}ODataContext.ts", context);
+            File.WriteAllText($"{Output}{PathSep}{module.EndpointName}Context.ts", context);
         }
 
         public void CreateModule(Angular.Module module)

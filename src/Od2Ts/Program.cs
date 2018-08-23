@@ -17,6 +17,7 @@ namespace Od2Ts
         public static string MetadataPath { get; set; }
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
+        public static bool Secure { get; set; }
         public static bool UseIntrefaces { get; set; }
         public static bool UseReferences { get; set; }
         public static bool PurgeOutput { get; set; }
@@ -40,6 +41,7 @@ namespace Od2Ts
             MetadataPath = Configuration.GetValue<string>("MetadataPath");
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
+            Secure = Configuration.GetValue<bool>("Secure");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
             UseIntrefaces = Configuration.GetValue<bool>("UseInterfaces");
             UseReferences = Configuration.GetValue<bool>("UseReferences");
@@ -64,7 +66,7 @@ namespace Od2Ts
             directoryManager.DirectoryCopy("./StaticContent", Output, true);
 
             Logger.LogInformation("Render");
-            templateRenderer.CreateContext(MetadataPath, "4.0");
+            templateRenderer.CreateContext(module, MetadataPath, Secure, "4.0");
             templateRenderer.CreateModels(module);
             templateRenderer.CreateEnums(module);
             templateRenderer.CreateServices(module);

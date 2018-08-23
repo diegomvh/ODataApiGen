@@ -83,7 +83,7 @@ namespace Od2Ts.Angular
             {
                 var list = new List<Import>
                 {
-                    new Import(this.BuildUri("ODataContext"))
+                    new Import(this.BuildUri($"{this.EndpointName}Context"))
                 };
                 list.AddRange(Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 return list;
@@ -99,8 +99,7 @@ import {{ CommonModule }} from '@angular/common';
 
 @NgModule({{
   providers: [
-    {String.Join("\n    ", this.Services.Select(set => $"{set.Name},"))},
-    {{ provide: ODataContext, useClass: ODataContext }}
+    {String.Join(",\n    ", this.Services.Select(set => set.Name))}
   ]
 }})
 export class {this.Name}Module {{ }}";
