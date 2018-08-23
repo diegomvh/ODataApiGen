@@ -2,6 +2,7 @@
     "MetadataPath": "http://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
     "EndpointName": "Northwind",
     "Output": "api",
+    "Secure": true,
     "PurgeOutput": true,
     "UseInterfaces": true,
     "UseReferences": true
