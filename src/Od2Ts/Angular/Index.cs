@@ -20,6 +20,7 @@ namespace Od2Ts.Angular
             get
             {
                 var imports = new List<Import>();
+                imports.AddRange(Module.Enums.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 imports.AddRange(Module.Models.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 imports.AddRange(Module.Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 return imports;
