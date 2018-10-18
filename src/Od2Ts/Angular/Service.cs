@@ -37,6 +37,8 @@ namespace Od2Ts.Angular
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
 import {{ ODataEntityService, ODataContext, ODataQueryAbstract }} from 'angular-odata';
+import {{ Observable }} from 'rxjs';
+import {{ map }} from 'rxjs/operators';
 
 @Injectable()
 export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
@@ -100,20 +102,21 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
                     (p.IsCollection? "[]" : "") + 
                     (optionals.Contains(p)? " = null" : "")
                 ));
+                argumentWithType.Add("options?");
 
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Promise<{returnType}> {{" +
+                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{returnType}> {{" +
                     $"\n    var body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
                     $"\n    return this.{baseMethodName}(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
-                    (parameters.Any()? ", body)" : ")") + 
+                    (parameters.Any()? ", body, options)" : ", options)") + 
                     (callable.IsEdmReturnType ? 
-                        $"\n      .then(resp => resp.toPropertyValue<{returnTypeName}>())\n  }}" : 
+                        $"\n      .pipe(map(resp => resp.toPropertyValue<{returnTypeName}>()))\n  }}" : 
                     callable.ReturnsCollection ?
-                        $"\n      .then(resp => resp.toEntitySet<{returnTypeName}>().getEntities())\n  }}" : 
-                        $"\n      .then(resp => resp.toEntity<{returnTypeName}>())\n  }}");
+                        $"\n      .pipe(map(resp => resp.toEntitySet<{returnTypeName}>().getEntities()))\n  }}" : 
+                        $"\n      .pipe(map(resp => resp.toEntity<{returnTypeName}>()))\n  }}");
             }
         }
 
@@ -129,22 +132,22 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
 
                 if (property.IsCollection) {
                     // Navigation
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}) {{
-    return this.navigation(entity, '{property.Name}');
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?) {{
+    return this.navigation(entity, '{property.Name}', options);
   }}";
                 } else {
                     // Property
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}) {{
-    return this.property(entity, '{property.Name}');
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?) {{
+    return this.property(entity, '{property.Name}', options);
   }}";
                 }
                 // Link
-                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract) {{
-    return this.{baseMethodCreateName}(entity, '{property.Name}', target);
+                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract, options?) {{
+    return this.{baseMethodCreateName}(entity, '{property.Name}', target, options);
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract) {{
-    return this.{baseMethodDeleteName}(entity, '{property.Name}', target);
+                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract, options?) {{
+    return this.{baseMethodDeleteName}(entity, '{property.Name}', target, options);
   }}";
             }
         }
