@@ -81,10 +81,7 @@ namespace Od2Ts.Angular
         {
             get
             {
-                var list = new List<Import>
-                {
-                    new Import(this.BuildUri($"{this.EndpointName}Context"))
-                };
+                var list = new List<Import>();
                 list.AddRange(Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
                 return list;
             }
@@ -94,7 +91,6 @@ namespace Od2Ts.Angular
             var imports = this.RenderImports(this);
 
             return $@"import {{ NgModule }} from '@angular/core';
-import {{ CommonModule }} from '@angular/common';
 
 {String.Join("\n", imports)}
 

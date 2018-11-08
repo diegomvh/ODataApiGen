@@ -66,7 +66,7 @@ namespace Od2Ts
             directoryManager.DirectoryCopy("./StaticContent", Output, true);
 
             Logger.LogInformation("Render");
-            templateRenderer.CreateContext(module, MetadataPath, Secure, "4.0");
+            templateRenderer.CreateConfig(module, MetadataPath, Secure, "4.0");
             templateRenderer.CreateModels(module);
             templateRenderer.CreateEnums(module);
             templateRenderer.CreateServices(module);
