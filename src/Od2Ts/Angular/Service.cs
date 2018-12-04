@@ -47,7 +47,10 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
     protected context: ODataContext
   ) {{
     super(http, context, '{this.EdmEntitySet.EntitySetName}');
-  }} 
+  }}
+  
+  {RenderKeyResolver()}
+
   {String.Join("\n\n  ", actions)}
   {String.Join("\n\n  ", functions)}
   {String.Join("\n\n  ", relations)}
@@ -65,6 +68,16 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.BuildCallableImports(a)));
                 return list;
             }
+        }
+
+        private string RenderKeyResolver() {
+            var type = this.Model.EdmStructuredType;
+            var parts = type.KeyNames.Select(name => $"{name}: entity.{name}");
+            var key = type.CompositeKey ? $"{{{String.Join(", ", parts)}}}" : $"entity.{type.KeyName}";
+
+            return $@"protected resolveEntityKey(entity) {{
+    return {key};
+  }}";
         }
 
         private IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)

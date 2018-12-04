@@ -12,13 +12,12 @@ namespace Od2Ts.Abstracts
         public StructuredType(XElement sourceElement)
         {
             Name = sourceElement.Attribute("Name")?.Value;
-            KeyName =
+            KeyNames =
                 sourceElement.Descendants()
                     .Where(a => a.Name.LocalName == "Key")
                     .Descendants()
-                    .FirstOrDefault()?  //ToDo: Composite keys
-                    .Attribute("Name")?
-                    .Value;
+                    .Select(ch => ch.Attribute("Name")?.Value)
+                    .ToList();
             NameSpace = sourceElement.Parent?.Attribute("Namespace")?.Value;
 
             Properties = sourceElement.Descendants().Where(a => a.Name.LocalName == "Property")
@@ -45,7 +44,9 @@ namespace Od2Ts.Abstracts
 
         public string NameSpace { get; private set; }
         public string Name { get; private set; }
-        public string KeyName { get; set; }
+        public List<string> KeyNames { get; set; }
+        public string KeyName { get { return this.KeyNames.FirstOrDefault(); } }
+        public bool CompositeKey { get { return this.KeyNames.Count() > 1; } }
         public List<Property> Properties { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
     }
