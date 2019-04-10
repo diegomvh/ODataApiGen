@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Od2Ts.Abstracts;
+using Microsoft.Extensions.Logging;
 using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular
 {
     public class Module : Renderable, IHasImports
     {
+        public static ILogger Logger { get; } = Program.CreateLogger<Module>();
         public bool UseInterfaces {get; private set;}
         public bool UseReferences {get; private set;}
         public string EndpointName {get; private set;}
@@ -41,6 +43,7 @@ namespace Od2Ts.Angular
             {
                 this.Models.Add(new Angular.Model(m, UseInterfaces));
             }
+            ResolveBases();
             ResolveRelations();
         }
 
@@ -49,6 +52,7 @@ namespace Od2Ts.Angular
             {
                 this.Models.Add(new Angular.Model(c, UseInterfaces));
             }
+            ResolveBases();
             ResolveRelations();
         }
 
@@ -58,6 +62,15 @@ namespace Od2Ts.Angular
                 this.Services.Add(new Angular.Service(s, UseReferences));
             }
             ResolveRelations();
+        }
+
+        private void ResolveBases() {
+            foreach (var model in Models) {
+                if (!String.IsNullOrEmpty(model.EdmStructuredType.BaseType)) {
+                    var baseModel = this.Models.FirstOrDefault(m => m.EdmStructuredType.Type == model.EdmStructuredType.BaseType);
+                    model.Base = baseModel;
+                }
+            }
         }
 
         private void ResolveRelations() {

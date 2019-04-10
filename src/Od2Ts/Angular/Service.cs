@@ -50,7 +50,7 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
   }}
   
   {RenderKeyResolver()}
-
+  
   {String.Join("\n\n  ", actions)}
   {String.Join("\n\n  ", functions)}
   {String.Join("\n\n  ", relations)}
@@ -71,9 +71,16 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
         }
 
         private string RenderKeyResolver() {
-            var type = this.Model.EdmStructuredType;
-            var parts = type.KeyNames.Select(name => $"{name}: entity.{name}");
-            var key = type.CompositeKey ? $"{{{String.Join(", ", parts)}}}" : $"entity.{type.KeyName}";
+            var model = this.Model;
+            var keys = new List<string>(model.EdmStructuredType.KeyNames); 
+            while (model.Base != null) {
+                model = model.Base;
+                keys.AddRange(model.EdmStructuredType.KeyNames);
+            }
+            if (keys.Count() == 0)
+                return "";
+            var parts = keys.Select(name => $"{name}: entity.{name}");
+            var key = keys.Count() > 1 ? $"{{{String.Join(", ", parts)}}}" : $"entity.{keys.First()}";
 
             return $@"protected resolveEntityKey(entity) {{
     return {key};

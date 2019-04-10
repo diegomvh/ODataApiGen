@@ -11,14 +11,16 @@ namespace Od2Ts.Abstracts
     {
         public StructuredType(XElement sourceElement)
         {
+            NameSpace = sourceElement.Parent?.Attribute("Namespace")?.Value;
             Name = sourceElement.Attribute("Name")?.Value;
+            BaseType = sourceElement.Attribute("BaseType")?.Value;
+
             KeyNames =
                 sourceElement.Descendants()
                     .Where(a => a.Name.LocalName == "Key")
                     .Descendants()
                     .Select(ch => ch.Attribute("Name")?.Value)
                     .ToList();
-            NameSpace = sourceElement.Parent?.Attribute("Namespace")?.Value;
 
             Properties = sourceElement.Descendants().Where(a => a.Name.LocalName == "Property")
                 .Select(propElement => new Property()
@@ -44,6 +46,8 @@ namespace Od2Ts.Abstracts
 
         public string NameSpace { get; private set; }
         public string Name { get; private set; }
+        public string BaseType { get; private set; }
+        public string Type { get { return $"{this.NameSpace}.{this.Name}"; } }
         public List<string> KeyNames { get; set; }
         public string KeyName { get { return this.KeyNames.FirstOrDefault(); } }
         public bool CompositeKey { get { return this.KeyNames.Count() > 1; } }
