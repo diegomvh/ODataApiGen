@@ -1,7 +1,7 @@
 {
-    "MetadataPath": "http://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
-    "EndpointName": "Northwind",
-    "Output": "api",
+    "MetadataPath": "http://nb-mdp-dev02:57970/$metadata",
+    "EndpointName": "SiuApi",
+    "Output": "siuapi",
     "Secure": true,
     "PurgeOutput": true,
     "UseInterfaces": true,
