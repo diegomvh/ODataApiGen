@@ -1,7 +1,7 @@
 {
-    "MetadataPath": "http://nb-mdp-dev02:57970/$metadata",
-    "EndpointName": "SiuApi",
-    "Output": "siuapi",
+    "MetadataPath": "http://localhost/odata/$metadata",
+    "EndpointName": "MyApi",
+    "Output": "myapi",
     "Secure": true,
     "PurgeOutput": true,
     "UseInterfaces": true,
