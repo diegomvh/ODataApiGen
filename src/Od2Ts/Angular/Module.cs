@@ -3,105 +3,157 @@ using System.Collections.Generic;
 using System.Linq;
 using Od2Ts.Abstracts;
 using Microsoft.Extensions.Logging;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular
 {
-    public class Module : Renderable, IHasImports
+    public class Module : Renderable
     {
         public static ILogger Logger { get; } = Program.CreateLogger<Module>();
-        public bool UseInterfaces {get; private set;}
-        public bool UseReferences {get; private set;}
-        public string EndpointName {get; private set;}
-        public override string Name => this.EndpointName;
-        public override string NameSpace => String.Empty;
-        public Angular.Index Index {get; private set;}
-        public ICollection<Angular.Enum> Enums {get; private set;}
-        public ICollection<Angular.Model> Models {get; private set;}
-        public ICollection<Angular.Service> Services {get; private set;}
+        public bool UseReferences { get; private set; }
+        public string EndpointName { get; private set; }
+        public override string Name => this.EndpointName + "Module";
+        public override string FileName => this.EndpointName.ToLower() + ".module";
+        public override string Directory => "";
+        public override IEnumerable<string> Types
+        {
+            get
+            {
+                return Services.Select(a => a.EdmEntitySet.EntityType);
+            }
+        }
+        public Angular.Index Index { get; private set; }
+        public ICollection<Angular.Enum> Enums { get; private set; }
+        public ICollection<Angular.Interface> Interfaces { get; private set; }
+        public ICollection<Angular.Service> Services { get; private set; }
+        public ICollection<Angular.Model> Models { get; private set; }
 
-        public Module(string endpointName, bool useInterfaces, bool useReferences)
+        public Module(string endpointName, bool useReferences)
         {
             EndpointName = endpointName;
-            UseInterfaces = useInterfaces;
             UseReferences = useReferences;
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
-            Models = new List<Angular.Model>();
+            Interfaces = new List<Angular.Interface>();
             Services = new List<Angular.Service>();
+            Models = new List<Angular.Model>();
         }
 
-        public void AddEnums(IEnumerable<Models.EnumType> enums) {
+        public void AddEnums(IEnumerable<Models.EnumType> enums)
+        {
             foreach (var e in enums)
             {
                 this.Enums.Add(new Angular.Enum(e));
             }
         }
 
-        public void AddModels(IEnumerable<Models.EntityType> entities) {
+        public void AddInterfaces(IEnumerable<Models.EntityType> entities)
+        {
             foreach (var m in entities)
             {
-                this.Models.Add(new Angular.Model(m, UseInterfaces));
+                this.Interfaces.Add(new Angular.Interface(m));
             }
-            ResolveBases();
-            ResolveRelations();
         }
 
-        public void AddModels(IEnumerable<Models.ComplexType> complexs) {
+        public void AddInterfaces(IEnumerable<Models.ComplexType> complexs)
+        {
             foreach (var c in complexs)
             {
-                this.Models.Add(new Angular.Model(c, UseInterfaces));
+                this.Interfaces.Add(new Angular.Interface(c));
             }
-            ResolveBases();
-            ResolveRelations();
         }
 
-        public void AddServices(IEnumerable<Models.EntitySet> sets) {
+        public void AddServices(IEnumerable<Models.EntitySet> sets)
+        {
             foreach (var s in sets)
             {
                 this.Services.Add(new Angular.Service(s, UseReferences));
             }
-            ResolveRelations();
         }
 
-        private void ResolveBases() {
-            foreach (var model in Models) {
-                if (!String.IsNullOrEmpty(model.EdmStructuredType.BaseType)) {
-                    var baseModel = this.Models.FirstOrDefault(m => m.EdmStructuredType.Type == model.EdmStructuredType.BaseType);
-                    model.Base = baseModel;
-                }
+        public void AddModels(IEnumerable<Models.EntitySet> sets)
+        {
+            foreach (var s in sets)
+            {
+                this.Models.Add(new Angular.Model(s));
             }
         }
 
-        private void ResolveRelations() {
-            foreach (var service in Services) {
-                var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
-                if (model != null) {
-                    service.SetModel(model);
-                }
+        public void ResolveDependencies()
+        {
+            foreach (var enumm in Enums)
+            {
             }
+            foreach (var inter in Interfaces)
+            {
+                if (!String.IsNullOrEmpty(inter.EdmStructuredType.BaseType))
+                {
+                    var baseInter = this.Interfaces.FirstOrDefault(m => m.EdmStructuredType.Type == inter.EdmStructuredType.BaseType);
+                    inter.SetBase(baseInter);
+                }
+                var types = inter.Types;
+                inter.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
+                );
+                inter.Dependencies.AddRange(
+this.Interfaces.Where(e => e != inter && types.Contains(e.EdmStructuredType.Type))
+                );
+            }
+            foreach (var service in Services)
+            {
+                var inter = this.Interfaces.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
+                if (inter != null)
+                {
+                    service.SetInterface(inter);
+                }
+                var types = service.Types;
+                service.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
+                );
+                service.Dependencies.AddRange(
+this.Interfaces.Where(e => types.Contains(e.EdmStructuredType.Type))
+                );
+            }
+            foreach (var model in Models)
+            {
+                var service = this.Services.FirstOrDefault(s => s.Interface.EdmStructuredType.Type == model.EdmEntitySet.EntityType);
+                if (service != null)
+                {
+                    model.SetService(service);
+                }
+                if (!String.IsNullOrEmpty(model.Service.Interface.EdmStructuredType.BaseType))
+                {
+                    var baseModel = this.Models.FirstOrDefault(m => m.Service.Interface.EdmStructuredType.Type == model.Service.Interface.EdmStructuredType.BaseType);
+                    model.SetBase(baseModel);
+                }
+                var types = model.Types;
+                model.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
+                );
+                model.Dependencies.AddRange(
+this.Interfaces.Where(e => types.Contains(e.EdmStructuredType.Type))
+                );
+                model.Dependencies.AddRange(
+this.Models.Where(e => types.Contains(e.Type))
+                );
+            }
+            this.Dependencies.AddRange(this.Services);
+            this.Index.Dependencies.AddRange(this.Enums);
+            this.Index.Dependencies.AddRange(this.Interfaces);
+            this.Index.Dependencies.AddRange(this.Services);
+            this.Index.Dependencies.AddRange(this.Models);
         }
 
-        public IEnumerable<string> GetAllNamespaces() {
-            return this.Enums.Select(e => e.NameSpace)
-                .Union(this.Models.Select(m => m.NameSpace))
-                .Union(this.Services.Select(s => s.NameSpace))
+        public IEnumerable<string> GetAllDirectories()
+        {
+            return this.Enums.Select(e => e.Directory)
+                .Union(this.Interfaces.Select(m => m.Directory))
+                .Union(this.Services.Select(s => s.Directory))
                 .Distinct();
         }
 
-        public Uri Uri { get { return this.BuildUri(Name); }}
-        public IEnumerable<Import> Imports
-        {
-            get
-            {
-                var list = new List<Import>();
-                list.AddRange(Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
-                return list;
-            }
-        }
         public override string Render()
         {
-            var imports = this.RenderImports(this);
+            var imports = this.RenderImports();
 
             return $@"import {{ NgModule }} from '@angular/core';
 
@@ -112,7 +164,7 @@ namespace Od2Ts.Angular
     {String.Join(",\n    ", this.Services.Select(set => set.Name))}
   ]
 }})
-export class {this.Name}Module {{ }}";
+export class {this.Name} {{ }}";
         }
     }
 }

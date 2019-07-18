@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Od2Ts.Abstracts;
-using Od2Ts.Extensions;
-using Od2Ts.Interfaces;
-using Od2Ts.Models;
 
 namespace Od2Ts
 {
@@ -15,28 +9,20 @@ namespace Od2Ts
     {
         private ILogger Logger { get; } = Program.CreateLogger<TemplateRenderer>();
         public string Output { get; private set; }
-        private char PathSep {get;} = Path.DirectorySeparatorChar;
         public TemplateRenderer(string output)
         {
             this.Output = output;
         }
 
-        private void DoRender(Renderable entity, string fileName = null)
+        private void DoRender(Renderable entity)
         {
-            var ns = entity.NameSpace.Replace('.', PathSep);
-            if (fileName == null)
-                fileName = entity.Name;
+            //var ns = entity.Namespace.Replace('.', PathSep);
+            var fileName = entity.FileName;
+            var directory = entity.Directory;
 
-            File.WriteAllText($"{Output}{PathSep}{ns}{PathSep}{fileName}.ts", entity.Render());
+            File.WriteAllText($"{Output}{Path.DirectorySeparatorChar}{directory}{Path.DirectorySeparatorChar}{fileName}.ts", entity.Render());
         }
 
-        public void CreateModels(Angular.Module module)
-        {
-            foreach (var model in module.Models)
-            {
-                DoRender(model);
-            }
-        }
         public void CreateEnums(Angular.Module module)
         {
             foreach (var enumm in module.Enums)
@@ -44,11 +30,26 @@ namespace Od2Ts
                 DoRender(enumm);
             }
         }
+
+        public void CreateInterfaces(Angular.Module module)
+        {
+            foreach (var inter in module.Interfaces)
+            {
+                DoRender(inter);
+            }
+        }
         public void CreateServices(Angular.Module module)
         {
             foreach (var service in module.Services)
             {
                 DoRender(service);
+            }
+        }
+        public void CreateModels(Angular.Module module)
+        {
+            foreach (var model in module.Models)
+            {
+                DoRender(model);
             }
         }
         public void CreateConfig(Angular.Module module, string metadataPath, bool secure, string odataVersion)
@@ -60,17 +61,17 @@ namespace Od2Ts
   creation: new Date('{DateTime.Now.ToString("o")}'),
   version: '{odataVersion}'
 }}";
-            File.WriteAllText($"{Output}{PathSep}{module.EndpointName}Config.ts", context);
+            File.WriteAllText($"{Output}{Path.DirectorySeparatorChar}{module.EndpointName.ToLower()}.config.ts", context);
         }
 
         public void CreateModule(Angular.Module module)
         {
-            DoRender(module, $"{module.EndpointName.ToLower()}.module");
+            DoRender(module);
         }
 
         public void CreateIndex(Angular.Module module)
         {
-            DoRender(module.Index, $"index");
+            DoRender(module.Index);
         }
     }
 }

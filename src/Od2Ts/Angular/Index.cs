@@ -2,43 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using Od2Ts.Abstracts;
-using Od2Ts.Extensions;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular
 {
-    public class Index : Renderable, IHasImports
+    public class Index : Renderable
     {
         public Angular.Module Module {get; private set;}
         public Index(Angular.Module module )
         {
             this.Module = module;
         }
-        public Uri Uri { get { return this.BuildUri(Name); }}
-        public IEnumerable<Import> Imports
+        public override string Name => this.Module.EndpointName;
+        public override string FileName => "index";
+        public override string Directory => "";
+        public override IEnumerable<string> Types 
         {
-            get
-            {
-                var imports = new List<Import>
-                {
-                    new Import(this.BuildUri($"{this.Module.EndpointName}Config"))
-                };
-                imports.AddRange(Module.Enums.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
-                imports.AddRange(Module.Models.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
-                imports.AddRange(Module.Services.Select(a => new Import(this.BuildUri(a.NameSpace, a.Name))));
-                return imports;
+            get { 
+                var ns = new List<String>();
+                ns.AddRange(Module.Enums.SelectMany(e => e.Types));
+                ns.AddRange(Module.Interfaces.SelectMany(i => i.Types));
+                ns.AddRange(Module.Models.SelectMany(m => m.Types));
+                ns.AddRange(Module.Types);
+                return ns;
             }
         }
-        public override string Name => this.Module.EndpointName;
-
-        public override string NameSpace => String.Empty;
         public override string Render()
         {
             var exports = this.GetImportRecords().Select(record => $"export * from './{record.RelativeNamespace}';");
 
             return $@"{String.Join("\n", exports)}
-            
-export * from './{this.Module.EndpointName.ToLower()}.module'";
+export * from './{this.Module.EndpointName.ToLower()}.config';
+export * from './{this.Module.EndpointName.ToLower()}.module';";
         }
     }
 }

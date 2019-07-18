@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Od2Ts.Interfaces;
-using Od2Ts.Models;
 
-namespace Od2Ts.Abstracts
+namespace Od2Ts.Models
 {
     public abstract class StructuredType 
     {

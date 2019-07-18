@@ -2,14 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Od2Ts.Extensions;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Abstracts
 {
+    public class ImportRecord
+    {
+        public string Name { get; set; }
+        public Uri RelativeNamespace { get; set; }
+    }
+
     public abstract class Renderable {
         public abstract string Name { get; }
-        public abstract string NameSpace { get; }
+        public abstract string FileName { get; }
+        public abstract string Directory { get; }
+        public abstract IEnumerable<string> Types {get; }
         public abstract string Render();
         public string GetTypescriptType(string type)
         {
@@ -40,27 +46,44 @@ namespace Od2Ts.Abstracts
                     }
             }
         }
-        public Uri BuildUri(params string[] names) {
-            var parts = names.SelectMany(part => part.Split("."));
-            return new Uri("r://" + String.Join(Path.DirectorySeparatorChar.ToString(), parts), UriKind.Absolute);
-        }
-        public IEnumerable<Import> BuildCallableImports(Callable callable)
+        public Uri Uri => !String.IsNullOrEmpty(Directory) ? new Uri($"r://{Directory}{Path.DirectorySeparatorChar}{FileName}", UriKind.Absolute) : new Uri($"r://{FileName}");
+        public List<Renderable> Dependencies {get; set;} = new List<Renderable>();
+        public IEnumerable<string> CallableNamespaces(Callable callable)
         {
-            var uriList = new List<Import>();
+            var uriList = new List<string>();
             if (!string.IsNullOrWhiteSpace(callable.ReturnType) && !callable.IsEdmReturnType)
             {
-                uriList.Add(new Import(this.BuildUri(callable.ReturnType)));
+                uriList.Add(callable.ReturnType);
             }
             if (!string.IsNullOrWhiteSpace(callable.BindingParameter))
             {
-                uriList.Add(new Import(this.BuildUri(callable.BindingParameter)));
+                uriList.Add(callable.BindingParameter);
             }
             return uriList;
         }
-        public IEnumerable<string> RenderImports(IHasImports renderable)
+        public IEnumerable<string> RenderImports()
         {
-            return renderable.GetImportRecords().Select(a =>
-                $"import {{ {a.ElementTypeName} }} from './{a.RelativeNamespace}';");
+            return this.GetImportRecords().Select(r => {
+                var path = r.RelativeNamespace.ToString();
+                if (!path.StartsWith("../"))
+                    path = $"./{path}";
+                return $"import {{ {r.Name} }} from '{path}';";
+            });
+        }
+
+        public IEnumerable<ImportRecord> GetImportRecords()
+        {
+            var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i=> i.Uri).Select(group =>
+            {
+                var a = group.First();
+                var record = new ImportRecord()
+                {
+                    RelativeNamespace = this.Uri.MakeRelativeUri(a.Uri),
+                    Name = a.Name
+                };
+                return record;
+            });
+            return records;
         }
     }
 }

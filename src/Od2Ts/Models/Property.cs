@@ -9,5 +9,6 @@ namespace Od2Ts.Models
         public bool IsEdmType { get { return !System.String.IsNullOrWhiteSpace(Type) && Type.StartsWith("Edm."); } }
         public bool IsCollection { get; set; }
         public bool IsRequired { get; set; }
+        public int Length { get; set; }
     }
 }

@@ -4,6 +4,6 @@
     "Output": "myapi",
     "Secure": true,
     "PurgeOutput": true,
-    "UseInterfaces": true,
+    "Models": false,
     "UseReferences": true
 }

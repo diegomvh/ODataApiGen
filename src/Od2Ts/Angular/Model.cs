@@ -1,74 +1,69 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Od2Ts.Abstracts;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular {
-    public class Model : Renderable, IHasImports {
-        public StructuredType EdmStructuredType {get; private set;}
+    public class Model : Renderable {
+        public Angular.Service Service {get; private set;}
+        public Model Base {get; private set;}
+        public Models.EntitySet EdmEntitySet { get; private set; }
+        public Model(Models.EntitySet type)
+        {
+            EdmEntitySet = type;
+        }
 
-        public Model Base {get; set;}
-        public bool UseInterfaces {get; set;} = false;
+        public void SetService(Angular.Service service) {
+            this.Service = service;
+        }
 
-        public Model(StructuredType type, bool inter) {
-            EdmStructuredType = type;
-            UseInterfaces = inter;
+        public void SetBase(Model b) {
+            this.Base = b;
         }
 
         public override string Render() {
-            var properties = EdmStructuredType.Properties.Select(prop =>
-                $"{prop.Name}" + (prop.IsRequired ? ":" : "?:") + $" {this.GetTypescriptType(prop.Type)};");
+            var properties = new List<string>();
+            properties.AddRange(this.Service.Interface.EdmStructuredType.Properties.Select(prop =>
+                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}")
+            );
+            properties.AddRange(this.Service.Interface.EdmStructuredType.NavigationProperties.Select(prop =>
+                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}")
+            );
 
-            var navigations = EdmStructuredType.NavigationProperties.Select(nav =>
-                $"{nav.Name}" + 
-                (nav.IsRequired ? ":" : "?:") + 
-                $" {this.GetTypescriptType(nav.Type)}" + (nav.IsCollection ? "[];" : ";"));
-
-            var imports = this.RenderImports(this);
+            var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
+import {{ ODataModel, Property }} from 'angular-odata';
+
 export {this.GetModelSignature()} {{
-  /* Navigation properties */
-  {String.Join("\n  ", navigations)}
-  /* Properties */
-  {String.Join("\n  ", properties)}
+  protected properties() : Property[] {{
+    return [
+      {String.Join(",\n      ", properties)}
+    ];
+  }}
 }}"; 
         }
 
         public string GetModelSignature() {
-            var signature = $"{GetModelType()} {this.EdmStructuredType.Name}";
-            if (this.Base != null)
-                signature = $"{signature} extends {this.Base.EdmStructuredType.Name}";
-            return signature;
+            return (this.Base != null) ?
+                $"class {this.Name} extends {this.Base.Name}" :
+                $"class {this.Name} extends ODataModel<{this.GetTypescriptType(this.EdmEntitySet.EntityType)}>";
         }
 
-        public string GetModelType() {
-            return this.UseInterfaces ? "interface" : "class";
-        }
+        public override string Name => this.GetTypescriptType(this.EdmEntitySet.EntityType) + "Model";
+        public override string FileName => this.GetTypescriptType(this.EdmEntitySet.EntityType).ToLower() + ".model";
+        public override string Directory => String.Join(Path.DirectorySeparatorChar, this.EdmEntitySet.EntityType.Split('.').Reverse().Skip(1).Reverse());
 
-        public IEnumerable<Import> Imports
+        public override IEnumerable<string> Types
         {
             get
             {
-                var namespaces = this.EdmStructuredType.NavigationProperties
-                    .Select(a => a.Type)
-                    .Where(a => a != this.EdmStructuredType.Type)
-                    .ToList();
-                /*For Not-EDM types (e.g. enums with namespaces, complex types*/
-                namespaces.AddRange(this.EdmStructuredType.Properties
-                    .Where(a => !a.IsEdmType)
-                    .Select(a => a.Type));
+                var types = new List<string>() { this.EdmEntitySet.EntityType };
                 if (this.Base != null)
-                    namespaces.Add(this.Base.EdmStructuredType.Type);
-                return namespaces.Distinct().Select(a => new Import(this.BuildUri(a)));
+                    types.Add(this.Base.Type);
+                return types;
             }
         }
-
-        private Uri _uri;
-        public Uri Uri => _uri ?? (_uri = new Uri("r://" + this.EdmStructuredType.NameSpace.Replace(".", "/") + "/" + this.EdmStructuredType.Name, UriKind.Absolute));
-
-        public override string Name => this.EdmStructuredType.Name;
-
-        public override string NameSpace => this.EdmStructuredType.NameSpace;
+        public string Type { get { return $"{this.EdmEntitySet.EntityType}.{this.Name}"; } }
     }
 }

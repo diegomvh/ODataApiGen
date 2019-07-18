@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Models
 {
@@ -13,7 +10,7 @@ namespace Od2Ts.Models
         IEnumerable<CustomAction> customActions, IEnumerable<CustomFunction> customFunctions)
         {
             EntitySetName = xElement.Attribute("Name")?.Value;
-            Name = char.ToUpper(EntitySetName[0]) + EntitySetName.Substring(1) + "ODataService";
+            Name = char.ToUpper(EntitySetName[0]) + EntitySetName.Substring(1);
             EntityType = xElement.Attribute("EntityType")?.Value;
             NameSpace =
                 xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;

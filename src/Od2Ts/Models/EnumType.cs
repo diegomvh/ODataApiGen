@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Models
 {
@@ -9,6 +8,7 @@ namespace Od2Ts.Models
     {
         public string Name { get; private set; }
         public string NameSpace { get; private set; }
+        public string Type { get { return $"{this.NameSpace}.{this.Name}"; } }
         public IEnumerable<EnumMember> Members { get; private set; }
         
         public EnumType(XElement sourceElement)

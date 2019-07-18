@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Od2Ts.Abstracts;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts.Angular
 {
-    public class Service : Renderable, IHasImports
+    public class Service : Renderable
     {
-        public Angular.Model Model {get; private set;}
+        public Angular.Interface Interface {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
         public bool UseReferences { get; set; } = false;
@@ -20,8 +19,8 @@ namespace Od2Ts.Angular
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
-        public void SetModel(Angular.Model model) {
-            this.Model = model;
+        public void SetInterface(Angular.Interface inter) {
+            this.Interface = inter;
         }
         
         public override string Render()
@@ -29,9 +28,9 @@ namespace Od2Ts.Angular
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
             var relations = UseReferences ? 
-                this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties) :
+                this.RenderReferences(this.Interface.EdmStructuredType.NavigationProperties) :
                 new List<string>();
-            var imports = this.RenderImports(this);
+            var imports = this.RenderImports();
 
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
@@ -41,7 +40,7 @@ import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
 @Injectable()
-export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
+export class {this.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
   constructor(
     protected http: HttpClient,
     protected context: ODataContext
@@ -56,26 +55,25 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
   {String.Join("\n\n  ", relations)}
 }}";
         }
-        public IEnumerable<Import> Imports
+        public override IEnumerable<string> Types
         {
             get
             {
-                var list = new List<Import>
-                {
-                    new Import(this.BuildUri(this.EdmEntitySet.EntityType))
+                var list = new List<string> {
+                    this.EdmEntitySet.EntityType
                 };
-                list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.BuildCallableImports(a)));
-                list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.BuildCallableImports(a)));
+                list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.CallableNamespaces(a)));
                 return list;
             }
         }
 
         private string RenderKeyResolver() {
-            var model = this.Model;
-            var keys = new List<string>(model.EdmStructuredType.KeyNames); 
-            while (model.Base != null) {
-                model = model.Base;
-                keys.AddRange(model.EdmStructuredType.KeyNames);
+            var inter = this.Interface;
+            var keys = new List<string>(inter.EdmStructuredType.KeyNames); 
+            while (inter.Base != null) {
+                inter = inter.Base;
+                keys.AddRange(inter.EdmStructuredType.KeyNames);
             }
             if (keys.Count() == 0)
                 return "";
@@ -171,9 +169,8 @@ export class {this.EdmEntitySet.Name} extends ODataEntityService<{EdmEntityTypeN
   }}";
             }
         }
-
-        public Uri Uri { get { return this.BuildUri(NameSpace, Name); } }
-        public override string Name => this.EdmEntitySet.Name;
-        public override string NameSpace => this.EdmEntitySet.NameSpace;
+        public override string Name => this.EdmEntitySet.Name + "Service";
+        public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
+        public override string Directory => this.EdmEntitySet.NameSpace.Replace('.', Path.DirectorySeparatorChar);
     }
 }

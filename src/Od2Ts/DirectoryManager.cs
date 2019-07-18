@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Od2Ts.Abstracts;
-using Od2Ts.Interfaces;
 
 namespace Od2Ts
 {
@@ -52,17 +50,16 @@ namespace Od2Ts
             }
         }
 
-        public void PrepareNamespaceFolders(IEnumerable<string> namespaces)
+        public void PrepareFolders(IEnumerable<string> directories)
         {
-            var nsList = namespaces.ToList();
-            nsList.Sort();
-            foreach (var ns in nsList)
+            var dsList = directories.ToList();
+            dsList.Sort();
+            foreach (var ds in dsList)
             {
-                var path = ns.Replace('.', Path.DirectorySeparatorChar);
-                if (!Directory.Exists( Path.Combine(DirectoryInfo.FullName, path)))
+                if (!Directory.Exists( Path.Combine(DirectoryInfo.FullName, ds)))
                 {
-                    Logger.LogDebug($"Creating subdirectory '{path}'");
-                    DirectoryInfo.CreateSubdirectory(path);
+                    Logger.LogDebug($"Creating subdirectory '{ds}'");
+                    DirectoryInfo.CreateSubdirectory(ds);
                 }
             }
         }

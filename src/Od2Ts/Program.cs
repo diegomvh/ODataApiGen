@@ -18,7 +18,7 @@ namespace Od2Ts
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
         public static bool Secure { get; set; }
-        public static bool UseIntrefaces { get; set; }
+        public static bool Models { get; set; }
         public static bool UseReferences { get; set; }
         public static bool PurgeOutput { get; set; }
 
@@ -43,7 +43,7 @@ namespace Od2Ts
             Output = Configuration.GetValue<string>("Output");
             Secure = Configuration.GetValue<bool>("Secure");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
-            UseIntrefaces = Configuration.GetValue<bool>("UseInterfaces");
+            Models = Configuration.GetValue<bool>("Models");
             UseReferences = Configuration.GetValue<bool>("UseReferences");
             
             var directoryManager = new DirectoryManager(Output);
@@ -53,23 +53,28 @@ namespace Od2Ts
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var module = new Angular.Module(EndpointName, UseIntrefaces, UseReferences);
+            var module = new Angular.Module(EndpointName, UseReferences);
             module.AddEnums(metadataReader.EnumTypes);
-            module.AddModels(metadataReader.EntityTypes);
-            module.AddModels(metadataReader.ComplexTypes);
+            module.AddInterfaces(metadataReader.EntityTypes);
+            module.AddInterfaces(metadataReader.ComplexTypes);
             module.AddServices(metadataReader.EntitySets);
+            module.AddModels(metadataReader.EntitySets);
+            module.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
-            directoryManager.PrepareNamespaceFolders(module.GetAllNamespaces());
+            directoryManager.PrepareFolders(module.GetAllDirectories());
             
             Logger.LogInformation("Copy static content");
             directoryManager.DirectoryCopy("./StaticContent", Output, true);
 
             Logger.LogInformation("Render");
             templateRenderer.CreateConfig(module, MetadataPath, Secure, "4.0");
-            templateRenderer.CreateModels(module);
+            templateRenderer.CreateInterfaces(module);
             templateRenderer.CreateEnums(module);
             templateRenderer.CreateServices(module);
+            if (Models) {
+                templateRenderer.CreateModels(module);
+            }
             templateRenderer.CreateModule(module);
             templateRenderer.CreateIndex(module);
         }
