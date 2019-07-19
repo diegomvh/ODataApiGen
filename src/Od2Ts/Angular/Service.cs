@@ -8,7 +8,7 @@ namespace Od2Ts.Angular
 {
     public class Service : Renderable
     {
-        public Angular.Interface Interface {get; private set;}
+        public Angular.Model Model {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
         public bool UseReferences { get; set; } = false;
@@ -19,8 +19,8 @@ namespace Od2Ts.Angular
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
-        public void SetInterface(Angular.Interface inter) {
-            this.Interface = inter;
+        public void SetModel(Angular.Model model) {
+            this.Model = model;
         }
         
         public override string Render()
@@ -28,7 +28,7 @@ namespace Od2Ts.Angular
             var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
             var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
             var relations = UseReferences ? 
-                this.RenderReferences(this.Interface.EdmStructuredType.NavigationProperties) :
+                this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties) :
                 new List<string>();
             var imports = this.RenderImports();
 
@@ -69,11 +69,11 @@ export class {this.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
         }
 
         private string RenderKeyResolver() {
-            var inter = this.Interface;
-            var keys = new List<string>(inter.EdmStructuredType.KeyNames); 
-            while (inter.Base != null) {
-                inter = inter.Base;
-                keys.AddRange(inter.EdmStructuredType.KeyNames);
+            var model = this.Model;
+            var keys = new List<string>(model.EdmStructuredType.KeyNames); 
+            while (model.Base != null) {
+                model = model.Base;
+                keys.AddRange(model.EdmStructuredType.KeyNames);
             }
             if (keys.Count() == 0)
                 return "";

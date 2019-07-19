@@ -31,13 +31,6 @@ namespace Od2Ts
             }
         }
 
-        public void CreateInterfaces(Angular.Module module)
-        {
-            foreach (var inter in module.Interfaces)
-            {
-                DoRender(inter);
-            }
-        }
         public void CreateServices(Angular.Module module)
         {
             foreach (var service in module.Services)

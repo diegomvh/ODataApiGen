@@ -20,7 +20,6 @@ namespace Od2Ts.Angular
             get { 
                 var ns = new List<String>();
                 ns.AddRange(Module.Enums.SelectMany(e => e.Types));
-                ns.AddRange(Module.Interfaces.SelectMany(i => i.Types));
                 ns.AddRange(Module.Models.SelectMany(m => m.Types));
                 ns.AddRange(Module.Types);
                 return ns;

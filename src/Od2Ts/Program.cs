@@ -18,7 +18,7 @@ namespace Od2Ts
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
         public static bool Secure { get; set; }
-        public static bool Models { get; set; }
+        public static bool UseInterfaces { get; set; }
         public static bool UseReferences { get; set; }
         public static bool PurgeOutput { get; set; }
 
@@ -43,7 +43,7 @@ namespace Od2Ts
             Output = Configuration.GetValue<string>("Output");
             Secure = Configuration.GetValue<bool>("Secure");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
-            Models = Configuration.GetValue<bool>("Models");
+            UseInterfaces = Configuration.GetValue<bool>("UseInterfaces");
             UseReferences = Configuration.GetValue<bool>("UseReferences");
             
             var directoryManager = new DirectoryManager(Output);
@@ -55,10 +55,9 @@ namespace Od2Ts
             directoryManager.PrepareOutput(PurgeOutput);
             var module = new Angular.Module(EndpointName, UseReferences);
             module.AddEnums(metadataReader.EnumTypes);
-            module.AddInterfaces(metadataReader.EntityTypes);
-            module.AddInterfaces(metadataReader.ComplexTypes);
+            module.AddModels(metadataReader.EntityTypes, UseInterfaces);
+            module.AddModels(metadataReader.ComplexTypes, UseInterfaces);
             module.AddServices(metadataReader.EntitySets);
-            module.AddModels(metadataReader.EntitySets);
             module.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
@@ -69,12 +68,9 @@ namespace Od2Ts
 
             Logger.LogInformation("Render");
             templateRenderer.CreateConfig(module, MetadataPath, Secure, "4.0");
-            templateRenderer.CreateInterfaces(module);
+            templateRenderer.CreateModels(module);
             templateRenderer.CreateEnums(module);
             templateRenderer.CreateServices(module);
-            if (Models) {
-                templateRenderer.CreateModels(module);
-            }
             templateRenderer.CreateModule(module);
             templateRenderer.CreateIndex(module);
         }

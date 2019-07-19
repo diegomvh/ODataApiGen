@@ -23,7 +23,6 @@ namespace Od2Ts.Angular
         }
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Enum> Enums { get; private set; }
-        public ICollection<Angular.Interface> Interfaces { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
 
@@ -33,7 +32,6 @@ namespace Od2Ts.Angular
             UseReferences = useReferences;
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
-            Interfaces = new List<Angular.Interface>();
             Services = new List<Angular.Service>();
             Models = new List<Angular.Model>();
         }
@@ -46,19 +44,19 @@ namespace Od2Ts.Angular
             }
         }
 
-        public void AddInterfaces(IEnumerable<Models.EntityType> entities)
+        public void AddModels(IEnumerable<Models.EntityType> entities, bool inter)
         {
             foreach (var m in entities)
             {
-                this.Interfaces.Add(new Angular.Interface(m));
+                this.Models.Add(new Angular.Model(m, inter));
             }
         }
 
-        public void AddInterfaces(IEnumerable<Models.ComplexType> complexs)
+        public void AddModels(IEnumerable<Models.ComplexType> complexs, bool inter)
         {
             foreach (var c in complexs)
             {
-                this.Interfaces.Add(new Angular.Interface(c));
+                this.Models.Add(new Angular.Model(c, inter));
             }
         }
 
@@ -70,83 +68,51 @@ namespace Od2Ts.Angular
             }
         }
 
-        public void AddModels(IEnumerable<Models.EntitySet> sets)
-        {
-            foreach (var s in sets)
-            {
-                this.Models.Add(new Angular.Model(s));
-            }
-        }
-
         public void ResolveDependencies()
         {
             foreach (var enumm in Enums)
             {
             }
-            foreach (var inter in Interfaces)
-            {
-                if (!String.IsNullOrEmpty(inter.EdmStructuredType.BaseType))
-                {
-                    var baseInter = this.Interfaces.FirstOrDefault(m => m.EdmStructuredType.Type == inter.EdmStructuredType.BaseType);
-                    inter.SetBase(baseInter);
-                }
-                var types = inter.Types;
-                inter.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
-                );
-                inter.Dependencies.AddRange(
-this.Interfaces.Where(e => e != inter && types.Contains(e.EdmStructuredType.Type))
-                );
-            }
-            foreach (var service in Services)
-            {
-                var inter = this.Interfaces.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
-                if (inter != null)
-                {
-                    service.SetInterface(inter);
-                }
-                var types = service.Types;
-                service.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
-                );
-                service.Dependencies.AddRange(
-this.Interfaces.Where(e => types.Contains(e.EdmStructuredType.Type))
-                );
-            }
             foreach (var model in Models)
             {
-                var service = this.Services.FirstOrDefault(s => s.Interface.EdmStructuredType.Type == model.EdmEntitySet.EntityType);
-                if (service != null)
+                if (!String.IsNullOrEmpty(model.EdmStructuredType.BaseType))
                 {
-                    model.SetService(service);
-                }
-                if (!String.IsNullOrEmpty(model.Service.Interface.EdmStructuredType.BaseType))
-                {
-                    var baseModel = this.Models.FirstOrDefault(m => m.Service.Interface.EdmStructuredType.Type == model.Service.Interface.EdmStructuredType.BaseType);
-                    model.SetBase(baseModel);
+                    var baseInter = this.Models.FirstOrDefault(m => m.EdmStructuredType.Type == model.EdmStructuredType.BaseType);
+                    model.SetBase(baseInter);
                 }
                 var types = model.Types;
                 model.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
                 );
                 model.Dependencies.AddRange(
-this.Interfaces.Where(e => types.Contains(e.EdmStructuredType.Type))
+this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type))
                 );
-                model.Dependencies.AddRange(
-this.Models.Where(e => types.Contains(e.Type))
+            }
+            foreach (var service in Services)
+            {
+                var inter = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
+                if (inter != null)
+                {
+                    service.SetModel(inter);
+                }
+                var types = service.Types;
+                service.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
+                );
+                service.Dependencies.AddRange(
+this.Models.Where(e => types.Contains(e.EdmStructuredType.Type))
                 );
             }
             this.Dependencies.AddRange(this.Services);
             this.Index.Dependencies.AddRange(this.Enums);
-            this.Index.Dependencies.AddRange(this.Interfaces);
-            this.Index.Dependencies.AddRange(this.Services);
             this.Index.Dependencies.AddRange(this.Models);
+            this.Index.Dependencies.AddRange(this.Services);
         }
 
         public IEnumerable<string> GetAllDirectories()
         {
             return this.Enums.Select(e => e.Directory)
-                .Union(this.Interfaces.Select(m => m.Directory))
+                .Union(this.Models.Select(m => m.Directory))
                 .Union(this.Services.Select(s => s.Directory))
                 .Distinct();
         }
