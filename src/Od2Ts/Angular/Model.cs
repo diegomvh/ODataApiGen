@@ -46,12 +46,14 @@ export {this.GetSignature()} {{
 }}"; 
         }
         public string RenderModel() {
-            var properties = new List<string>();
-            properties.AddRange(this.EdmStructuredType.Properties.Select(prop =>
-                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}")
+            var properties = this.EdmStructuredType.Properties.Select(prop =>
+                $"{prop.Name}" + (prop.IsRequired ? ":" : "?:") + $" {this.GetTypescriptType(prop.Type)};"
             );
-            properties.AddRange(this.EdmStructuredType.NavigationProperties.Select(prop =>
-                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}")
+            var fields = this.EdmStructuredType.Properties.Select(prop =>
+                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
+            );
+            var relations = this.EdmStructuredType.NavigationProperties.Select(prop =>
+                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
             );
 
             var imports = this.RenderImports();
@@ -59,10 +61,14 @@ export {this.GetSignature()} {{
 import {{ ODataModel, Property }} from 'angular-odata';
 
 export {this.GetSignature()} {{
-  protected properties() : Property[] {{
-    return [
-      {String.Join(",\n      ", properties)}
-    ];
+  {String.Join("\n  ", properties)}
+  protected options = {{
+    fields: [
+      {String.Join(",\n      ", fields)}
+    ],
+    relations: [
+      {String.Join(",\n      ", relations)}
+    ],
   }}
 }}"; 
         }
