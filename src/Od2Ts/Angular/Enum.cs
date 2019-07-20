@@ -15,7 +15,6 @@ namespace Od2Ts.Angular {
             var imports = this.RenderImports();
 
             return $@"{String.Join("\n", imports)}
-
 export enum {this.Name} {{
   {String.Join(",\n  ", members)}
 }}";
@@ -23,6 +22,7 @@ export enum {this.Name} {{
         public override string Name => this.EdmEnumType.Name;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.EdmEnumType.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override IEnumerable<string> Types => Enumerable.Empty<string>();
+        public override IEnumerable<string> ImportTypes => Enumerable.Empty<string>();
+        public override IEnumerable<string> ExportTypes => new string[] {this.Name};
     }
 }

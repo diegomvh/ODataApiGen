@@ -12,7 +12,7 @@ namespace Od2Ts.Abstracts
         {
             Name = xElement.Attribute("Name")?.Value;
             BindingParameter = xElement.Descendants()
-                .Single(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value == "bindingParameter")
+                .FirstOrDefault(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value == "bindingParameter")?
                 .Attribute("Type")?.Value;
 
             Parameters = xElement.Descendants().Where(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value != "bindingParameter")
@@ -25,7 +25,6 @@ namespace Od2Ts.Abstracts
                 }).ToList();
 
             ReturnType = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReturnType")?.Attribute("Type")?.Value;
-
             if (!string.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Collection("))
             {
                 ReturnsCollection = true;
@@ -41,7 +40,7 @@ namespace Od2Ts.Abstracts
             NameSpace =
                 xElement.Ancestors().First(a => a.Attribute("Namespace") != null)?.Attribute("Namespace")?.Value;
         }
-        public string Type { get; protected set;}
+        public string Type { get; protected set; }
         public string Name { get; }
         public string NameSpace { get; }
         public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }

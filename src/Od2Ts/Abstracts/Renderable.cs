@@ -7,15 +7,20 @@ namespace Od2Ts.Abstracts
 {
     public class ImportRecord
     {
-        public string Name { get; set; }
-        public Uri RelativeNamespace { get; set; }
+        public IEnumerable<string> Names { get; set; }
+        public Uri From { get; set; }
+        public ImportRecord(IEnumerable<string> names, Uri from) {
+            this.Names = names;
+            this.From = from;
+        }
     }
 
     public abstract class Renderable {
         public abstract string Name { get; }
         public abstract string FileName { get; }
         public abstract string Directory { get; }
-        public abstract IEnumerable<string> Types {get; }
+        public abstract IEnumerable<string> ImportTypes {get; }
+        public abstract IEnumerable<string> ExportTypes { get; }
         public abstract string Render();
         public string GetTypescriptType(string type)
         {
@@ -64,24 +69,20 @@ namespace Od2Ts.Abstracts
         public IEnumerable<string> RenderImports()
         {
             return this.GetImportRecords().Select(r => {
-                var path = r.RelativeNamespace.ToString();
+                var path = r.From.ToString();
                 if (!path.StartsWith("../"))
                     path = $"./{path}";
-                return $"import {{ {r.Name} }} from '{path}';";
+                return $"import {{ {String.Join(", ", r.Names)} }} from '{path}';";
             });
         }
 
-        public IEnumerable<ImportRecord> GetImportRecords()
+        protected IEnumerable<ImportRecord> GetImportRecords()
         {
-            var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i=> i.Uri).Select(group =>
+            var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i => i.Uri).Select(group =>
             {
-                var a = group.First();
-                var record = new ImportRecord()
-                {
-                    RelativeNamespace = this.Uri.MakeRelativeUri(a.Uri),
-                    Name = a.Name
-                };
-                return record;
+                var uri = this.Uri.MakeRelativeUri(group.First().Uri);
+                var names = group.SelectMany(d => d.ExportTypes);
+                return new ImportRecord(names, uri);
             });
             return records;
         }

@@ -53,11 +53,11 @@ namespace Od2Ts
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var module = new Angular.Module(EndpointName, UseReferences);
+            var module = new Angular.Module(EndpointName);
             module.AddEnums(metadataReader.EnumTypes);
             module.AddModels(metadataReader.EntityTypes, UseInterfaces);
             module.AddModels(metadataReader.ComplexTypes, UseInterfaces);
-            module.AddServices(metadataReader.EntitySets);
+            module.AddServices(metadataReader.EntitySets, UseInterfaces, UseReferences);
             module.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");

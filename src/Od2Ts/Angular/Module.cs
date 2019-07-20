@@ -9,27 +9,27 @@ namespace Od2Ts.Angular
     public class Module : Renderable
     {
         public static ILogger Logger { get; } = Program.CreateLogger<Module>();
-        public bool UseReferences { get; private set; }
         public string EndpointName { get; private set; }
         public override string Name => this.EndpointName + "Module";
         public override string FileName => this.EndpointName.ToLower() + ".module";
         public override string Directory => "";
-        public override IEnumerable<string> Types
+        public override IEnumerable<string> ImportTypes
         {
             get
             {
                 return Services.Select(a => a.EdmEntitySet.EntityType);
             }
         }
+
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Enum> Enums { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
 
-        public Module(string endpointName, bool useReferences)
+        public Module(string endpointName)
         {
             EndpointName = endpointName;
-            UseReferences = useReferences;
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
             Services = new List<Angular.Service>();
@@ -60,11 +60,11 @@ namespace Od2Ts.Angular
             }
         }
 
-        public void AddServices(IEnumerable<Models.EntitySet> sets)
+        public void AddServices(IEnumerable<Models.EntitySet> sets, bool inter, bool refe)
         {
             foreach (var s in sets)
             {
-                this.Services.Add(new Angular.Service(s, UseReferences));
+                this.Services.Add(new Angular.Service(s, inter,  refe));
             }
         }
 
@@ -80,7 +80,7 @@ namespace Od2Ts.Angular
                     var baseInter = this.Models.FirstOrDefault(m => m.EdmStructuredType.Type == model.EdmStructuredType.BaseType);
                     model.SetBase(baseInter);
                 }
-                var types = model.Types;
+                var types = model.ImportTypes;
                 model.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
                 );
@@ -95,7 +95,7 @@ this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type))
                 {
                     service.SetModel(inter);
                 }
-                var types = service.Types;
+                var types = service.ImportTypes;
                 service.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
                 );

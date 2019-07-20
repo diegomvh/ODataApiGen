@@ -1,9 +1,9 @@
 {
-    "MetadataPath": "http://localhost/odata/$metadata",
-    "EndpointName": "MyApi",
-    "Output": "myapi",
+    "MetadataPath": "https://services.odata.org/TripPinRESTierService/$metadata",
+    "EndpointName": "TripPin",
+    "Output": "trippin",
     "Secure": true,
     "PurgeOutput": true,
-    "Models": false,
+    "UseInterfaces": false,
     "UseReferences": true
 }

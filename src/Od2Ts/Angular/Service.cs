@@ -11,11 +11,13 @@ namespace Od2Ts.Angular
         public Angular.Model Model {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
-        public bool UseReferences { get; set; } = false;
-        public Service(Models.EntitySet type, bool useReferences)
+        public bool Interface { get; set; } = false;
+        public bool References { get; set; } = false;
+        public Service(Models.EntitySet type, bool inter, bool refe)
         {
             EdmEntitySet = type;
-            UseReferences = useReferences;
+            Interface = inter;
+            References = refe;
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
@@ -23,24 +25,27 @@ namespace Od2Ts.Angular
             this.Model = model;
         }
         
-        public override string Render()
+        public override string Render() {
+            return Interface ? this.RenderEntityService() : this.RenderModelService();
+        }
+        public string RenderEntityService()
         {
-            var actions = this.RenderCallables(this.EdmEntitySet.CustomActions);
-            var functions = this.RenderCallables(this.EdmEntitySet.CustomFunctions);
-            var relations = UseReferences ? 
-                this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties) :
-                new List<string>();
+            var methods = new List<string>();
+            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomActions));
+            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomFunctions));
+            if (References)
+                methods.AddRange( this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties));
             var imports = this.RenderImports();
 
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataContext, ODataQueryAbstract }} from 'angular-odata';
+import {{ ODataEntityService, ODataModelService, ODataContext, ODataQueryBase }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
 @Injectable()
-export class {this.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
+export {this.GetSignature()} {{
   constructor(
     protected http: HttpClient,
     protected context: ODataContext
@@ -50,12 +55,44 @@ export class {this.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
   
   {RenderKeyResolver()}
   
-  {String.Join("\n\n  ", actions)}
-  {String.Join("\n\n  ", functions)}
-  {String.Join("\n\n  ", relations)}
+  {String.Join("\n\n  ", methods)}
 }}";
         }
-        public override IEnumerable<string> Types
+
+        public string RenderModelService()
+        {
+            var methods = new List<string>();
+            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomActions));
+            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomFunctions));
+            if (References)
+                methods.AddRange( this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties));
+            var imports = this.RenderImports();
+
+            return $@"{String.Join("\n", imports)}
+import {{ Injectable }} from '@angular/core';
+import {{ HttpClient }} from '@angular/common/http';
+import {{ ODataEntityService, ODataModelService, ODataContext, ODataQueryBase }} from 'angular-odata';
+import {{ Observable }} from 'rxjs';
+import {{ map }} from 'rxjs/operators';
+
+@Injectable()
+export {this.GetSignature()} {{
+  protected Model = {this.EdmEntityTypeName};
+  protected Collection = {this.EdmEntityTypeName}Collection;
+
+  constructor(
+    protected http: HttpClient,
+    protected context: ODataContext
+  ) {{
+    super(http, context, '{this.EdmEntitySet.EntitySetName}');
+  }}
+  
+  {RenderKeyResolver()}
+  
+  {String.Join("\n\n  ", methods)}
+}}";
+        }
+        public override IEnumerable<string> ImportTypes
         {
             get
             {
@@ -66,6 +103,15 @@ export class {this.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.CallableNamespaces(a)));
                 return list;
             }
+        }
+
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+
+        public string GetSignature() {
+            var signature = $"class {this.Name}";
+            return (Interface) ?
+                $"{signature} extends ODataEntityService<{EdmEntityTypeName}>" :
+                $"{signature} extends ODataModelService<{EdmEntityTypeName}, {EdmEntityTypeName}Collection>";
         }
 
         private string RenderKeyResolver() {
@@ -160,11 +206,11 @@ export class {this.Name} extends ODataEntityService<{EdmEntityTypeName}> {{
   }}";
                 }
                 // Link
-                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract, options?) {{
+                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryBase, options?) {{
     return this.{baseMethodCreateName}(entity, '{property.Name}', target, options);
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryAbstract, options?) {{
+                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryBase, options?) {{
     return this.{baseMethodDeleteName}(entity, '{property.Name}', target, options);
   }}";
             }

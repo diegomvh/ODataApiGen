@@ -15,19 +15,20 @@ namespace Od2Ts.Angular
         public override string Name => this.Module.EndpointName;
         public override string FileName => "index";
         public override string Directory => "";
-        public override IEnumerable<string> Types 
+        public override IEnumerable<string> ImportTypes 
         {
             get { 
                 var ns = new List<String>();
-                ns.AddRange(Module.Enums.SelectMany(e => e.Types));
-                ns.AddRange(Module.Models.SelectMany(m => m.Types));
-                ns.AddRange(Module.Types);
+                ns.AddRange(Module.Enums.SelectMany(e => e.ImportTypes));
+                ns.AddRange(Module.Models.SelectMany(m => m.ImportTypes));
+                ns.AddRange(Module.ImportTypes);
                 return ns;
             }
         }
+        public override IEnumerable<string> ExportTypes => new string[] {};
         public override string Render()
         {
-            var exports = this.GetImportRecords().Select(record => $"export * from './{record.RelativeNamespace}';");
+            var exports = this.GetImportRecords().Select(record => $"export * from './{record.From}';");
 
             return $@"{String.Join("\n", exports)}
 export * from './{this.Module.EndpointName.ToLower()}.config';

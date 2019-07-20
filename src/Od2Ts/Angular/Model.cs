@@ -58,18 +58,24 @@ export {this.GetSignature()} {{
 
             var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
-import {{ ODataModel, Property }} from 'angular-odata';
+import {{ ODataModel, ODataModelSchema, ODataCollection }} from 'angular-odata';
+
+export const {this.Name}Schema = new ODataModelSchema({{
+  fields: [
+    {String.Join(",\n      ", fields)}
+  ],
+  relations: [
+    {String.Join(",\n      ", relations)}
+  ],
+  defaults: {{}}
+}});
 
 export {this.GetSignature()} {{
   {String.Join("\n  ", properties)}
-  protected options = {{
-    fields: [
-      {String.Join(",\n      ", fields)}
-    ],
-    relations: [
-      {String.Join(",\n      ", relations)}
-    ],
-  }}
+  protected schema: ODataModelSchema = {this.Name}Schema;
+}}
+
+export class {this.Name}Collection extends ODataCollection<{this.Name}> {{
 }}"; 
         }
 
@@ -85,7 +91,7 @@ export {this.GetSignature()} {{
         public override string Name => this.EdmStructuredType.Name;
         public override string FileName => this.EdmStructuredType.Name.ToLower() + (Interface ? ".interface" : ".model");
         public override string Directory => this.EdmStructuredType.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override IEnumerable<string> Types
+        public override IEnumerable<string> ImportTypes
         {
             get
             {
@@ -102,6 +108,6 @@ export {this.GetSignature()} {{
                 return types.Distinct();
             }
         }
-
+        public override IEnumerable<string> ExportTypes => Interface? new string[] { this.Name } : new string[] {this.Name, $"{this.Name}Collection"};
     }
 }
