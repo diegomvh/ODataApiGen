@@ -1,18 +1,19 @@
 import { Location, LocationCollection } from './location.model';
-import { ODataModel, ODataModelOptions, ODataCollection } from 'angular-odata';
+import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
+
+export const EventLocationSchema = new ODataModelSchema({
+  fields: [
+    {name: 'BuildingInfo', type: 'string', required: false, length: 0, collection: false}
+  ],
+  relations: [
+    
+  ],
+  defaults: {}
+});
 
 export class EventLocation extends Location {
   BuildingInfo?: string;
-  private static _meta: ODataModelOptions<EventLocation> = new ODataModelOptions<EventLocation>({
-    fields: [
-      {name: 'BuildingInfo', type: 'string', required: false, length: 0, collection: false}
-    ],
-    relations: [
-      
-    ],
-    defaults: {}
-  });
-  protected meta() { return EventLocation._meta; }
+  protected schema: ODataModelSchema = EventLocationSchema;
 }
 
 export class EventLocationCollection extends ODataCollection<EventLocation> {

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AirlinesService, PeopleService, Person, AirportsService } from './trippin';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'TripPin';
+  constructor(protected airlines: AirlinesService, protected people: PeopleService, protected airports: AirportsService) {
+    this.airlines.all().subscribe(resp => console.log(resp));
+    this.people.all().subscribe(resp => console.log(resp));
+    this.airports.all().subscribe(resp => console.log(resp));
+    //this.people.fetch("ronaldmundy").subscribe(resp => console.log(resp));
+  }
 }

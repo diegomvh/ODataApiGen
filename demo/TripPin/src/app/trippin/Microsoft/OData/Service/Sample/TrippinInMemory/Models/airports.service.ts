@@ -7,6 +7,9 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AirportsService extends ODataModelService<Airport, AirportCollection> {
+  protected Model = Airport;
+  protected Collection = AirportCollection;
+
   constructor(
     protected http: HttpClient,
     protected context: ODataContext

@@ -1,5 +1,19 @@
 
-import { ODataModel, ODataModelOptions, ODataCollection } from 'angular-odata';
+import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
+
+export const PlanItemSchema = new ODataModelSchema({
+  fields: [
+    {name: 'PlanItemId', type: 'number', required: true, length: 0, collection: false},
+      {name: 'ConfirmationCode', type: 'string', required: false, length: 0, collection: false},
+      {name: 'StartsAt', type: 'Date', required: true, length: 0, collection: false},
+      {name: 'EndsAt', type: 'Date', required: true, length: 0, collection: false},
+      {name: 'Duration', type: 'string', required: true, length: 0, collection: false}
+  ],
+  relations: [
+    
+  ],
+  defaults: {}
+});
 
 export class PlanItem extends ODataModel {
   PlanItemId: number;
@@ -7,20 +21,7 @@ export class PlanItem extends ODataModel {
   StartsAt: Date;
   EndsAt: Date;
   Duration: string;
-  private static _meta: ODataModelOptions<PlanItem> = new ODataModelOptions<PlanItem>({
-    fields: [
-      {name: 'PlanItemId', type: 'number', required: true, length: 0, collection: false},
-      {name: 'ConfirmationCode', type: 'string', required: false, length: 0, collection: false},
-      {name: 'StartsAt', type: 'Date', required: true, length: 0, collection: false},
-      {name: 'EndsAt', type: 'Date', required: true, length: 0, collection: false},
-      {name: 'Duration', type: 'string', required: true, length: 0, collection: false}
-    ],
-    relations: [
-      
-    ],
-    defaults: {}
-  });
-  protected meta() { return PlanItem._meta; }
+  protected schema: ODataModelSchema = PlanItemSchema;
 }
 
 export class PlanItemCollection extends ODataCollection<PlanItem> {
