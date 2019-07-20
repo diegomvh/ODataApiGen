@@ -77,8 +77,8 @@ import {{ map }} from 'rxjs/operators';
 
 @Injectable()
 export {this.GetSignature()} {{
-  protected Model = {this.EdmEntityTypeName};
-  protected Collection = {this.EdmEntityTypeName}Collection;
+  static Model = {this.EdmEntityTypeName};
+  static Collection = {this.EdmEntityTypeName}Collection;
 
   constructor(
     protected http: HttpClient,

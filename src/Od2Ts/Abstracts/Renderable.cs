@@ -32,7 +32,7 @@ namespace Od2Ts.Abstracts
                 case "Edm.Duration":
                 case "Edm.Guid":
                 case "Edm.Binary":
-                    return "string";
+                    return "String";
                 case "Edm.Int16":
                 case "Edm.Int32":
                 case "Edm.Int64":
@@ -40,14 +40,15 @@ namespace Od2Ts.Abstracts
                 case "Edm.Decimal":
                 case "Edm.Single":
                 case "Edm.Byte":
-                    return "number";
+                    return "Number";
                 case "Edm.Boolean":
-                    return "boolean";
+                    return "Boolean";
                 case "Edm.DateTimeOffset":
                     return "Date";
                 default:
                     {
-                        return type.Contains(".") ? type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
+                        return type.Contains(".") && !type.StartsWith("Edm") ? 
+                            type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
                     }
             }
         }

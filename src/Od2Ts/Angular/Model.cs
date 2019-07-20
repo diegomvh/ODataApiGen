@@ -50,32 +50,32 @@ export {this.GetSignature()} {{
                 $"{prop.Name}" + (prop.IsRequired ? ":" : "?:") + $" {this.GetTypescriptType(prop.Type)};"
             );
             var fields = this.EdmStructuredType.Properties.Select(prop =>
-                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
+                $"{{name: '{prop.Name}', type: {this.GetTypescriptType(prop.Type)}, required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
             );
             var relations = this.EdmStructuredType.NavigationProperties.Select(prop =>
-                $"{{name: '{prop.Name}', type: '{this.GetTypescriptType(prop.Type)}', required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
+                $"{{name: '{prop.Name}', type: {this.GetTypescriptType(prop.Type)}, required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
             );
 
             var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
 import {{ ODataModel, ODataModelSchema, ODataCollection }} from 'angular-odata';
 
-export const {this.Name}Schema = new ODataModelSchema({{
-  fields: [
-    {String.Join(",\n      ", fields)}
-  ],
-  relations: [
-    {String.Join(",\n      ", relations)}
-  ],
-  defaults: {{}}
-}});
 
 export {this.GetSignature()} {{
+  static schema = new ODataModelSchema({{
+    fields: [
+      {String.Join(",\n      ", fields)}
+    ],
+    relations: [
+      {String.Join(",\n      ", relations)}
+    ],
+    defaults: {{}}
+  }});
   {String.Join("\n  ", properties)}
-  protected schema: ODataModelSchema = {this.Name}Schema;
 }}
 
 export class {this.Name}Collection extends ODataCollection<{this.Name}> {{
+  static Model = {this.Name};
 }}"; 
         }
 
