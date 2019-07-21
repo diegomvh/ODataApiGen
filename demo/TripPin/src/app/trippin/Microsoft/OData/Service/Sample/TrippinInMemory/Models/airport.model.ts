@@ -1,26 +1,23 @@
 import { AirportLocation, AirportLocationCollection } from './airportlocation.model';
-import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
-
-export const AirportSchema = new ODataModelSchema({
-  fields: [
-    {name: 'Name', type: 'string', required: false, length: 0, collection: false},
-      {name: 'IcaoCode', type: 'string', required: true, length: 0, collection: false},
-      {name: 'IataCode', type: 'string', required: false, length: 0, collection: false},
-      {name: 'Location', type: 'AirportLocation', required: false, length: 0, collection: false}
-  ],
-  relations: [
-    
-  ],
-  defaults: {}
-});
-
+import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
 export class Airport extends ODataModel {
-  Name?: string;
+  static schema = Schema.create({
+    fields: [
+      {name: 'Name', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'IcaoCode', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'IataCode', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'Location', type: 'AirportLocation', constructor: AirportLocation, required: true, collection: false}
+    ],
+    relationships: [
+      
+    ],
+    defaults: {}
+  });
+  Name: string;
   IcaoCode: string;
-  IataCode?: string;
-  Location?: AirportLocation;
-  protected schema: ODataModelSchema = AirportSchema;
+  IataCode: string;
+  Location: AirportLocation;
 }
-
 export class AirportCollection extends ODataCollection<Airport> {
+  static Model = Airport;
 }

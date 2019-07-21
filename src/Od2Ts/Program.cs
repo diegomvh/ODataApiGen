@@ -55,8 +55,8 @@ namespace Od2Ts
             directoryManager.PrepareOutput(PurgeOutput);
             var module = new Angular.Module(EndpointName);
             module.AddEnums(metadataReader.EnumTypes);
-            module.AddModels(metadataReader.EntityTypes, UseInterfaces);
             module.AddModels(metadataReader.ComplexTypes, UseInterfaces);
+            module.AddModels(metadataReader.EntityTypes, UseInterfaces);
             module.AddServices(metadataReader.EntitySets, UseInterfaces, UseReferences);
             module.ResolveDependencies();
 

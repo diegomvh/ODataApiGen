@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Od2Ts.Abstracts;
+using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
@@ -126,7 +126,7 @@ export {this.GetSignature()} {{
             var parts = keys.Select(name => $"{name}: entity.{name}");
             var key = keys.Count() > 1 ? $"{{{String.Join(", ", parts)}}}" : $"entity.{keys.First()}";
 
-            return $@"protected resolveEntityKey(entity) {{
+            return $@"protected resolveEntityKey(entity: Partial<{EdmEntityTypeName}>) {{
     return {key};
   }}";
         }

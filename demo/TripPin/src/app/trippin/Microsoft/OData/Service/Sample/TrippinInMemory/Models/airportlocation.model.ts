@@ -1,20 +1,14 @@
 import { Location, LocationCollection } from './location.model';
-import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
-
-export const AirportLocationSchema = new ODataModelSchema({
-  fields: [
-    {name: 'Loc', type: 'GeographyPoint', required: false, length: 0, collection: false}
-  ],
-  relations: [
-    
-  ],
-  defaults: {}
-});
-
+import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
 export class AirportLocation extends Location {
-  Loc?: number[];
-  protected schema: ODataModelSchema = AirportLocationSchema;
-}
-
-export class AirportLocationCollection extends ODataCollection<AirportLocation> {
+  static schema = Od2Ts.Angular.Model.schema.extend({
+    fields: [
+      {name: 'Loc', type: 'any', constructor: Object, required: true, collection: false}
+    ],
+    relationships: [
+      
+    ],
+    defaults: {}
+  });
+  Loc: any;
 }

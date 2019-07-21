@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Od2Ts.Abstracts;
 using Od2Ts.Models;
 
 namespace Od2Ts.Angular {
@@ -30,11 +29,11 @@ namespace Od2Ts.Angular {
         public string RenderInterface() {
             var properties = new List<string>();
             properties.AddRange(this.EdmStructuredType.Properties.Select(prop =>
-                $"{prop.Name}" + (prop.IsRequired ? ":" : "?:") + $" {this.GetTypescriptType(prop.Type)};")
+                $"{prop.Name}" + (prop.Nullable ? "?:" : ":") + $" {this.GetTypescriptType(prop.Type)};")
             );
             properties.AddRange(this.EdmStructuredType.NavigationProperties.Select(prop =>
                 $"{prop.Name}" + 
-                (prop.IsRequired ? ":" : "?:") + 
+                (prop.Nullable ? "?:" : ":") + 
                 $" {this.GetTypescriptType(prop.Type)}" + (prop.IsCollection ? "[];" : ";"))
             );
 
@@ -45,44 +44,70 @@ export {this.GetSignature()} {{
   {String.Join("\n  ", properties)}
 }}"; 
         }
+
+        public string RenderField(Property property) {
+            var d = new Dictionary<string, string>() {
+                {"name", $"'{property.Name}'"},
+                {"type", $"'{this.GetTypescriptType(property.Type)}'"},
+                {"constructor", $"{this.GetTypescriptConstructor(property.Type)}"},
+                {"required", (property.Nullable ? "false" : "true")},
+                {"collection", (property.IsCollection ? "true" : "false")},
+            };
+            if (!String.IsNullOrEmpty(property.MaxLength))
+                d.Add("length", property.MaxLength);
+            return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
+        }
+
+        public string RenderRelationship(NavigationProperty navigation) {
+            var d = new Dictionary<string, string>() {
+                {"name", $"'{navigation.Name}'"},
+                {"type", $"'{this.GetTypescriptType(navigation.Type)}'"},
+                {"constructor", $"{this.GetTypescriptConstructor(navigation.Type)}"},
+                {"required", (navigation.Nullable ? "false" : "true")},
+                {"collection", (navigation.IsCollection ? "true" : "false")},
+            };
+            return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
+        }
         public string RenderModel() {
             var properties = this.EdmStructuredType.Properties.Select(prop =>
-                $"{prop.Name}" + (prop.IsRequired ? ":" : "?:") + $" {this.GetTypescriptType(prop.Type)};"
+                $"{prop.Name}" + (prop.Nullable ? "?:" : ":") + $" {this.GetTypescriptType(prop.Type)};"
             );
             var fields = this.EdmStructuredType.Properties.Select(prop =>
-                $"{{name: '{prop.Name}', type: {this.GetTypescriptType(prop.Type)}, required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
+                this.RenderField(prop)
             );
-            var relations = this.EdmStructuredType.NavigationProperties.Select(prop =>
-                $"{{name: '{prop.Name}', type: {this.GetTypescriptType(prop.Type)}, required: " + (prop.IsRequired ? "true" : "false") + $", length: {prop.Length}, collection: " + (prop.IsCollection ? "true" : "false") + $"}}"
+            var relationships = this.EdmStructuredType.NavigationProperties.Select(nav =>
+                this.RenderRelationship(nav)
             );
 
-            var imports = this.RenderImports();
-            return $@"{String.Join("\n", imports)}
-import {{ ODataModel, ODataModelSchema, ODataCollection }} from 'angular-odata';
-
-
-export {this.GetSignature()} {{
-  static schema = new ODataModelSchema({{
+            var parts = new List<string>();
+            parts.Add(String.Join("\n", this.RenderImports()));
+            parts.Add("import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';");
+            parts.Add($@"export {this.GetSignature()} {{
+  static schema = {(this.Base == null? $"Schema.create({{" : $"{this.Base}.schema.extend({{")}
     fields: [
       {String.Join(",\n      ", fields)}
     ],
-    relations: [
-      {String.Join(",\n      ", relations)}
+    relationships: [
+      {String.Join(",\n      ", relationships)}
     ],
     defaults: {{}}
   }});
   {String.Join("\n  ", properties)}
-}}
-
-export class {this.Name}Collection extends ODataCollection<{this.Name}> {{
+}}");
+            if (this.EdmStructuredType is EntityType) {
+                parts.Add($@"export class {this.Name}Collection extends ODataCollection<{this.Name}> {{
   static Model = {this.Name};
-}}"; 
+}}"); 
+            }
+            return String.Join("\n", parts);
         }
 
         public string GetSignature() {
             var signature = (Interface ? "interface " : "class ") + this.Name;
             if (this.Base != null)
                 signature = $"{signature} extends {this.Base.Name}";
+            else if (this.EdmStructuredType is ComplexType)
+                signature = $"{signature} extends Model";
             else if (!Interface)
                 signature = $"{signature} extends ODataModel";
             return signature;

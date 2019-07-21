@@ -1,23 +1,20 @@
-import { Person, PersonCollection } from './person.model';
 import { Location, LocationCollection } from './location.model';
-import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
-
-export const ManagerSchema = new ODataModelSchema({
-  fields: [
-    {name: 'Budget', type: 'number', required: true, length: 0, collection: false},
-      {name: 'BossOffice', type: 'Location', required: false, length: 0, collection: false}
-  ],
-  relations: [
-    {name: 'DirectReports', type: 'Person', required: false, length: 0, collection: true}
-  ],
-  defaults: {}
-});
-
+import { Person, PersonCollection } from './person.model';
+import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
 export class Manager extends Person {
+  static schema = Od2Ts.Angular.Model.schema.extend({
+    fields: [
+      {name: 'Budget', type: 'number', constructor: Number, required: true, collection: false},
+      {name: 'BossOffice', type: 'Location', constructor: Location, required: true, collection: false}
+    ],
+    relationships: [
+      {name: 'DirectReports', type: 'Person', constructor: Person, required: false, collection: true}
+    ],
+    defaults: {}
+  });
   Budget: number;
-  BossOffice?: Location;
-  protected schema: ODataModelSchema = ManagerSchema;
+  BossOffice: Location;
 }
-
 export class ManagerCollection extends ODataCollection<Manager> {
+  static Model = Manager;
 }

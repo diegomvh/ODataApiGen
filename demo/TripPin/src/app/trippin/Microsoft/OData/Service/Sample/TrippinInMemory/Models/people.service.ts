@@ -7,8 +7,8 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PeopleService extends ODataModelService<Person, PersonCollection> {
-  protected Model = Person;
-  protected Collection = PersonCollection;
+  static Model = Person;
+  static Collection = PersonCollection;
 
   constructor(
     protected http: HttpClient,
@@ -17,7 +17,7 @@ export class PeopleService extends ODataModelService<Person, PersonCollection> {
     super(http, context, 'People');
   }
   
-  protected resolveEntityKey(entity) {
+  protected resolveEntityKey(entity: Partial<Person>) {
     return entity.UserName;
   }
   

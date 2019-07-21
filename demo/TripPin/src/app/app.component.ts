@@ -12,6 +12,6 @@ export class AppComponent {
     this.airlines.all().subscribe(resp => console.log(resp));
     this.people.all().subscribe(resp => console.log(resp));
     this.airports.all().subscribe(resp => console.log(resp));
-    //this.people.fetch("ronaldmundy").subscribe(resp => console.log(resp));
+    this.people.model({UserName: "ronaldmundy"}).fetch({parse: true}).subscribe(resp => console.log(resp));
   }
 }

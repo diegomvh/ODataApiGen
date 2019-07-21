@@ -1,45 +1,42 @@
 import { PersonGender } from './persongender.enum';
 import { Feature } from './feature.enum';
-import { Trip, TripCollection } from './trip.model';
 import { Location, LocationCollection } from './location.model';
-import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
-
-export const PersonSchema = new ODataModelSchema({
-  fields: [
-    {name: 'UserName', type: 'string', required: true, length: 0, collection: false},
-      {name: 'FirstName', type: 'string', required: true, length: 0, collection: false},
-      {name: 'LastName', type: 'string', required: false, length: 0, collection: false},
-      {name: 'MiddleName', type: 'string', required: false, length: 0, collection: false},
-      {name: 'Gender', type: 'PersonGender', required: true, length: 0, collection: false},
-      {name: 'Age', type: 'number', required: false, length: 0, collection: false},
-      {name: 'Emails', type: 'string', required: false, length: 0, collection: true},
-      {name: 'AddressInfo', type: 'Location', required: false, length: 0, collection: true},
-      {name: 'HomeAddress', type: 'Location', required: false, length: 0, collection: false},
-      {name: 'FavoriteFeature', type: 'Feature', required: true, length: 0, collection: false},
-      {name: 'Features', type: 'Feature', required: true, length: 0, collection: true}
-  ],
-  relations: [
-    {name: 'Friends', type: 'Person', required: false, length: 0, collection: true},
-      {name: 'BestFriend', type: 'Person', required: false, length: 0, collection: false},
-      {name: 'Trips', type: 'Trip', required: false, length: 0, collection: true}
-  ],
-  defaults: {}
-});
-
+import { Trip, TripCollection } from './trip.model';
+import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
 export class Person extends ODataModel {
+  static schema = Schema.create({
+    fields: [
+      {name: 'UserName', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'FirstName', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'LastName', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'MiddleName', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'Gender', type: 'PersonGender', constructor: PersonGender, required: true, collection: false},
+      {name: 'Age', type: 'number', constructor: Number, required: true, collection: false},
+      {name: 'Emails', type: 'string', constructor: String, required: true, collection: true},
+      {name: 'AddressInfo', type: 'Location', constructor: Location, required: true, collection: true},
+      {name: 'HomeAddress', type: 'Location', constructor: Location, required: true, collection: false},
+      {name: 'FavoriteFeature', type: 'Feature', constructor: Feature, required: true, collection: false},
+      {name: 'Features', type: 'Feature', constructor: Feature, required: true, collection: true}
+    ],
+    relationships: [
+      {name: 'Friends', type: 'Person', constructor: Person, required: false, collection: true},
+      {name: 'BestFriend', type: 'Person', constructor: Person, required: false, collection: false},
+      {name: 'Trips', type: 'Trip', constructor: Trip, required: false, collection: true}
+    ],
+    defaults: {}
+  });
   UserName: string;
   FirstName: string;
-  LastName?: string;
-  MiddleName?: string;
+  LastName: string;
+  MiddleName: string;
   Gender: PersonGender;
-  Age?: number;
-  Emails?: string;
-  AddressInfo?: Location;
-  HomeAddress?: Location;
+  Age: number;
+  Emails: string;
+  AddressInfo: Location;
+  HomeAddress: Location;
   FavoriteFeature: Feature;
   Features: Feature;
-  protected schema: ODataModelSchema = PersonSchema;
 }
-
 export class PersonCollection extends ODataCollection<Person> {
+  static Model = Person;
 }

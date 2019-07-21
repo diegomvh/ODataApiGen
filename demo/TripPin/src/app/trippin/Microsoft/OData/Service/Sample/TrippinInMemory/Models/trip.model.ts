@@ -1,34 +1,31 @@
 import { PlanItem, PlanItemCollection } from './planitem.model';
-import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
-
-export const TripSchema = new ODataModelSchema({
-  fields: [
-    {name: 'TripId', type: 'number', required: true, length: 0, collection: false},
-      {name: 'ShareId', type: 'string', required: true, length: 0, collection: false},
-      {name: 'Name', type: 'string', required: false, length: 0, collection: false},
-      {name: 'Budget', type: 'number', required: true, length: 0, collection: false},
-      {name: 'Description', type: 'string', required: false, length: 0, collection: false},
-      {name: 'Tags', type: 'string', required: false, length: 0, collection: true},
-      {name: 'StartsAt', type: 'Date', required: true, length: 0, collection: false},
-      {name: 'EndsAt', type: 'Date', required: true, length: 0, collection: false}
-  ],
-  relations: [
-    {name: 'PlanItems', type: 'PlanItem', required: false, length: 0, collection: true}
-  ],
-  defaults: {}
-});
-
+import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
 export class Trip extends ODataModel {
+  static schema = Schema.create({
+    fields: [
+      {name: 'TripId', type: 'number', constructor: Number, required: true, collection: false},
+      {name: 'ShareId', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'Name', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'Budget', type: 'number', constructor: Number, required: true, collection: false},
+      {name: 'Description', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'Tags', type: 'string', constructor: String, required: true, collection: true},
+      {name: 'StartsAt', type: 'Date', constructor: Date, required: true, collection: false},
+      {name: 'EndsAt', type: 'Date', constructor: Date, required: true, collection: false}
+    ],
+    relationships: [
+      {name: 'PlanItems', type: 'PlanItem', constructor: PlanItem, required: false, collection: true}
+    ],
+    defaults: {}
+  });
   TripId: number;
   ShareId: string;
-  Name?: string;
+  Name: string;
   Budget: number;
-  Description?: string;
-  Tags?: string;
+  Description: string;
+  Tags: string;
   StartsAt: Date;
   EndsAt: Date;
-  protected schema: ODataModelSchema = TripSchema;
 }
-
 export class TripCollection extends ODataCollection<Trip> {
+  static Model = Trip;
 }

@@ -7,8 +7,8 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AirlinesService extends ODataModelService<Airline, AirlineCollection> {
-  protected Model = Airline;
-  protected Collection = AirlineCollection;
+  static Model = Airline;
+  static Collection = AirlineCollection;
 
   constructor(
     protected http: HttpClient,
@@ -17,7 +17,7 @@ export class AirlinesService extends ODataModelService<Airline, AirlineCollectio
     super(http, context, 'Airlines');
   }
   
-  protected resolveEntityKey(entity) {
+  protected resolveEntityKey(entity: Partial<Airline>) {
     return entity.AirlineCode;
   }
   

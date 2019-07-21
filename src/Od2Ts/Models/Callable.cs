@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Od2Ts.Models;
 
-namespace Od2Ts.Abstracts
+namespace Od2Ts.Models
 {
     public abstract class Callable
     {

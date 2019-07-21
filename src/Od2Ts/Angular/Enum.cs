@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Od2Ts.Abstracts;
 
 namespace Od2Ts.Angular {
     public class Enum : Renderable {

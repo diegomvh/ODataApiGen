@@ -1,22 +1,19 @@
 
-import { ODataModel, ODataModelSchema, ODataCollection } from 'angular-odata';
-
-export const AirlineSchema = new ODataModelSchema({
-  fields: [
-    {name: 'AirlineCode', type: 'string', required: true, length: 0, collection: false},
-      {name: 'Name', type: 'string', required: false, length: 0, collection: false}
-  ],
-  relations: [
-    
-  ],
-  defaults: {}
-});
-
+import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
 export class Airline extends ODataModel {
+  static schema = Schema.create({
+    fields: [
+      {name: 'AirlineCode', type: 'string', constructor: String, required: true, collection: false},
+      {name: 'Name', type: 'string', constructor: String, required: true, collection: false}
+    ],
+    relationships: [
+      
+    ],
+    defaults: {}
+  });
   AirlineCode: string;
-  Name?: string;
-  protected schema: ODataModelSchema = AirlineSchema;
+  Name: string;
 }
-
 export class AirlineCollection extends ODataCollection<Airline> {
+  static Model = Airline;
 }
