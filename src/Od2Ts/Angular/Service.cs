@@ -71,7 +71,7 @@ export {this.GetSignature()} {{
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataModelService, ODataContext, ODataQueryBase }} from 'angular-odata';
+import {{ ODataEntityService, ODataModelService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
@@ -101,6 +101,8 @@ export {this.GetSignature()} {{
                 };
                 list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
+                list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
                 return list;
             }
         }
@@ -196,12 +198,12 @@ export {this.GetSignature()} {{
 
                 if (property.IsCollection) {
                     // Navigation
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?) {{
-    return this.navigation(entity, '{property.Name}', options);
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<EntitySet<{this.GetTypescriptType(property.Type)}>> {{
+    return this.navigationProperty(entity, '{property.Name}', options);
   }}";
                 } else {
                     // Property
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?) {{
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<EntitySet<{this.GetTypescriptType(property.Type)}>> {{
     return this.property(entity, '{property.Name}', options);
   }}";
                 }

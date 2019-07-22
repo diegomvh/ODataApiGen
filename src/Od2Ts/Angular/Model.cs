@@ -81,9 +81,9 @@ export {this.GetSignature()} {{
 
             var parts = new List<string>();
             parts.Add(String.Join("\n", this.RenderImports()));
-            parts.Add("import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';");
+            parts.Add("import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';");
             parts.Add($@"export {this.GetSignature()} {{
-  static schema = {(this.Base == null? $"Schema.create({{" : $"{this.Base}.schema.extend({{")}
+  static schema = {(this.Base == null? $"Schema.create({{" : $"{this.Base.Name}.schema.extend({{")}
     fields: [
       {String.Join(",\n      ", fields)}
     ],
@@ -133,6 +133,7 @@ export {this.GetSignature()} {{
                 return types.Distinct();
             }
         }
-        public override IEnumerable<string> ExportTypes => Interface? new string[] { this.Name } : new string[] {this.Name, $"{this.Name}Collection"};
+        public override IEnumerable<string> ExportTypes =>
+            Interface || this.EdmStructuredType is ComplexType? new string[] { this.Name } : new string[] {this.Name, $"{this.Name}Collection"};
     }
 }
