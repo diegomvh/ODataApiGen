@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 
 namespace Od2Ts.Angular {
-    public class Enum : Renderable {
+    public class Enum : AngularRenderable {
         public Models.EnumType EdmEnumType {get; private set;}
         public Enum(Models.EnumType type) {
             EdmEnumType = type;

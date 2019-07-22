@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
-    public abstract class Renderable : Od2Ts.Abstracts.Renderable {
+    public abstract class AngularRenderable : Od2Ts.Abstracts.Renderable {
         public string GetTypescriptType(string type)
         {
             if (String.IsNullOrWhiteSpace(type))
@@ -34,36 +33,6 @@ namespace Od2Ts.Angular
                     {
                         return type.Contains(".") && !type.StartsWith("Edm") ? 
                             type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
-                    }
-            }
-        }
-        public string GetTypescriptConstructor(string type)
-        {
-            if (String.IsNullOrWhiteSpace(type))
-                return "any";
-            switch (type)
-            {
-                case "Edm.String":
-                case "Edm.Duration":
-                case "Edm.Guid":
-                case "Edm.Binary":
-                    return "String";
-                case "Edm.Int16":
-                case "Edm.Int32":
-                case "Edm.Int64":
-                case "Edm.Double":
-                case "Edm.Decimal":
-                case "Edm.Single":
-                case "Edm.Byte":
-                    return "Number";
-                case "Edm.Boolean":
-                    return "Boolean";
-                case "Edm.DateTimeOffset":
-                    return "Date";
-                default:
-                    {
-                        return type.Contains(".") && !type.StartsWith("Edm") ? 
-                            type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "Object";
                     }
             }
         }

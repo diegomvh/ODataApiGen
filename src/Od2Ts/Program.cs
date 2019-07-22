@@ -53,26 +53,20 @@ namespace Od2Ts
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var module = new Angular.Module(EndpointName);
-            module.AddEnums(metadataReader.EnumTypes);
-            module.AddModels(metadataReader.ComplexTypes, UseInterfaces);
-            module.AddModels(metadataReader.EntityTypes, UseInterfaces);
-            module.AddServices(metadataReader.EntitySets, UseInterfaces, UseReferences);
-            module.ResolveDependencies();
+            var package = new Angular.AngularPackage(EndpointName, MetadataPath, Secure, "4.0");
+            package.UseInterfaces = UseInterfaces;
+            package.UseReferences = UseReferences;
+            package.LoadMetadata(metadataReader);
+            package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
-            directoryManager.PrepareFolders(module.GetAllDirectories());
+            directoryManager.PrepareFolders(package.GetAllDirectories());
             
             Logger.LogInformation("Copy static content");
             directoryManager.DirectoryCopy("./StaticContent", Output, true);
 
             Logger.LogInformation("Render");
-            templateRenderer.CreateConfig(module, MetadataPath, Secure, "4.0");
-            templateRenderer.CreateModels(module);
-            templateRenderer.CreateEnums(module);
-            templateRenderer.CreateServices(module);
-            templateRenderer.CreateModule(module);
-            templateRenderer.CreateIndex(module);
+            templateRenderer.Render(package);
         }
     }
 }

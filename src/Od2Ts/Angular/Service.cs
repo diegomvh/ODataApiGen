@@ -6,7 +6,7 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
-    public abstract class Service : Renderable
+    public abstract class Service : AngularRenderable
     {
         public Angular.Model Model {get; private set;}
         public string EdmEntityTypeName {get; set;}
