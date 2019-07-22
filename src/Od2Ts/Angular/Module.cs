@@ -47,7 +47,11 @@ namespace Od2Ts.Angular
         {
             foreach (var m in entities)
             {
-                this.Models.Add(new Angular.Model(m, inter));
+                if (inter) {
+                    this.Models.Add(new Angular.ModelInterface(m));
+                } else {
+                    this.Models.Add(new Angular.ModelClass(m));
+                }
             }
         }
 
@@ -55,7 +59,11 @@ namespace Od2Ts.Angular
         {
             foreach (var c in complexs)
             {
-                this.Models.Add(new Angular.Model(c, inter));
+                if (inter) {
+                    this.Models.Add(new Angular.ModelInterface(c));
+                } else {
+                    this.Models.Add(new Angular.ModelClass(c));
+                }
             }
         }
 
@@ -63,7 +71,11 @@ namespace Od2Ts.Angular
         {
             foreach (var s in sets)
             {
-                this.Services.Add(new Angular.Service(s, inter,  refe));
+                if (inter) {
+                    this.Services.Add(new Angular.ServiceEntity(s, refe));
+                } else {
+                    this.Services.Add(new Angular.ServiceModel(s, refe));
+                }
             }
         }
 
