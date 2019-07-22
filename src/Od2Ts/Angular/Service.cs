@@ -185,7 +185,6 @@ export {this.GetSignature()} {{
   {String.Join("\n\n  ", methods)}
 }}";
         }
-
     }
 
     public class ServiceModel : Service
