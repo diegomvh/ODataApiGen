@@ -41,6 +41,12 @@ namespace Od2Ts.Angular
                 return types.Distinct();
             }
         }
+        protected string RenderProperty(Property prop) {
+            return $"{prop.Name}" +
+                (prop.Nullable ? "?:" : ":") +
+                $" {this.GetTypescriptType(prop.Type)}" + 
+                (prop.IsCollection ? "[];" : ";");
+        }
     }
 
     public class ModelClass : Model
@@ -53,7 +59,7 @@ namespace Od2Ts.Angular
             var d = new Dictionary<string, string>() {
                 {"name", $"'{property.Name}'"},
                 {"type", $"'{this.GetTypescriptType(property.Type)}'"},
-                {"constructor", $"{this.GetTypescriptConstructor(property.Type)}"},
+                //{"constructor", $"{this.GetTypescriptConstructor(property.Type)}"},
                 {"required", (property.Nullable ? "false" : "true")},
                 {"collection", (property.IsCollection ? "true" : "false")},
             };
@@ -67,7 +73,7 @@ namespace Od2Ts.Angular
             var d = new Dictionary<string, string>() {
                 {"name", $"'{navigation.Name}'"},
                 {"type", $"'{this.GetTypescriptType(navigation.Type)}'"},
-                {"constructor", $"{this.GetTypescriptConstructor(navigation.Type)}"},
+                //{"constructor", $"{this.GetTypescriptConstructor(navigation.Type)}"},
                 {"required", (navigation.Nullable ? "false" : "true")},
                 {"collection", (navigation.IsCollection ? "true" : "false")},
             };
@@ -78,7 +84,7 @@ namespace Od2Ts.Angular
             var signature = $"class {this.Name}";
             if (this.Base != null)
                 signature = $"{signature} extends {this.Base.Name}";
-            if (this.EdmStructuredType is ComplexType)
+            else if (this.EdmStructuredType is ComplexType)
                 signature = $"{signature} extends Model";
             else
                 signature = $"{signature} extends ODataModel";
@@ -87,9 +93,11 @@ namespace Od2Ts.Angular
 
         public override string Render()
         {
-            var properties = this.EdmStructuredType.Properties.Select(prop =>
-                $"{prop.Name}" + (prop.Nullable ? "?:" : ":") + $" {this.GetTypescriptType(prop.Type)};"
-            );
+            var properties = this.EdmStructuredType.Properties
+                .Union(this.EdmStructuredType.NavigationProperties)
+                .Select(prop =>
+                    this.RenderProperty(prop)
+                );
             var fields = this.EdmStructuredType.Properties.Select(prop =>
                 this.RenderField(prop)
             );
@@ -142,15 +150,11 @@ namespace Od2Ts.Angular
 
         public override string Render()
         {
-            var properties = new List<string>();
-            properties.AddRange(this.EdmStructuredType.Properties.Select(prop =>
-                $"{prop.Name}" + (prop.Nullable ? "?:" : ":") + $" {this.GetTypescriptType(prop.Type)};")
-            );
-            properties.AddRange(this.EdmStructuredType.NavigationProperties.Select(prop =>
-                $"{prop.Name}" +
-                (prop.Nullable ? "?:" : ":") +
-                $" {this.GetTypescriptType(prop.Type)}" + (prop.IsCollection ? "[];" : ";"))
-            );
+            var properties = this.EdmStructuredType.Properties
+                .Union(this.EdmStructuredType.NavigationProperties)
+                .Select(prop =>
+                    this.RenderProperty(prop)
+                );
 
             var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
