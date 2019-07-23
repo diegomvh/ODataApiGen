@@ -13,9 +13,9 @@ namespace Od2Ts.Angular
         public Angular.Config Config { get; private set; }
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Enum> Enums { get; private set; }
-        public ICollection<Angular.Service> Services { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
-
+        public ICollection<Angular.Collection> Collections { get; private set; }
+        public ICollection<Angular.Service> Services { get; private set; }
 
         public AngularPackage(string endpointName, string metadataPath, bool secure, string version) : base(endpointName, metadataPath, secure, version)
         {
@@ -23,8 +23,9 @@ namespace Od2Ts.Angular
             Config = new Angular.Config(this);
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
-            Services = new List<Angular.Service>();
             Models = new List<Angular.Model>();
+            Collections = new List<Angular.Collection>();
+            Services = new List<Angular.Service>();
         }
 
         public override void LoadMetadata(MetadataReader reader)
@@ -51,6 +52,7 @@ namespace Od2Ts.Angular
                     this.Models.Add(new Angular.ModelInterface(m));
                 } else {
                     this.Models.Add(new Angular.ModelClass(m));
+                    this.Collections.Add(new Angular.Collection(m));
                 }
             }
         }
@@ -63,6 +65,7 @@ namespace Od2Ts.Angular
                     this.Models.Add(new Angular.ModelInterface(c));
                 } else {
                     this.Models.Add(new Angular.ModelClass(c));
+                    this.Collections.Add(new Angular.Collection(c));
                 }
             }
         }
@@ -99,6 +102,12 @@ this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
 this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type))
                 );
             }
+            foreach (var collection in Collections)
+            {
+                var model = this.Models.FirstOrDefault(m => m.EdmStructuredType == collection.EdmStructuredType);
+                collection.SetModel(model);
+                collection.Dependencies.Add(model);
+            }
             foreach (var service in Services)
             {
                 var inter = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
@@ -113,11 +122,17 @@ this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
                 service.Dependencies.AddRange(
 this.Models.Where(e => types.Contains(e.EdmStructuredType.Type))
                 );
+                service.Dependencies.AddRange(
+this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
+                );
             }
             this.Module.Dependencies.AddRange(this.Services);
+            this.Config.Dependencies.AddRange(this.Enums);
             this.Config.Dependencies.AddRange(this.Models);
+            this.Config.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Enums);
             this.Index.Dependencies.AddRange(this.Models);
+            this.Index.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Services);
         }
 
@@ -125,6 +140,7 @@ this.Models.Where(e => types.Contains(e.EdmStructuredType.Type))
         {
             return this.Enums.Select(e => e.Directory)
                 .Union(this.Models.Select(m => m.Directory))
+                .Union(this.Collections.Select(m => m.Directory))
                 .Union(this.Services.Select(s => s.Directory))
                 .Distinct();
         }
@@ -132,6 +148,7 @@ this.Models.Where(e => types.Contains(e.EdmStructuredType.Type))
             var renderables = new List<Renderable>();
             renderables.AddRange(this.Enums);
             renderables.AddRange(this.Models);
+            renderables.AddRange(this.Collections);
             renderables.AddRange(this.Services);
             renderables.Add(this.Module);
             renderables.Add(this.Config);

@@ -39,23 +39,6 @@ namespace Od2Ts.Angular
 
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
 
-        protected string RenderKeyResolver() {
-            var model = this.Model;
-            var keys = new List<string>(model.EdmStructuredType.KeyNames); 
-            while (model.Base != null) {
-                model = model.Base;
-                keys.AddRange(model.EdmStructuredType.KeyNames);
-            }
-            if (keys.Count() == 0)
-                return "";
-            var parts = keys.Select(name => $"{name}: entity.{name}");
-            var key = keys.Count() > 1 ? $"{{{String.Join(", ", parts)}}}" : $"entity.{keys.First()}";
-
-            return $@"protected resolveEntityKey(entity: Partial<{EdmEntityTypeName}>) {{
-    return {key};
-  }}";
-        }
-
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
@@ -151,6 +134,23 @@ namespace Od2Ts.Angular
         {
         }
 
+        protected string RenderKeyResolver() {
+            var model = this.Model;
+            var keys = new List<string>(model.EdmStructuredType.KeyNames); 
+            while (model.Base != null) {
+                model = model.Base;
+                keys.AddRange(model.EdmStructuredType.KeyNames);
+            }
+            if (keys.Count() == 0)
+                return "";
+            var parts = keys.Select(name => $"{name}: entity.{name}");
+            var key = keys.Count() > 1 ? $"{{{String.Join(", ", parts)}}}" : $"entity.{keys.First()}";
+
+            return $@"protected resolveEntityKey(entity: Partial<{EdmEntityTypeName}>) {{
+    return {key};
+  }}";
+        }
+
         public string GetSignature() {
             var signature = $"class {this.Name}";
             return $"{signature} extends ODataEntityService<{EdmEntityTypeName}>";
@@ -167,7 +167,7 @@ namespace Od2Ts.Angular
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataModelService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
+import {{ ODataEntityService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
@@ -195,22 +195,17 @@ export {this.GetSignature()} {{
 
         public string GetSignature() {
             var signature = $"class {this.Name}";
-            return $"{signature} extends ODataModelService<{EdmEntityTypeName}, {EdmEntityTypeName}Collection>";
+            return $"{signature} extends ODataModelService<{EdmEntityTypeName}>";
         }
 
         public override string Render()
         {
-            var methods = new List<string>();
-            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomActions));
-            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomFunctions));
-            if (References)
-                methods.AddRange( this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties));
             var imports = this.RenderImports();
 
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataModelService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
+import {{ ODataModelService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
@@ -226,17 +221,13 @@ export {this.GetSignature()} {{
     super(http, context, '{this.EdmEntitySet.EntitySetName}');
   }}
   
-  {RenderKeyResolver()}
-  
-  model(attrs: any): {this.Model.Name} {{
+  model(attrs?: any): {this.Model.Name} {{
     return super.model(attrs) as {this.Model.Name};
   }}
 
-  collection(attrs: any): {this.Model.Name}Collection {{
+  collection(attrs?: any): {this.Model.Name}Collection {{
     return super.collection(attrs) as {this.Model.Name}Collection;
   }}
-
-  {String.Join("\n\n  ", methods)}
 }}";
         }
     }

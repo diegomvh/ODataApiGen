@@ -125,6 +125,7 @@ namespace Od2Ts.Angular
                 .Select(prop =>
                     this.RenderProperty(prop)
                 );
+            var keys = this.EdmStructuredType.KeyNames.Select(k => $"'{k}'"); 
             var fields = this.EdmStructuredType.Properties.Select(prop =>
                 this.RenderField(prop)
             );
@@ -132,12 +133,16 @@ namespace Od2Ts.Angular
                 this.RenderRelationship(nav)
             );
 
-            var parts = new List<string>();
-            parts.Add(String.Join("\n", this.RenderImports()));
-            parts.Add("import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';");
-            parts.Add($@"export {this.GetSignature()} {{
+            var imports = this.RenderImports();
+            return $@"{String.Join("\n", imports)}
+import {{ Schema, Model, ODataModel }} from 'angular-odata';
+
+export {this.GetSignature()} {{
   static type = '{this.GetModelType(this.EdmStructuredType.Type)}';
   static schema = {(this.Base == null ? $"Schema.create({{" : $"{this.Base.Name}.schema.extend({{")}
+    keys: [
+        {String.Join(", ", keys)}
+    ],
     fields: [
       {String.Join(",\n      ", fields)}
     ],
@@ -147,19 +152,11 @@ namespace Od2Ts.Angular
     defaults: {{}}
   }});
   {String.Join("\n  ", properties)}
-}}");
-            if (this.EdmStructuredType is EntityType)
-            {
-                parts.Add($@"export class {this.Name}Collection extends ODataCollection<{this.Name}> {{
-  static model = '{this.EdmStructuredType.Type}';
-}}");
-            }
-            return String.Join("\n", parts);
+}}";
         }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
-        public override IEnumerable<string> ExportTypes =>
-            this.EdmStructuredType is ComplexType ? new string[] { this.Name } : new string[] { this.Name, $"{this.Name}Collection" };
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
     }
 
     public class ModelInterface : Model

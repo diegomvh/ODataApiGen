@@ -12,6 +12,7 @@ namespace Od2Ts.Angular {
         }
         public override string Render() {
             var imports = this.RenderImports();
+            var enums = this.Package.Enums.Select(enu => $"'{enu.EdmEnumType.Type}': {enu.Name}");
             var models = this.Package.Models.Select(model => $"'{model.EdmStructuredType.Type}': {model.Name}");
             var collections = this.Package.Models.Where(m => ! (m.EdmStructuredType is ComplexType)).Select(model => $"'{model.EdmStructuredType.Type}Collection': {model.Name}Collection");
             return $@"{String.Join("\n", imports)}
@@ -21,6 +22,9 @@ export const {this.Name} = {{
   withCredentials: {this.Package.Secure.ToString().ToLower()},
   creation: new Date('{DateTime.Now.ToString("o")}'),
   version: '{this.Package.Version}',
+  enums: {{
+    {String.Join(",\n    ", enums)}
+  }},
   models: {{
     {String.Join(",\n    ", models)}
   }},
