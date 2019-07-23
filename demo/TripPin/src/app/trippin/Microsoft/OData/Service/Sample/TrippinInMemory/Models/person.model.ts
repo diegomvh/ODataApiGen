@@ -1,27 +1,28 @@
 import { PersonGender } from './persongender.enum';
 import { Feature } from './feature.enum';
-import { Location, LocationCollection } from './location.model';
+import { Location } from './location.model';
 import { Trip, TripCollection } from './trip.model';
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class Person extends ODataModel {
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Person';
   static schema = Schema.create({
     fields: [
-      {name: 'UserName', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'FirstName', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'LastName', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'MiddleName', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'Gender', type: 'PersonGender', constructor: PersonGender, required: true, collection: false},
-      {name: 'Age', type: 'number', constructor: Number, required: true, collection: false},
-      {name: 'Emails', type: 'string', constructor: String, required: true, collection: true},
-      {name: 'AddressInfo', type: 'Location', constructor: Location, required: true, collection: true},
-      {name: 'HomeAddress', type: 'Location', constructor: Location, required: true, collection: false},
-      {name: 'FavoriteFeature', type: 'Feature', constructor: Feature, required: true, collection: false},
-      {name: 'Features', type: 'Feature', constructor: Feature, required: true, collection: true}
+      {name: 'UserName', type: 'String', required: true, collection: false},
+      {name: 'FirstName', type: 'String', required: true, collection: false},
+      {name: 'LastName', type: 'String', required: true, collection: false},
+      {name: 'MiddleName', type: 'String', required: true, collection: false},
+      {name: 'Gender', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PersonGender', required: true, collection: false},
+      {name: 'Age', type: 'Number', required: true, collection: false},
+      {name: 'Emails', type: 'String', required: true, collection: true},
+      {name: 'AddressInfo', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Location', required: true, collection: true},
+      {name: 'HomeAddress', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Location', required: true, collection: false},
+      {name: 'FavoriteFeature', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Feature', required: true, collection: false},
+      {name: 'Features', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Feature', required: true, collection: true}
     ],
     relationships: [
-      {name: 'Friends', type: 'Person', constructor: Person, required: false, collection: true},
-      {name: 'BestFriend', type: 'Person', constructor: Person, required: false, collection: false},
-      {name: 'Trips', type: 'Trip', constructor: Trip, required: false, collection: true}
+      {name: 'Friends', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Person', required: false, collection: true},
+      {name: 'BestFriend', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Person', required: false, collection: false},
+      {name: 'Trips', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Trip', required: false, collection: true}
     ],
     defaults: {}
   });
@@ -31,12 +32,15 @@ export class Person extends ODataModel {
   MiddleName: string;
   Gender: PersonGender;
   Age: number;
-  Emails: string;
-  AddressInfo: Location;
+  Emails: string[];
+  AddressInfo: Location[];
   HomeAddress: Location;
   FavoriteFeature: Feature;
-  Features: Feature;
+  Features: Feature[];
+  Friends?: Person[];
+  BestFriend?: Person;
+  Trips?: Trip[];
 }
 export class PersonCollection extends ODataCollection<Person> {
-  static Model = Person;
+  static model = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Person';
 }

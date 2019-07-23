@@ -1,13 +1,14 @@
 
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class PlanItem extends ODataModel {
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PlanItem';
   static schema = Schema.create({
     fields: [
-      {name: 'PlanItemId', type: 'number', constructor: Number, required: true, collection: false},
-      {name: 'ConfirmationCode', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'StartsAt', type: 'Date', constructor: Date, required: true, collection: false},
-      {name: 'EndsAt', type: 'Date', constructor: Date, required: true, collection: false},
-      {name: 'Duration', type: 'string', constructor: String, required: true, collection: false}
+      {name: 'PlanItemId', type: 'Number', required: true, collection: false},
+      {name: 'ConfirmationCode', type: 'String', required: true, collection: false},
+      {name: 'StartsAt', type: 'Date', required: true, collection: false},
+      {name: 'EndsAt', type: 'Date', required: true, collection: false},
+      {name: 'Duration', type: 'String', required: true, collection: false}
     ],
     relationships: [
       
@@ -21,5 +22,5 @@ export class PlanItem extends ODataModel {
   Duration: string;
 }
 export class PlanItemCollection extends ODataCollection<PlanItem> {
-  static Model = PlanItem;
+  static model = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PlanItem';
 }

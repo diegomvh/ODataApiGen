@@ -13,7 +13,7 @@ namespace Od2Ts.Angular {
         public override string Render() {
             var imports = this.RenderImports();
             var models = this.Package.Models.Select(model => $"'{model.EdmStructuredType.Type}': {model.Name}");
-            var collections = this.Package.Models.Where(m => ! (m.EdmStructuredType is ComplexType)).Select(model => $"{model.Name}Collection");
+            var collections = this.Package.Models.Where(m => ! (m.EdmStructuredType is ComplexType)).Select(model => $"'{model.EdmStructuredType.Type}Collection': {model.Name}Collection");
             return $@"{String.Join("\n", imports)}
 export const {this.Name} = {{
   baseUrl: '{this.Package.MetadataPath.TrimEnd("$metadata".ToCharArray())}',
@@ -24,9 +24,9 @@ export const {this.Name} = {{
   models: {{
     {String.Join(",\n    ", models)}
   }},
-  collections: [
+  collections: {{
     {String.Join(",\n    ", collections)}
-  ]
+  }}
 }}";
         }
         public override string Name => this.Package.EndpointName + "Config";

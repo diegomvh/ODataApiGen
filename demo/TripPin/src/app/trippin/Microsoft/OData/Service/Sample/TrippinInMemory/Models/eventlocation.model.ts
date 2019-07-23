@@ -1,9 +1,10 @@
-import { Location, LocationCollection } from './location.model';
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { Location } from './location.model';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class EventLocation extends Location {
-  static schema = Od2Ts.Angular.Model.schema.extend({
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.EventLocation';
+  static schema = Location.schema.extend({
     fields: [
-      {name: 'BuildingInfo', type: 'string', constructor: String, required: true, collection: false}
+      {name: 'BuildingInfo', type: 'String', required: true, collection: false}
     ],
     relationships: [
       

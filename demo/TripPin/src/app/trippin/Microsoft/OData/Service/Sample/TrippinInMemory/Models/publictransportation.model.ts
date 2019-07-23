@@ -1,9 +1,10 @@
 import { PlanItem, PlanItemCollection } from './planitem.model';
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class PublicTransportation extends PlanItem {
-  static schema = Od2Ts.Angular.Model.schema.extend({
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PublicTransportation';
+  static schema = PlanItem.schema.extend({
     fields: [
-      {name: 'SeatNumber', type: 'string', constructor: String, required: true, collection: false}
+      {name: 'SeatNumber', type: 'String', required: true, collection: false}
     ],
     relationships: [
       
@@ -13,5 +14,5 @@ export class PublicTransportation extends PlanItem {
   SeatNumber: string;
 }
 export class PublicTransportationCollection extends ODataCollection<PublicTransportation> {
-  static Model = PublicTransportation;
+  static model = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PublicTransportation';
 }

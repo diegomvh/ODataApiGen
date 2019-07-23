@@ -16,6 +16,7 @@ import { ODataModule } from 'angular-odata';
     HttpClientModule,
     ODataModule.forContext(Object.assign({}, TripPinConfig, {
       baseUrl: "https://services.odata.org/TripPinRESTierService/(S(igakoy2xq2x3as3phi2ajn0i))/",
+      withCredentials: false,
       errorHandler: (error: HttpErrorResponse) => {
         // Custom error processing
         return throwError(error);

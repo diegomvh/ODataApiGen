@@ -1,10 +1,11 @@
 
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class Airline extends ODataModel {
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Airline';
   static schema = Schema.create({
     fields: [
-      {name: 'AirlineCode', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'Name', type: 'string', constructor: String, required: true, collection: false}
+      {name: 'AirlineCode', type: 'String', required: true, collection: false},
+      {name: 'Name', type: 'String', required: true, collection: false}
     ],
     relationships: [
       
@@ -15,5 +16,5 @@ export class Airline extends ODataModel {
   Name: string;
 }
 export class AirlineCollection extends ODataCollection<Airline> {
-  static Model = Airline;
+  static model = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Airline';
 }

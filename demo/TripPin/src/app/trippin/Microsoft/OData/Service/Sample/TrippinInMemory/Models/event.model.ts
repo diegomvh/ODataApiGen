@@ -1,11 +1,12 @@
-import { EventLocation, EventLocationCollection } from './eventlocation.model';
+import { EventLocation } from './eventlocation.model';
 import { PlanItem, PlanItemCollection } from './planitem.model';
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class Event extends PlanItem {
-  static schema = Od2Ts.Angular.Model.schema.extend({
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Event';
+  static schema = PlanItem.schema.extend({
     fields: [
-      {name: 'OccursAt', type: 'EventLocation', constructor: EventLocation, required: true, collection: false},
-      {name: 'Description', type: 'string', constructor: String, required: true, collection: false}
+      {name: 'OccursAt', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.EventLocation', required: true, collection: false},
+      {name: 'Description', type: 'String', required: true, collection: false}
     ],
     relationships: [
       
@@ -16,5 +17,5 @@ export class Event extends PlanItem {
   Description: string;
 }
 export class EventCollection extends ODataCollection<Event> {
-  static Model = Event;
+  static model = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Event';
 }

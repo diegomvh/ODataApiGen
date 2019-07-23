@@ -1,12 +1,13 @@
-import { AirportLocation, AirportLocationCollection } from './airportlocation.model';
-import {{ Schema, Model, ODataModel, ODataCollection }} from 'angular-odata';
+import { AirportLocation } from './airportlocation.model';
+import { Schema, Model, ODataModel, ODataCollection } from 'angular-odata';
 export class Airport extends ODataModel {
+  static type = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Airport';
   static schema = Schema.create({
     fields: [
-      {name: 'Name', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'IcaoCode', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'IataCode', type: 'string', constructor: String, required: true, collection: false},
-      {name: 'Location', type: 'AirportLocation', constructor: AirportLocation, required: true, collection: false}
+      {name: 'Name', type: 'String', required: true, collection: false},
+      {name: 'IcaoCode', type: 'String', required: true, collection: false},
+      {name: 'IataCode', type: 'String', required: true, collection: false},
+      {name: 'Location', type: 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.AirportLocation', required: true, collection: false}
     ],
     relationships: [
       
@@ -19,5 +20,5 @@ export class Airport extends ODataModel {
   Location: AirportLocation;
 }
 export class AirportCollection extends ODataCollection<Airport> {
-  static Model = Airport;
+  static model = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.Airport';
 }

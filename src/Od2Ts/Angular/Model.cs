@@ -151,7 +151,7 @@ namespace Od2Ts.Angular
             if (this.EdmStructuredType is EntityType)
             {
                 parts.Add($@"export class {this.Name}Collection extends ODataCollection<{this.Name}> {{
-  static Model = {this.Name};
+  static model = '{this.EdmStructuredType.Type}';
 }}");
             }
             return String.Join("\n", parts);

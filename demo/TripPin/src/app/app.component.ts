@@ -9,9 +9,15 @@ import { AirlinesService, PeopleService, Person, AirportsService } from './tripp
 export class AppComponent {
   title = 'TripPin';
   constructor(protected airlines: AirlinesService, protected people: PeopleService, protected airports: AirportsService) {
-    this.airlines.all().subscribe(resp => console.log(resp));
-    this.people.all().subscribe(resp => console.log(resp));
-    this.airports.all().subscribe(resp => console.log(resp));
-    this.people.model({UserName: "ronaldmundy"}).fetch({parse: true}).subscribe(resp => console.log(resp));
+    this.airlines.collection([]).fetch().subscribe(resp => console.log(resp));
+    this.people.collection([]).fetch().subscribe(resp => console.log(resp));
+    this.airports.collection([]).fetch().subscribe(resp => console.log(resp));
+    this.people.model({UserName: "ronaldmundy"})
+      .fetch<Person>()
+      .subscribe(person => { 
+        console.log(person)
+        person.LastName = 'van Haaster'; 
+        person.save().subscribe();
+      });
   }
 }

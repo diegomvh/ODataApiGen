@@ -122,12 +122,12 @@ namespace Od2Ts.Angular
                 if (property.IsCollection) {
                     // Navigation
                     yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<EntitySet<{this.GetTypescriptType(property.Type)}>> {{
-    return this.navigationProperty(entity, '{property.Name}', options);
+    return this.navigationProperty<{this.GetTypescriptType(property.Type)}>(entity, '{property.Name}', options);
   }}";
                 } else {
                     // Property
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<EntitySet<{this.GetTypescriptType(property.Type)}>> {{
-    return this.property(entity, '{property.Name}', options);
+                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<{this.GetTypescriptType(property.Type)}> {{
+    return this.property<{this.GetTypescriptType(property.Type)}>(entity, '{property.Name}', options);
   }}";
                 }
                 // Link
@@ -175,7 +175,7 @@ import {{ map }} from 'rxjs/operators';
 export {this.GetSignature()} {{
   constructor(
     protected http: HttpClient,
-    protected context: ODataContext
+    public context: ODataContext
   ) {{
     super(http, context, '{this.EdmEntitySet.EntitySetName}');
   }}
@@ -216,18 +216,26 @@ import {{ map }} from 'rxjs/operators';
 
 @Injectable()
 export {this.GetSignature()} {{
-  static Model = {this.EdmEntityTypeName};
-  static Collection = {this.EdmEntityTypeName}Collection;
+  static model = '{this.EdmEntitySet.EntityType}';
+  static collection = '{this.EdmEntitySet.EntityType}Collection';
 
   constructor(
     protected http: HttpClient,
-    protected context: ODataContext
+    public context: ODataContext
   ) {{
     super(http, context, '{this.EdmEntitySet.EntitySetName}');
   }}
   
   {RenderKeyResolver()}
   
+  model(attrs: any): {this.Model.Name} {{
+    return super.model(attrs) as {this.Model.Name};
+  }}
+
+  collection(attrs: any): {this.Model.Name}Collection {{
+    return super.collection(attrs) as {this.Model.Name}Collection;
+  }}
+
   {String.Join("\n\n  ", methods)}
 }}";
         }
