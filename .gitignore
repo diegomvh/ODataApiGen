@@ -3,3 +3,5 @@ bin/
 *.code-workspace
 .vscode/
 *Output/
+application.siu.json
+demo/Siu

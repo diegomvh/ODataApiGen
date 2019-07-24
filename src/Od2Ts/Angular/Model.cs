@@ -41,10 +41,11 @@ namespace Od2Ts.Angular
                 return types.Distinct();
             }
         }
-        protected string RenderProperty(Property prop) {
+        protected string RenderProperty(Property prop)
+        {
             return $"{prop.Name}" +
                 (prop.IsNullable ? "?:" : ":") +
-                $" {this.GetTypescriptType(prop.Type)}" + 
+                $" {this.GetTypescriptType(prop.Type)}" +
                 (prop.IsCollection ? "[];" : ";");
         }
     }
@@ -83,6 +84,48 @@ namespace Od2Ts.Angular
                     }
             }
         }
+        public IEnumerable<string> RenderModelMethods(NavigationProperty nav)
+        {
+            var type = this.GetTypescriptType(nav.Type);
+            var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
+            var methodRelationName = $"get{name}";
+            var baseMethodRelationName = nav.IsCollection ? $"relatedCollection" : $"relatedModel";
+            var returnType = (nav.IsCollection) ?
+                $"Collection<{type}>" :
+                $"{type}";
+            // Navigation
+            var methods = new List<string>() {$@"public {methodRelationName}(): {returnType} {{
+    return this.{baseMethodRelationName}('{nav.Name}') as {returnType};
+  }}"};
+            return methods;
+        }
+        public IEnumerable<string> RenderODataModelMethods(NavigationProperty nav)
+        {
+            var type = this.GetTypescriptType(nav.Type);
+            var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
+            var methodRelationName = $"get{name}";
+            var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
+            var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+            var baseMethodRelationName = nav.IsCollection ? $"relatedODataCollection" : $"relatedODataModel";
+            var baseMethodCreateName = nav.IsCollection ? $"createODataCollectionRef" : $"createODataModelRef";
+            var baseMethodDeleteName = nav.IsCollection ? $"deleteODataCollectionRef" : $"deleteODataModelRef";
+            var returnType = (nav.IsCollection) ?
+                $"ODataCollection<{type}>" :
+                $"{type}";
+            // Navigation
+            var methods = new List<string>() {$@"public {methodRelationName}(): {returnType} {{
+    return this.{baseMethodRelationName}('{nav.Name}') as {returnType};
+  }}"};
+            // Link
+            methods.Add($@"public {methodCreateName}(target: ODataQueryBase, options?) {{
+    return this.{baseMethodCreateName}('{nav.Name}', target, options);
+  }}");
+            // Unlink
+            methods.Add($@"public {methodDeleteName}(target: ODataQueryBase, options?) {{
+    return this.{baseMethodDeleteName}('{nav.Name}', target, options);
+  }}");
+            return methods;
+        }
         public string RenderField(Property property)
         {
             var d = new Dictionary<string, string>() {
@@ -95,19 +138,6 @@ namespace Od2Ts.Angular
             d.Add("type", $"'{type}'");
             if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
                 d.Add("length", property.MaxLength);
-            return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
-        }
-
-        public string RenderRelationship(NavigationProperty navigation)
-        {
-            var d = new Dictionary<string, string>() {
-                {"name", $"'{navigation.Name}'"},
-                {"required", (navigation.IsNullable ? "false" : "true")}
-            };
-            var type = this.GetModelType(navigation.Type);
-            if (!navigation.IsEdmType && navigation.IsCollection)
-                type = $"{type}Collection";
-            d.Add("type", $"'{type}'");
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
         public string GetSignature()
@@ -125,21 +155,22 @@ namespace Od2Ts.Angular
         public override string Render()
         {
             var properties = this.EdmStructuredType.Properties
+                .Select(prop => this.RenderProperty(prop));
+            var methods = this.EdmStructuredType.NavigationProperties
+                .SelectMany(nav => 
+                    (EdmStructuredType is ComplexType) ? 
+                    this.RenderModelMethods(nav) : 
+                    this.RenderODataModelMethods(nav));
+
+            var keys = this.EdmStructuredType.KeyNames.Select(k => $"'{k}'");
+            var fields = this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop =>
-                    this.RenderProperty(prop)
-                );
-            var keys = this.EdmStructuredType.KeyNames.Select(k => $"'{k}'"); 
-            var fields = this.EdmStructuredType.Properties.Select(prop =>
-                this.RenderField(prop)
-            );
-            var relationships = this.EdmStructuredType.NavigationProperties.Select(nav =>
-                this.RenderRelationship(nav)
+                .Select(prop => this.RenderField(prop)
             );
 
             var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
-import {{ Schema, Model, ODataModel }} from 'angular-odata';
+import {{ Schema, Model, ODataQueryBase, ODataModel, ODataCollection }} from 'angular-odata';
 
 export {this.GetSignature()} {{
   static type = '{this.GetModelType(this.EdmStructuredType.Type)}';
@@ -150,12 +181,11 @@ export {this.GetSignature()} {{
     fields: [
       {String.Join(",\n      ", fields)}
     ],
-    relationships: [
-      {String.Join(",\n      ", relationships)}
-    ],
     defaults: {{}}
   }});
   {String.Join("\n  ", properties)}
+
+  {String.Join("\n  ", methods)}
 }}";
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
@@ -167,7 +197,6 @@ export {this.GetSignature()} {{
         public ModelInterface(StructuredType type) : base(type)
         {
         }
-
         public string GetSignature()
         {
             var signature = $"interface {this.Name}";

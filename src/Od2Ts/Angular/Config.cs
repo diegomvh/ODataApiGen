@@ -13,8 +13,8 @@ namespace Od2Ts.Angular {
         public override string Render() {
             var imports = this.RenderImports();
             var enums = this.Package.Enums.Select(enu => $"'{enu.EdmEnumType.Type}': {enu.Name}");
-            var models = this.Package.Models.Select(model => $"'{model.EdmStructuredType.Type}': {model.Name}");
-            var collections = this.Package.Models.Where(m => ! (m.EdmStructuredType is ComplexType)).Select(model => $"'{model.EdmStructuredType.Type}Collection': {model.Name}Collection");
+            var models = this.Package.Models.Where(m => m is ModelClass).Select(model => $"'{model.EdmStructuredType.Type}': {model.Name}");
+            var collections = this.Package.Collections.Select(col => $"'{col.EdmStructuredType.Type}Collection': {col.Name}");
             return $@"{String.Join("\n", imports)}
 export const {this.Name} = {{
   baseUrl: '{this.Package.MetadataPath.TrimEnd("$metadata".ToCharArray())}',
