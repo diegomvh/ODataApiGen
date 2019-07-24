@@ -1,9 +1,9 @@
 {
-    "MetadataPath": "https://services.odata.org/TripPinRESTierService/$metadata",
-    "EndpointName": "TripPin",
-    "Output": "../../demo/TripPin/src/app/trippin",
+    "MetadataPath": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
+    "EndpointName": "Northwind",
+    "Output": "../../demo/Northwind/src/app/northwind",
     "Secure": true,
     "PurgeOutput": true,
-    "UseInterfaces": false,
+    "UseInterfaces": true,
     "UseReferences": true
 }
