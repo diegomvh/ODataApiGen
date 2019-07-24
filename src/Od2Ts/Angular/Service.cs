@@ -92,34 +92,31 @@ namespace Od2Ts.Angular
             }
         }
 
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.Property> properties) {
-            foreach (var property in properties) {
-                var type = this.GetTypescriptType(property.Type);
-                var name = property.Name[0].ToString().ToUpper() + property.Name.Substring(1);
-                var methodRelationName = property.Name;
-                var methodCreateName = property.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
-                var methodDeleteName = property.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
-                var baseMethodCreateName = property.IsCollection ? $"createCollectionRef" : $"createRef";
-                var baseMethodDeleteName = property.IsCollection ? $"deleteCollectionRef" : $"deleteRef";
+        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations) {
+            foreach (var nav in navigations) {
+                var type = this.GetTypescriptType(nav.Type);
+                var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
+                var methodRelationName = nav.Name;
+                var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
+                var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+                var baseMethodCreateName = nav.IsCollection ? $"createCollectionRef" : $"createRef";
+                var baseMethodDeleteName = nav.IsCollection ? $"deleteCollectionRef" : $"deleteRef";
+                var returnType = (nav.IsCollection) ? 
+                    $"EntitySet<{this.GetTypescriptType(nav.Type)}>" :
+                    $"{this.GetTypescriptType(nav.Type)}";
 
-                if (property.IsCollection) {
-                    // Navigation
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<EntitySet<{this.GetTypescriptType(property.Type)}>> {{
-    return this.navigationProperty<{this.GetTypescriptType(property.Type)}>(entity, '{property.Name}', options);
+                // Navigation
+                yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<{returnType}> {{
+    return this.navigationProperty(entity, '{nav.Name}', options)
+        .pipe(map(resp => {(nav.IsCollection? $"resp.toEntitySet<{this.GetTypescriptType(nav.Type)}>()" : $"resp.toEntity<{this.GetTypescriptType(nav.Type)}>()")}));
   }}";
-                } else {
-                    // Property
-                    yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<{this.GetTypescriptType(property.Type)}> {{
-    return this.property<{this.GetTypescriptType(property.Type)}>(entity, '{property.Name}', options);
-  }}";
-                }
                 // Link
                 yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryBase, options?) {{
-    return this.{baseMethodCreateName}(entity, '{property.Name}', target, options);
+    return this.{baseMethodCreateName}(entity, '{nav.Name}', target, options);
   }}";
                 // Unlink
                 yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryBase, options?) {{
-    return this.{baseMethodDeleteName}(entity, '{property.Name}', target, options);
+    return this.{baseMethodDeleteName}(entity, '{nav.Name}', target, options);
   }}";
             }
         }
@@ -161,7 +158,7 @@ namespace Od2Ts.Angular
             methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomActions));
             methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomFunctions));
             if (References)
-                methods.AddRange( this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties));
+                methods.AddRange(this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties));
             var imports = this.RenderImports();
 
             return $@"{String.Join("\n", imports)}

@@ -43,7 +43,7 @@ namespace Od2Ts.Angular
         }
         protected string RenderProperty(Property prop) {
             return $"{prop.Name}" +
-                (prop.Nullable ? "?:" : ":") +
+                (prop.IsNullable ? "?:" : ":") +
                 $" {this.GetTypescriptType(prop.Type)}" + 
                 (prop.IsCollection ? "[];" : ";");
         }
@@ -87,11 +87,13 @@ namespace Od2Ts.Angular
         {
             var d = new Dictionary<string, string>() {
                 {"name", $"'{property.Name}'"},
-                {"type", $"'{this.GetModelType(property.Type)}'"},
-                {"required", (property.Nullable ? "false" : "true")},
-                {"collection", (property.IsCollection ? "true" : "false")},
+                {"required", (property.IsNullable ? "false" : "true")}
             };
-            if (!String.IsNullOrEmpty(property.MaxLength))
+            var type = this.GetModelType(property.Type);
+            if (!property.IsEdmType && property.IsCollection)
+                type = $"{type}Collection";
+            d.Add("type", $"'{type}'");
+            if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
                 d.Add("length", property.MaxLength);
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
@@ -100,10 +102,12 @@ namespace Od2Ts.Angular
         {
             var d = new Dictionary<string, string>() {
                 {"name", $"'{navigation.Name}'"},
-                {"type", $"'{this.GetModelType(navigation.Type)}'"},
-                {"required", (navigation.Nullable ? "false" : "true")},
-                {"collection", (navigation.IsCollection ? "true" : "false")},
+                {"required", (navigation.IsNullable ? "false" : "true")}
             };
+            var type = this.GetModelType(navigation.Type);
+            if (!navigation.IsEdmType && navigation.IsCollection)
+                type = $"{type}Collection";
+            d.Add("type", $"'{type}'");
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
         public string GetSignature()
@@ -154,7 +158,6 @@ export {this.GetSignature()} {{
   {String.Join("\n  ", properties)}
 }}";
         }
-
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
     }

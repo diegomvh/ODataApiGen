@@ -26,7 +26,7 @@ namespace Od2Ts.Models
                         IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                         Name = element.Attribute("Name")?.Value,
                         MaxLength = element.Attribute("MaxLength")?.Value,
-                        Nullable = element.Attribute("Nullable")?.Value == "true",
+                        IsNullable = element.Attribute("Nullable")?.Value == "true",
                         Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
                     }).ToList();
 
@@ -36,8 +36,9 @@ namespace Od2Ts.Models
                         Name = element.Attribute("Name")?.Value.Split(".").Last(),
                         FullName = element.Attribute("Name")?.Value,
                         MaxLength = null,
-                        Nullable = true,
+                        IsNullable = true,
                         IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
+                        Partner = element.Attribute("Partner")?.Value,
                         Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
                         ReferentialConstraint = element.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value,
                         ReferencedProperty = element.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value
@@ -50,7 +51,7 @@ namespace Od2Ts.Models
         public string Type { get { return $"{this.NameSpace}.{this.Name}"; } }
         public List<string> KeyNames { get; set; }
         public string KeyName { get { return this.KeyNames.FirstOrDefault(); } }
-        public bool CompositeKey { get { return this.KeyNames.Count() > 1; } }
+        public bool IsCompositeKey { get { return this.KeyNames.Count() > 1; } }
         public List<Property> Properties { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
     }
