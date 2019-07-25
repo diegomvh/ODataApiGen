@@ -1,12 +1,16 @@
-import { Customer_and_Suppliers_by_City } from '../../../NorthwindModel/customer_and_suppliers_by_city.interface';
+import { Customer_and_Suppliers_by_City } from '../../../NorthwindModel/customer_and_suppliers_by_city.model';
+import { Customer_and_Suppliers_by_CityCollection } from '../../../NorthwindModel/customer_and_suppliers_by_city.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Customer_and_Suppliers_by_CitiesService extends ODataEntityService<Customer_and_Suppliers_by_City> {
+export class Customer_and_Suppliers_by_CitiesService extends ODataModelService<Customer_and_Suppliers_by_City> {
+  static model = 'NorthwindModel.Customer_and_Suppliers_by_City';
+  static collection = 'NorthwindModel.Customer_and_Suppliers_by_CityCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Customer_and_Suppliers_by_CitiesService extends ODataEntityService<
     super(http, context, 'Customer_and_Suppliers_by_Cities');
   }
   
-  protected resolveEntityKey(entity: Partial<Customer_and_Suppliers_by_City>) {
-    return {CompanyName: entity.CompanyName, Relationship: entity.Relationship};
+  model(attrs?: any): Customer_and_Suppliers_by_City {
+    return super.model(attrs) as Customer_and_Suppliers_by_City;
   }
-  
-  
+
+  collection(attrs?: any): Customer_and_Suppliers_by_CityCollection {
+    return super.collection(attrs) as Customer_and_Suppliers_by_CityCollection;
+  }
 }

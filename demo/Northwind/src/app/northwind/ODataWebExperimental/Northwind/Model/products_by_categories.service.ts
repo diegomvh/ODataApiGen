@@ -1,12 +1,16 @@
-import { Products_by_Category } from '../../../NorthwindModel/products_by_category.interface';
+import { Products_by_Category } from '../../../NorthwindModel/products_by_category.model';
+import { Products_by_CategoryCollection } from '../../../NorthwindModel/products_by_category.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Products_by_CategoriesService extends ODataEntityService<Products_by_Category> {
+export class Products_by_CategoriesService extends ODataModelService<Products_by_Category> {
+  static model = 'NorthwindModel.Products_by_Category';
+  static collection = 'NorthwindModel.Products_by_CategoryCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Products_by_CategoriesService extends ODataEntityService<Products_b
     super(http, context, 'Products_by_Categories');
   }
   
-  protected resolveEntityKey(entity: Partial<Products_by_Category>) {
-    return {CategoryName: entity.CategoryName, Discontinued: entity.Discontinued, ProductName: entity.ProductName};
+  model(attrs?: any): Products_by_Category {
+    return super.model(attrs) as Products_by_Category;
   }
-  
-  
+
+  collection(attrs?: any): Products_by_CategoryCollection {
+    return super.collection(attrs) as Products_by_CategoryCollection;
+  }
 }

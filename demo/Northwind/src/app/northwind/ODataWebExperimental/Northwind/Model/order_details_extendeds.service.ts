@@ -1,12 +1,16 @@
-import { Order_Details_Extended } from '../../../NorthwindModel/order_details_extended.interface';
+import { Order_Details_Extended } from '../../../NorthwindModel/order_details_extended.model';
+import { Order_Details_ExtendedCollection } from '../../../NorthwindModel/order_details_extended.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Order_Details_ExtendedsService extends ODataEntityService<Order_Details_Extended> {
+export class Order_Details_ExtendedsService extends ODataModelService<Order_Details_Extended> {
+  static model = 'NorthwindModel.Order_Details_Extended';
+  static collection = 'NorthwindModel.Order_Details_ExtendedCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Order_Details_ExtendedsService extends ODataEntityService<Order_Det
     super(http, context, 'Order_Details_Extendeds');
   }
   
-  protected resolveEntityKey(entity: Partial<Order_Details_Extended>) {
-    return {Discount: entity.Discount, OrderID: entity.OrderID, ProductID: entity.ProductID, ProductName: entity.ProductName, Quantity: entity.Quantity, UnitPrice: entity.UnitPrice};
+  model(attrs?: any): Order_Details_Extended {
+    return super.model(attrs) as Order_Details_Extended;
   }
-  
-  
+
+  collection(attrs?: any): Order_Details_ExtendedCollection {
+    return super.collection(attrs) as Order_Details_ExtendedCollection;
+  }
 }

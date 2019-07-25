@@ -1,13 +1,18 @@
-import { Category } from '../../../NorthwindModel/category.interface';
-import { Product } from '../../../NorthwindModel/product.interface';
+import { Category } from '../../../NorthwindModel/category.model';
+import { Product } from '../../../NorthwindModel/product.model';
+import { CategoryCollection } from '../../../NorthwindModel/category.collection';
+import { ProductCollection } from '../../../NorthwindModel/product.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class CategoriesService extends ODataEntityService<Category> {
+export class CategoriesService extends ODataModelService<Category> {
+  static model = 'NorthwindModel.Category';
+  static collection = 'NorthwindModel.CategoryCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -15,20 +20,11 @@ export class CategoriesService extends ODataEntityService<Category> {
     super(http, context, 'Categories');
   }
   
-  protected resolveEntityKey(entity: Partial<Category>) {
-    return entity.CategoryID;
-  }
-  
-  public Products(entity: Category, options?): Observable<EntitySet<Product>> {
-    return this.navigationProperty(entity, 'Products', options)
-        .pipe(map(resp => resp.toEntitySet<Product>()));
+  model(attrs?: any): Category {
+    return super.model(attrs) as Category;
   }
 
-  public addProductToProducts(entity: Category, target: ODataQueryBase, options?) {
-    return this.createCollectionRef(entity, 'Products', target, options);
-  }
-
-  public removeProductFromProducts(entity: Category, target: ODataQueryBase, options?) {
-    return this.deleteCollectionRef(entity, 'Products', target, options);
+  collection(attrs?: any): CategoryCollection {
+    return super.collection(attrs) as CategoryCollection;
   }
 }

@@ -1,12 +1,16 @@
-import { Current_Product_List } from '../../../NorthwindModel/current_product_list.interface';
+import { Current_Product_List } from '../../../NorthwindModel/current_product_list.model';
+import { Current_Product_ListCollection } from '../../../NorthwindModel/current_product_list.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Current_Product_ListsService extends ODataEntityService<Current_Product_List> {
+export class Current_Product_ListsService extends ODataModelService<Current_Product_List> {
+  static model = 'NorthwindModel.Current_Product_List';
+  static collection = 'NorthwindModel.Current_Product_ListCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Current_Product_ListsService extends ODataEntityService<Current_Pro
     super(http, context, 'Current_Product_Lists');
   }
   
-  protected resolveEntityKey(entity: Partial<Current_Product_List>) {
-    return {ProductID: entity.ProductID, ProductName: entity.ProductName};
+  model(attrs?: any): Current_Product_List {
+    return super.model(attrs) as Current_Product_List;
   }
-  
-  
+
+  collection(attrs?: any): Current_Product_ListCollection {
+    return super.collection(attrs) as Current_Product_ListCollection;
+  }
 }

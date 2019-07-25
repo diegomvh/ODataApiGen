@@ -1,12 +1,16 @@
-import { Alphabetical_list_of_product } from '../../../NorthwindModel/alphabetical_list_of_product.interface';
+import { Alphabetical_list_of_product } from '../../../NorthwindModel/alphabetical_list_of_product.model';
+import { Alphabetical_list_of_productCollection } from '../../../NorthwindModel/alphabetical_list_of_product.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Alphabetical_list_of_productsService extends ODataEntityService<Alphabetical_list_of_product> {
+export class Alphabetical_list_of_productsService extends ODataModelService<Alphabetical_list_of_product> {
+  static model = 'NorthwindModel.Alphabetical_list_of_product';
+  static collection = 'NorthwindModel.Alphabetical_list_of_productCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Alphabetical_list_of_productsService extends ODataEntityService<Alp
     super(http, context, 'Alphabetical_list_of_products');
   }
   
-  protected resolveEntityKey(entity: Partial<Alphabetical_list_of_product>) {
-    return {CategoryName: entity.CategoryName, Discontinued: entity.Discontinued, ProductID: entity.ProductID, ProductName: entity.ProductName};
+  model(attrs?: any): Alphabetical_list_of_product {
+    return super.model(attrs) as Alphabetical_list_of_product;
   }
-  
-  
+
+  collection(attrs?: any): Alphabetical_list_of_productCollection {
+    return super.collection(attrs) as Alphabetical_list_of_productCollection;
+  }
 }

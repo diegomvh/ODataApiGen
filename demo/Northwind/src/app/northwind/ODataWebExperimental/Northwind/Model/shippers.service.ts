@@ -1,13 +1,18 @@
-import { Order } from '../../../NorthwindModel/order.interface';
-import { Shipper } from '../../../NorthwindModel/shipper.interface';
+import { Order } from '../../../NorthwindModel/order.model';
+import { Shipper } from '../../../NorthwindModel/shipper.model';
+import { OrderCollection } from '../../../NorthwindModel/order.collection';
+import { ShipperCollection } from '../../../NorthwindModel/shipper.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class ShippersService extends ODataEntityService<Shipper> {
+export class ShippersService extends ODataModelService<Shipper> {
+  static model = 'NorthwindModel.Shipper';
+  static collection = 'NorthwindModel.ShipperCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -15,20 +20,11 @@ export class ShippersService extends ODataEntityService<Shipper> {
     super(http, context, 'Shippers');
   }
   
-  protected resolveEntityKey(entity: Partial<Shipper>) {
-    return entity.ShipperID;
-  }
-  
-  public Orders(entity: Shipper, options?): Observable<EntitySet<Order>> {
-    return this.navigationProperty(entity, 'Orders', options)
-        .pipe(map(resp => resp.toEntitySet<Order>()));
+  model(attrs?: any): Shipper {
+    return super.model(attrs) as Shipper;
   }
 
-  public addOrderToOrders(entity: Shipper, target: ODataQueryBase, options?) {
-    return this.createCollectionRef(entity, 'Orders', target, options);
-  }
-
-  public removeOrderFromOrders(entity: Shipper, target: ODataQueryBase, options?) {
-    return this.deleteCollectionRef(entity, 'Orders', target, options);
+  collection(attrs?: any): ShipperCollection {
+    return super.collection(attrs) as ShipperCollection;
   }
 }

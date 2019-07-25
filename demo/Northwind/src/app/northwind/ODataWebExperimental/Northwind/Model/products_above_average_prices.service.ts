@@ -1,12 +1,16 @@
-import { Products_Above_Average_Price } from '../../../NorthwindModel/products_above_average_price.interface';
+import { Products_Above_Average_Price } from '../../../NorthwindModel/products_above_average_price.model';
+import { Products_Above_Average_PriceCollection } from '../../../NorthwindModel/products_above_average_price.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Products_Above_Average_PricesService extends ODataEntityService<Products_Above_Average_Price> {
+export class Products_Above_Average_PricesService extends ODataModelService<Products_Above_Average_Price> {
+  static model = 'NorthwindModel.Products_Above_Average_Price';
+  static collection = 'NorthwindModel.Products_Above_Average_PriceCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Products_Above_Average_PricesService extends ODataEntityService<Pro
     super(http, context, 'Products_Above_Average_Prices');
   }
   
-  protected resolveEntityKey(entity: Partial<Products_Above_Average_Price>) {
-    return entity.ProductName;
+  model(attrs?: any): Products_Above_Average_Price {
+    return super.model(attrs) as Products_Above_Average_Price;
   }
-  
-  
+
+  collection(attrs?: any): Products_Above_Average_PriceCollection {
+    return super.collection(attrs) as Products_Above_Average_PriceCollection;
+  }
 }

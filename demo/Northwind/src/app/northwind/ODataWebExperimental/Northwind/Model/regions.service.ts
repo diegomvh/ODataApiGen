@@ -1,13 +1,18 @@
-import { Region } from '../../../NorthwindModel/region.interface';
-import { Territory } from '../../../NorthwindModel/territory.interface';
+import { Region } from '../../../NorthwindModel/region.model';
+import { Territory } from '../../../NorthwindModel/territory.model';
+import { RegionCollection } from '../../../NorthwindModel/region.collection';
+import { TerritoryCollection } from '../../../NorthwindModel/territory.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class RegionsService extends ODataEntityService<Region> {
+export class RegionsService extends ODataModelService<Region> {
+  static model = 'NorthwindModel.Region';
+  static collection = 'NorthwindModel.RegionCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -15,20 +20,11 @@ export class RegionsService extends ODataEntityService<Region> {
     super(http, context, 'Regions');
   }
   
-  protected resolveEntityKey(entity: Partial<Region>) {
-    return entity.RegionID;
-  }
-  
-  public Territories(entity: Region, options?): Observable<EntitySet<Territory>> {
-    return this.navigationProperty(entity, 'Territories', options)
-        .pipe(map(resp => resp.toEntitySet<Territory>()));
+  model(attrs?: any): Region {
+    return super.model(attrs) as Region;
   }
 
-  public addTerritoryToTerritories(entity: Region, target: ODataQueryBase, options?) {
-    return this.createCollectionRef(entity, 'Territories', target, options);
-  }
-
-  public removeTerritoryFromTerritories(entity: Region, target: ODataQueryBase, options?) {
-    return this.deleteCollectionRef(entity, 'Territories', target, options);
+  collection(attrs?: any): RegionCollection {
+    return super.collection(attrs) as RegionCollection;
   }
 }

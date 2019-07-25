@@ -1,12 +1,16 @@
-import { Orders_Qry } from '../../../NorthwindModel/orders_qry.interface';
+import { Orders_Qry } from '../../../NorthwindModel/orders_qry.model';
+import { Orders_QryCollection } from '../../../NorthwindModel/orders_qry.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class Orders_QriesService extends ODataEntityService<Orders_Qry> {
+export class Orders_QriesService extends ODataModelService<Orders_Qry> {
+  static model = 'NorthwindModel.Orders_Qry';
+  static collection = 'NorthwindModel.Orders_QryCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -14,9 +18,11 @@ export class Orders_QriesService extends ODataEntityService<Orders_Qry> {
     super(http, context, 'Orders_Qries');
   }
   
-  protected resolveEntityKey(entity: Partial<Orders_Qry>) {
-    return {CompanyName: entity.CompanyName, OrderID: entity.OrderID};
+  model(attrs?: any): Orders_Qry {
+    return super.model(attrs) as Orders_Qry;
   }
-  
-  
+
+  collection(attrs?: any): Orders_QryCollection {
+    return super.collection(attrs) as Orders_QryCollection;
+  }
 }

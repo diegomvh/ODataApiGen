@@ -1,16 +1,24 @@
-import { Customer } from '../../../NorthwindModel/customer.interface';
-import { Employee } from '../../../NorthwindModel/employee.interface';
-import { Order_Detail } from '../../../NorthwindModel/order_detail.interface';
-import { Order } from '../../../NorthwindModel/order.interface';
-import { Shipper } from '../../../NorthwindModel/shipper.interface';
+import { Customer } from '../../../NorthwindModel/customer.model';
+import { Employee } from '../../../NorthwindModel/employee.model';
+import { Order_Detail } from '../../../NorthwindModel/order_detail.model';
+import { Order } from '../../../NorthwindModel/order.model';
+import { Shipper } from '../../../NorthwindModel/shipper.model';
+import { CustomerCollection } from '../../../NorthwindModel/customer.collection';
+import { EmployeeCollection } from '../../../NorthwindModel/employee.collection';
+import { Order_DetailCollection } from '../../../NorthwindModel/order_detail.collection';
+import { OrderCollection } from '../../../NorthwindModel/order.collection';
+import { ShipperCollection } from '../../../NorthwindModel/shipper.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class OrdersService extends ODataEntityService<Order> {
+export class OrdersService extends ODataModelService<Order> {
+  static model = 'NorthwindModel.Order';
+  static collection = 'NorthwindModel.OrderCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -18,59 +26,11 @@ export class OrdersService extends ODataEntityService<Order> {
     super(http, context, 'Orders');
   }
   
-  protected resolveEntityKey(entity: Partial<Order>) {
-    return entity.OrderID;
-  }
-  
-  public Customer(entity: Order, options?): Observable<Customer> {
-    return this.navigationProperty(entity, 'Customer', options)
-        .pipe(map(resp => resp.toEntity<Customer>()));
+  model(attrs?: any): Order {
+    return super.model(attrs) as Order;
   }
 
-  public setCustomerAsCustomer(entity: Order, target: ODataQueryBase, options?) {
-    return this.createRef(entity, 'Customer', target, options);
-  }
-
-  public unsetCustomerAsCustomer(entity: Order, target: ODataQueryBase, options?) {
-    return this.deleteRef(entity, 'Customer', target, options);
-  }
-
-  public Employee(entity: Order, options?): Observable<Employee> {
-    return this.navigationProperty(entity, 'Employee', options)
-        .pipe(map(resp => resp.toEntity<Employee>()));
-  }
-
-  public setEmployeeAsEmployee(entity: Order, target: ODataQueryBase, options?) {
-    return this.createRef(entity, 'Employee', target, options);
-  }
-
-  public unsetEmployeeAsEmployee(entity: Order, target: ODataQueryBase, options?) {
-    return this.deleteRef(entity, 'Employee', target, options);
-  }
-
-  public Order_Details(entity: Order, options?): Observable<EntitySet<Order_Detail>> {
-    return this.navigationProperty(entity, 'Order_Details', options)
-        .pipe(map(resp => resp.toEntitySet<Order_Detail>()));
-  }
-
-  public addOrder_DetailToOrder_Details(entity: Order, target: ODataQueryBase, options?) {
-    return this.createCollectionRef(entity, 'Order_Details', target, options);
-  }
-
-  public removeOrder_DetailFromOrder_Details(entity: Order, target: ODataQueryBase, options?) {
-    return this.deleteCollectionRef(entity, 'Order_Details', target, options);
-  }
-
-  public Shipper(entity: Order, options?): Observable<Shipper> {
-    return this.navigationProperty(entity, 'Shipper', options)
-        .pipe(map(resp => resp.toEntity<Shipper>()));
-  }
-
-  public setShipperAsShipper(entity: Order, target: ODataQueryBase, options?) {
-    return this.createRef(entity, 'Shipper', target, options);
-  }
-
-  public unsetShipperAsShipper(entity: Order, target: ODataQueryBase, options?) {
-    return this.deleteRef(entity, 'Shipper', target, options);
+  collection(attrs?: any): OrderCollection {
+    return super.collection(attrs) as OrderCollection;
   }
 }

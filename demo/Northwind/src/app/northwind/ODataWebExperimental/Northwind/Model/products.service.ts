@@ -1,15 +1,22 @@
-import { Category } from '../../../NorthwindModel/category.interface';
-import { Order_Detail } from '../../../NorthwindModel/order_detail.interface';
-import { Product } from '../../../NorthwindModel/product.interface';
-import { Supplier } from '../../../NorthwindModel/supplier.interface';
+import { Category } from '../../../NorthwindModel/category.model';
+import { Order_Detail } from '../../../NorthwindModel/order_detail.model';
+import { Product } from '../../../NorthwindModel/product.model';
+import { Supplier } from '../../../NorthwindModel/supplier.model';
+import { CategoryCollection } from '../../../NorthwindModel/category.collection';
+import { Order_DetailCollection } from '../../../NorthwindModel/order_detail.collection';
+import { ProductCollection } from '../../../NorthwindModel/product.collection';
+import { SupplierCollection } from '../../../NorthwindModel/supplier.collection';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ODataEntityService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
+import { ODataModelService, ODataContext, ODataQueryBase, EntitySet } from 'angular-odata';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class ProductsService extends ODataEntityService<Product> {
+export class ProductsService extends ODataModelService<Product> {
+  static model = 'NorthwindModel.Product';
+  static collection = 'NorthwindModel.ProductCollection';
+
   constructor(
     protected http: HttpClient,
     public context: ODataContext
@@ -17,46 +24,11 @@ export class ProductsService extends ODataEntityService<Product> {
     super(http, context, 'Products');
   }
   
-  protected resolveEntityKey(entity: Partial<Product>) {
-    return entity.ProductID;
-  }
-  
-  public Category(entity: Product, options?): Observable<Category> {
-    return this.navigationProperty(entity, 'Category', options)
-        .pipe(map(resp => resp.toEntity<Category>()));
+  model(attrs?: any): Product {
+    return super.model(attrs) as Product;
   }
 
-  public setCategoryAsCategory(entity: Product, target: ODataQueryBase, options?) {
-    return this.createRef(entity, 'Category', target, options);
-  }
-
-  public unsetCategoryAsCategory(entity: Product, target: ODataQueryBase, options?) {
-    return this.deleteRef(entity, 'Category', target, options);
-  }
-
-  public Order_Details(entity: Product, options?): Observable<EntitySet<Order_Detail>> {
-    return this.navigationProperty(entity, 'Order_Details', options)
-        .pipe(map(resp => resp.toEntitySet<Order_Detail>()));
-  }
-
-  public addOrder_DetailToOrder_Details(entity: Product, target: ODataQueryBase, options?) {
-    return this.createCollectionRef(entity, 'Order_Details', target, options);
-  }
-
-  public removeOrder_DetailFromOrder_Details(entity: Product, target: ODataQueryBase, options?) {
-    return this.deleteCollectionRef(entity, 'Order_Details', target, options);
-  }
-
-  public Supplier(entity: Product, options?): Observable<Supplier> {
-    return this.navigationProperty(entity, 'Supplier', options)
-        .pipe(map(resp => resp.toEntity<Supplier>()));
-  }
-
-  public setSupplierAsSupplier(entity: Product, target: ODataQueryBase, options?) {
-    return this.createRef(entity, 'Supplier', target, options);
-  }
-
-  public unsetSupplierAsSupplier(entity: Product, target: ODataQueryBase, options?) {
-    return this.deleteRef(entity, 'Supplier', target, options);
+  collection(attrs?: any): ProductCollection {
+    return super.collection(attrs) as ProductCollection;
   }
 }
