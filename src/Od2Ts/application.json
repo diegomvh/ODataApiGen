@@ -4,6 +4,6 @@
     "Output": "../../demo/Northwind/src/app/northwind",
     "Secure": true,
     "PurgeOutput": true,
-    "UseInterfaces": true,
+    "UseInterfaces": false,
     "UseReferences": true
 }
