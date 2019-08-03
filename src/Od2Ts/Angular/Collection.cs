@@ -23,7 +23,8 @@ namespace Od2Ts.Angular
         }
 
         public override string Name => this.EdmStructuredType.Name + "Collection";
-        public override string Directory => this.EdmStructuredType.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string NameSpace => this.EdmStructuredType.NameSpace;
+        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<string> ImportTypes
         {
             get
@@ -37,9 +38,9 @@ namespace Od2Ts.Angular
         {
             var signature = $"class {this.Name}";
             if (this.EdmStructuredType is ComplexType)
-                signature = $"{signature} extends Collection<{this.Model.Name}>";
+                signature = $"{signature} extends Collection<{this.GetTypescriptType(this.EdmStructuredType.Type)}>";
             else
-                signature = $"{signature} extends ODataCollection<{this.Model.Name}>";
+                signature = $"{signature} extends ODataCollection<{this.GetTypescriptType(this.EdmStructuredType.Type)}>";
             return signature;
         }
         public override string Render()
@@ -50,8 +51,8 @@ namespace Od2Ts.Angular
 import {{ Collection, ODataCollection }} from 'angular-odata';
 
 export {this.GetSignature()} {{
-  static type = '{this.EdmStructuredType.Type}Collection';
-  static model = '{this.EdmStructuredType.Type}';
+  static type = '{this.Type}';
+  static Model = {this.GetTypescriptType(this.EdmStructuredType.Type)};
 }}";
         }
 

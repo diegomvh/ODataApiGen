@@ -19,8 +19,9 @@ export enum {this.Name} {{
 }}";
         }
         public override string Name => this.EdmEnumType.Name;
+        public override string NameSpace => this.EdmEnumType.NameSpace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
-        public override string Directory => this.EdmEnumType.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<string> ImportTypes => Enumerable.Empty<string>();
         public override IEnumerable<string> ExportTypes => new string[] {this.Name};
     }

@@ -23,7 +23,8 @@ namespace Od2Ts.Angular
         }
 
         public override string Name => this.EdmStructuredType.Name;
-        public override string Directory => this.EdmStructuredType.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string NameSpace => this.EdmStructuredType.NameSpace;
+        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<string> ImportTypes
         {
             get
@@ -40,13 +41,6 @@ namespace Od2Ts.Angular
                     types.Add(this.Base.EdmStructuredType.Type);
                 return types.Distinct();
             }
-        }
-        protected string RenderProperty(Property prop)
-        {
-            return $"{prop.Name}" +
-                (prop.IsNullable ? "?:" : ":") +
-                $" {this.GetTypescriptType(prop.Type)}" +
-                (prop.IsCollection ? "[];" : ";");
         }
     }
 
@@ -83,6 +77,13 @@ namespace Od2Ts.Angular
                         return type.Contains(".") && !type.StartsWith("Edm") ? type : "Object";
                     }
             }
+        }
+        protected string RenderProperty(Property prop)
+        {
+            return $"{prop.Name}" +
+                (prop.IsNullable ? "?:" : ":") +
+                $" {this.GetTypescriptType(prop.Type)}" +
+                (prop.IsCollection ? "Collection;" : ";");
         }
         public IEnumerable<string> RenderModelMethods(NavigationProperty nav)
         {
@@ -126,18 +127,46 @@ namespace Od2Ts.Angular
   }}");
             return methods;
         }
+        public string RenderKey(PropertyRef propertyRef)
+        {
+            var d = new Dictionary<string, string>() {
+                {"name", $"'{propertyRef.Name}'"}
+            };
+            if (!String.IsNullOrWhiteSpace(propertyRef.Alias)) {
+                d.Add("name", $"'{propertyRef.Alias}'");
+                d.Add("resolve", $"(model) => model.{propertyRef.Name.Replace('/', '.')}");
+            }
+            return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
+        }
         public string RenderField(Property property)
         {
             var d = new Dictionary<string, string>() {
-                {"name", $"'{property.Name}'"},
-                {"required", (property.IsNullable ? "false" : "true")}
+                {"name", $"'{property.Name}'"}
             };
-            var type = this.GetModelType(property.Type);
-            if (!property.IsEdmType && property.IsCollection)
-                type = $"{type}Collection";
-            d.Add("type", $"'{type}'");
-            if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
-                d.Add("length", property.MaxLength);
+            var propType = property.Type;
+            if (property.IsCollection)
+                propType = $"{propType}Collection";
+            var type = this.Dependencies.FirstOrDefault(dep => dep.Type == propType);
+            if (type == null) {
+                // Is Edm
+                d.Add("type", $"'{this.GetModelType(property.Type)}'");
+                if (!property.IsNullable)
+                    d.Add("required", "true");
+                if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
+                    d.Add("length", property.MaxLength);
+                if (property.IsCollection)
+                    d.Add("collection", "true");
+            } else {
+                d.Add("type", $"'{type.Type}'");
+                if (!(type is Enum))
+                    d.Add("ctor", "true");
+                if (!property.IsNullable)
+                    d.Add("required", "true");
+                if (property is NavigationProperty)
+                    d.Add("related", "true");
+                if (property.IsCollection)
+                    d.Add("collection", "true");
+            }
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
         public string GetSignature()
@@ -151,18 +180,21 @@ namespace Od2Ts.Angular
                 signature = $"{signature} extends ODataModel";
             return signature;
         }
-
         public override string Render()
         {
+            var keys = this.EdmStructuredType.Keys
+                .Select(prop => this.RenderKey(prop));
             var properties = this.EdmStructuredType.Properties
-                .Select(prop => this.RenderProperty(prop));
+                .Select(prop => this.RenderProperty(prop)).ToList();
+            properties.AddRange(this.EdmStructuredType.NavigationProperties
+                .Select(prop => this.RenderProperty(prop)));
             var methods = this.EdmStructuredType.NavigationProperties
                 .SelectMany(nav => 
                     (EdmStructuredType is ComplexType) ? 
                     this.RenderModelMethods(nav) : 
                     this.RenderODataModelMethods(nav));
-
-            var keys = this.EdmStructuredType.KeyNames.Select(k => $"'{k}'");
+            // Sin metodos para probar
+            methods = Enumerable.Empty<string>();
             var fields = this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => this.RenderField(prop)
@@ -170,18 +202,17 @@ namespace Od2Ts.Angular
 
             var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
-import {{ Schema, Model, ODataQueryBase, ODataModel, ODataCollection }} from 'angular-odata';
+import {{ Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject }} from 'angular-odata';
 
 export {this.GetSignature()} {{
-  static type = '{this.GetModelType(this.EdmStructuredType.Type)}';
+  static type = '{this.Type}';
   static schema = {(this.Base == null ? $"Schema.create({{" : $"{this.Base.Name}.schema.extend({{")}
     keys: [
-        {String.Join(", ", keys)}
+      {String.Join(",\n      ", keys)}
     ],
     fields: [
       {String.Join(",\n      ", fields)}
-    ],
-    defaults: {{}}
+    ]
   }});
   {String.Join("\n  ", properties)}
 
@@ -204,7 +235,13 @@ export {this.GetSignature()} {{
                 signature = $"{signature} extends {this.Base.Name}";
             return signature;
         }
-
+        protected string RenderProperty(Property prop)
+        {
+            return $"{prop.Name}" +
+                (prop.IsNullable ? "?:" : ":") +
+                $" {this.GetTypescriptType(prop.Type)}" +
+                (prop.IsCollection ? "[];" : ";");
+        }
         public override string Render()
         {
             var properties = this.EdmStructuredType.Properties

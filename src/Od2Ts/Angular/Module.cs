@@ -9,8 +9,9 @@ namespace Od2Ts.Angular
     {
         public static ILogger Logger { get; } = Program.CreateLogger<Module>();
         public override string Name => this.Package.EndpointName + "Module";
+        public override string NameSpace => "";
         public override string FileName => this.Package.EndpointName.ToLower() + ".module";
-        public override string Directory => "";
+        public override string Directory => this.NameSpace;
         public override IEnumerable<string> ImportTypes
         {
             get

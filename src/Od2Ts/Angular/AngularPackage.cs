@@ -101,6 +101,9 @@ this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
                 model.Dependencies.AddRange(
 this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type))
                 );
+                model.Dependencies.AddRange(
+this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
+                );
             }
             foreach (var collection in Collections)
             {

@@ -34,8 +34,9 @@ export const {this.Name} = {{
 }}";
         }
         public override string Name => this.Package.EndpointName + "Config";
+        public override string NameSpace => "";
         public override string FileName => this.Package.EndpointName.ToLower() + ".config";
-        public override string Directory => "";
+        public override string Directory => this.NameSpace;
         public override IEnumerable<string> ImportTypes 
         {
             get { 

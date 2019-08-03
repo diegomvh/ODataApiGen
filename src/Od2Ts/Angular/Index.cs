@@ -12,8 +12,9 @@ namespace Od2Ts.Angular
             this.Package = package;
         }
         public override string Name => this.Package.EndpointName;
+        public override string NameSpace => "";
         public override string FileName => "index";
-        public override string Directory => "";
+        public override string Directory => this.NameSpace;
         public override IEnumerable<string> ImportTypes 
         {
             get { 

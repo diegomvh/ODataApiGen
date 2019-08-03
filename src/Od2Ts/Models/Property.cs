@@ -13,4 +13,9 @@ namespace Od2Ts.Models
         public string MaxLength { get; set; }
         public string DisplayName { get; set; }
     }
+    public class PropertyRef
+    {
+        public string Name { get; set; }
+        public string Alias { get; set; }
+    }
 }

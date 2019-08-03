@@ -121,8 +121,9 @@ namespace Od2Ts.Angular
             }
         }
         public override string Name => this.EdmEntitySet.Name + "Service";
+        public override string NameSpace => this.EdmEntitySet.NameSpace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
-        public override string Directory => this.EdmEntitySet.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
     }
 
     public class ServiceEntity : Service
@@ -133,15 +134,21 @@ namespace Od2Ts.Angular
 
         protected string RenderKeyResolver() {
             var model = this.Model;
-            var keys = new List<string>(model.EdmStructuredType.KeyNames); 
-            while (model.Base != null) {
-                model = model.Base;
-                keys.AddRange(model.EdmStructuredType.KeyNames);
+            var keys = model.EdmStructuredType.Keys.ToList(); 
+            var baseModel = model.Base;
+            while (baseModel != null) {
+                keys.AddRange(model.Base.EdmStructuredType.Keys);
+                baseModel = baseModel.Base;
             }
             if (keys.Count() == 0)
                 return "";
-            var parts = keys.Select(name => $"{name}: entity.{name}");
-            var key = keys.Count() > 1 ? $"{{{String.Join(", ", parts)}}}" : $"entity.{keys.First()}";
+            var parts = keys.Select(k => 
+                !String.IsNullOrEmpty(k.Alias) ? 
+                    $"{k.Alias}: entity.{k.Name.Replace('/','.')}" : 
+                    $"{k.Name}: entity.{k.Name}");
+            var key = keys.Count() > 1 ? 
+                $"{{{String.Join(", ", parts)}}}" : 
+                $"entity.{keys.First().Name}";
 
             return $@"protected resolveEntityKey(entity: Partial<{EdmEntityTypeName}>) {{
     return {key};
@@ -150,7 +157,7 @@ namespace Od2Ts.Angular
 
         public string GetSignature() {
             var signature = $"class {this.Name}";
-            return $"{signature} extends ODataEntityService<{EdmEntityTypeName}>";
+            return $"{signature} extends ODataEntityService<{this.EdmEntityTypeName}>";
         }
         public override string Render()
         {
@@ -192,7 +199,7 @@ export {this.GetSignature()} {{
 
         public string GetSignature() {
             var signature = $"class {this.Name}";
-            return $"{signature} extends ODataModelService<{EdmEntityTypeName}>";
+            return $"{signature} extends ODataModelService";
         }
 
         public override string Render()
@@ -208,8 +215,8 @@ import {{ map }} from 'rxjs/operators';
 
 @Injectable()
 export {this.GetSignature()} {{
-  static model = '{this.EdmEntitySet.EntityType}';
-  static collection = '{this.EdmEntitySet.EntityType}Collection';
+  static modelType = '{this.EdmEntitySet.EntityType}';
+  static collectionType = '{this.EdmEntitySet.EntityType}Collection';
 
   constructor(
     protected http: HttpClient,
