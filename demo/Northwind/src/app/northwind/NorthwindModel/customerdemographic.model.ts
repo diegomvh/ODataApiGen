@@ -1,29 +1,22 @@
 import { Customer } from './customer.model';
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { CustomerCollection } from './customer.collection';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class CustomerDemographic extends ODataModel {
   static type = 'NorthwindModel.CustomerDemographic';
   static schema = Schema.create({
     keys: [
-        'CustomerTypeID'
+      {name: 'CustomerTypeID'}
     ],
     fields: [
-      {name: 'CustomerTypeID', required: true, type: 'String', length: 10},
-      {name: 'CustomerDesc', required: true, type: 'String'},
-      {name: 'Customers', required: false, type: 'NorthwindModel.CustomerCollection'}
-    ],
-    defaults: {}
+      {name: 'CustomerTypeID', type: 'String', required: true, length: 10},
+      {name: 'CustomerDesc', type: 'String', required: true},
+      {name: 'Customers', type: 'NorthwindModel.CustomerCollection', ctor: true, related: true, collection: true}
+    ]
   });
   CustomerTypeID: string;
   CustomerDesc: string;
+  Customers?: CustomerCollection;
 
-  public getCustomers(): ODataCollection<Customer> {
-    return this.relatedODataCollection('Customers') as ODataCollection<Customer>;
-  }
-  public addCustomerToCustomers(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Customers', target, options);
-  }
-  public removeCustomerFromCustomers(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Customers', target, options);
-  }
+  
 }

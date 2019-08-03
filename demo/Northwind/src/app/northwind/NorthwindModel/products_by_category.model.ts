@@ -1,20 +1,21 @@
 
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class Products_by_Category extends ODataModel {
   static type = 'NorthwindModel.Products_by_Category';
   static schema = Schema.create({
     keys: [
-        'CategoryName', 'Discontinued', 'ProductName'
+      {name: 'CategoryName'},
+      {name: 'Discontinued'},
+      {name: 'ProductName'}
     ],
     fields: [
-      {name: 'CategoryName', required: true, type: 'String', length: 15},
-      {name: 'ProductName', required: true, type: 'String', length: 40},
-      {name: 'QuantityPerUnit', required: true, type: 'String', length: 20},
-      {name: 'UnitsInStock', required: true, type: 'Number'},
-      {name: 'Discontinued', required: true, type: 'Boolean'}
-    ],
-    defaults: {}
+      {name: 'CategoryName', type: 'String', required: true, length: 15},
+      {name: 'ProductName', type: 'String', required: true, length: 40},
+      {name: 'QuantityPerUnit', type: 'String', required: true, length: 20},
+      {name: 'UnitsInStock', type: 'Number', required: true},
+      {name: 'Discontinued', type: 'Boolean', required: true}
+    ]
   });
   CategoryName: string;
   ProductName: string;

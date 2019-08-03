@@ -1,41 +1,48 @@
 
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class Invoice extends ODataModel {
   static type = 'NorthwindModel.Invoice';
   static schema = Schema.create({
     keys: [
-        'CustomerName', 'Discount', 'OrderID', 'ProductID', 'ProductName', 'Quantity', 'Salesperson', 'ShipperName', 'UnitPrice'
+      {name: 'CustomerName'},
+      {name: 'Discount'},
+      {name: 'OrderID'},
+      {name: 'ProductID'},
+      {name: 'ProductName'},
+      {name: 'Quantity'},
+      {name: 'Salesperson'},
+      {name: 'ShipperName'},
+      {name: 'UnitPrice'}
     ],
     fields: [
-      {name: 'ShipName', required: true, type: 'String', length: 40},
-      {name: 'ShipAddress', required: true, type: 'String', length: 60},
-      {name: 'ShipCity', required: true, type: 'String', length: 15},
-      {name: 'ShipRegion', required: true, type: 'String', length: 15},
-      {name: 'ShipPostalCode', required: true, type: 'String', length: 10},
-      {name: 'ShipCountry', required: true, type: 'String', length: 15},
-      {name: 'CustomerID', required: true, type: 'String', length: 5},
-      {name: 'CustomerName', required: true, type: 'String', length: 40},
-      {name: 'Address', required: true, type: 'String', length: 60},
-      {name: 'City', required: true, type: 'String', length: 15},
-      {name: 'Region', required: true, type: 'String', length: 15},
-      {name: 'PostalCode', required: true, type: 'String', length: 10},
-      {name: 'Country', required: true, type: 'String', length: 15},
-      {name: 'Salesperson', required: true, type: 'String', length: 31},
-      {name: 'OrderID', required: true, type: 'Number'},
-      {name: 'OrderDate', required: true, type: 'Date'},
-      {name: 'RequiredDate', required: true, type: 'Date'},
-      {name: 'ShippedDate', required: true, type: 'Date'},
-      {name: 'ShipperName', required: true, type: 'String', length: 40},
-      {name: 'ProductID', required: true, type: 'Number'},
-      {name: 'ProductName', required: true, type: 'String', length: 40},
-      {name: 'UnitPrice', required: true, type: 'Number'},
-      {name: 'Quantity', required: true, type: 'Number'},
-      {name: 'Discount', required: true, type: 'Number'},
-      {name: 'ExtendedPrice', required: true, type: 'Number'},
-      {name: 'Freight', required: true, type: 'Number'}
-    ],
-    defaults: {}
+      {name: 'ShipName', type: 'String', required: true, length: 40},
+      {name: 'ShipAddress', type: 'String', required: true, length: 60},
+      {name: 'ShipCity', type: 'String', required: true, length: 15},
+      {name: 'ShipRegion', type: 'String', required: true, length: 15},
+      {name: 'ShipPostalCode', type: 'String', required: true, length: 10},
+      {name: 'ShipCountry', type: 'String', required: true, length: 15},
+      {name: 'CustomerID', type: 'String', required: true, length: 5},
+      {name: 'CustomerName', type: 'String', required: true, length: 40},
+      {name: 'Address', type: 'String', required: true, length: 60},
+      {name: 'City', type: 'String', required: true, length: 15},
+      {name: 'Region', type: 'String', required: true, length: 15},
+      {name: 'PostalCode', type: 'String', required: true, length: 10},
+      {name: 'Country', type: 'String', required: true, length: 15},
+      {name: 'Salesperson', type: 'String', required: true, length: 31},
+      {name: 'OrderID', type: 'Number', required: true},
+      {name: 'OrderDate', type: 'Date', required: true},
+      {name: 'RequiredDate', type: 'Date', required: true},
+      {name: 'ShippedDate', type: 'Date', required: true},
+      {name: 'ShipperName', type: 'String', required: true, length: 40},
+      {name: 'ProductID', type: 'Number', required: true},
+      {name: 'ProductName', type: 'String', required: true, length: 40},
+      {name: 'UnitPrice', type: 'Number', required: true},
+      {name: 'Quantity', type: 'Number', required: true},
+      {name: 'Discount', type: 'Number', required: true},
+      {name: 'ExtendedPrice', type: 'Number', required: true},
+      {name: 'Freight', type: 'Number', required: true}
+    ]
   });
   ShipName: string;
   ShipAddress: string;

@@ -1,31 +1,24 @@
 import { Order } from './order.model';
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { OrderCollection } from './order.collection';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class Shipper extends ODataModel {
   static type = 'NorthwindModel.Shipper';
   static schema = Schema.create({
     keys: [
-        'ShipperID'
+      {name: 'ShipperID'}
     ],
     fields: [
-      {name: 'ShipperID', required: true, type: 'Number'},
-      {name: 'CompanyName', required: true, type: 'String', length: 40},
-      {name: 'Phone', required: true, type: 'String', length: 24},
-      {name: 'Orders', required: false, type: 'NorthwindModel.OrderCollection'}
-    ],
-    defaults: {}
+      {name: 'ShipperID', type: 'Number', required: true},
+      {name: 'CompanyName', type: 'String', required: true, length: 40},
+      {name: 'Phone', type: 'String', required: true, length: 24},
+      {name: 'Orders', type: 'NorthwindModel.OrderCollection', ctor: true, related: true, collection: true}
+    ]
   });
   ShipperID: number;
   CompanyName: string;
   Phone: string;
+  Orders?: OrderCollection;
 
-  public getOrders(): ODataCollection<Order> {
-    return this.relatedODataCollection('Orders') as ODataCollection<Order>;
-  }
-  public addOrderToOrders(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Orders', target, options);
-  }
-  public removeOrderFromOrders(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Orders', target, options);
-  }
+  
 }

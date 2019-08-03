@@ -3,5 +3,5 @@ import { Collection, ODataCollection } from 'angular-odata';
 
 export class Products_Above_Average_PriceCollection extends ODataCollection<Products_Above_Average_Price> {
   static type = 'NorthwindModel.Products_Above_Average_PriceCollection';
-  static model = 'NorthwindModel.Products_Above_Average_Price';
+  static Model = Products_Above_Average_Price;
 }

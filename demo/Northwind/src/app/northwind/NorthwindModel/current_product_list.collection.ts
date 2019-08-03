@@ -3,5 +3,5 @@ import { Collection, ODataCollection } from 'angular-odata';
 
 export class Current_Product_ListCollection extends ODataCollection<Current_Product_List> {
   static type = 'NorthwindModel.Current_Product_ListCollection';
-  static model = 'NorthwindModel.Current_Product_List';
+  static Model = Current_Product_List;
 }

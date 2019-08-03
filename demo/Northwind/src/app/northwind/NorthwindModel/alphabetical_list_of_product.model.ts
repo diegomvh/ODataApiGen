@@ -1,26 +1,28 @@
 
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class Alphabetical_list_of_product extends ODataModel {
   static type = 'NorthwindModel.Alphabetical_list_of_product';
   static schema = Schema.create({
     keys: [
-        'CategoryName', 'Discontinued', 'ProductID', 'ProductName'
+      {name: 'CategoryName'},
+      {name: 'Discontinued'},
+      {name: 'ProductID'},
+      {name: 'ProductName'}
     ],
     fields: [
-      {name: 'ProductID', required: true, type: 'Number'},
-      {name: 'ProductName', required: true, type: 'String', length: 40},
-      {name: 'SupplierID', required: true, type: 'Number'},
-      {name: 'CategoryID', required: true, type: 'Number'},
-      {name: 'QuantityPerUnit', required: true, type: 'String', length: 20},
-      {name: 'UnitPrice', required: true, type: 'Number'},
-      {name: 'UnitsInStock', required: true, type: 'Number'},
-      {name: 'UnitsOnOrder', required: true, type: 'Number'},
-      {name: 'ReorderLevel', required: true, type: 'Number'},
-      {name: 'Discontinued', required: true, type: 'Boolean'},
-      {name: 'CategoryName', required: true, type: 'String', length: 15}
-    ],
-    defaults: {}
+      {name: 'ProductID', type: 'Number', required: true},
+      {name: 'ProductName', type: 'String', required: true, length: 40},
+      {name: 'SupplierID', type: 'Number', required: true},
+      {name: 'CategoryID', type: 'Number', required: true},
+      {name: 'QuantityPerUnit', type: 'String', required: true, length: 20},
+      {name: 'UnitPrice', type: 'Number', required: true},
+      {name: 'UnitsInStock', type: 'Number', required: true},
+      {name: 'UnitsOnOrder', type: 'Number', required: true},
+      {name: 'ReorderLevel', type: 'Number', required: true},
+      {name: 'Discontinued', type: 'Boolean', required: true},
+      {name: 'CategoryName', type: 'String', required: true, length: 15}
+    ]
   });
   ProductID: number;
   ProductName: string;

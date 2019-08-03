@@ -1,28 +1,28 @@
 import { Product } from './product.model';
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { ProductCollection } from './product.collection';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class Supplier extends ODataModel {
   static type = 'NorthwindModel.Supplier';
   static schema = Schema.create({
     keys: [
-        'SupplierID'
+      {name: 'SupplierID'}
     ],
     fields: [
-      {name: 'SupplierID', required: true, type: 'Number'},
-      {name: 'CompanyName', required: true, type: 'String', length: 40},
-      {name: 'ContactName', required: true, type: 'String', length: 30},
-      {name: 'ContactTitle', required: true, type: 'String', length: 30},
-      {name: 'Address', required: true, type: 'String', length: 60},
-      {name: 'City', required: true, type: 'String', length: 15},
-      {name: 'Region', required: true, type: 'String', length: 15},
-      {name: 'PostalCode', required: true, type: 'String', length: 10},
-      {name: 'Country', required: true, type: 'String', length: 15},
-      {name: 'Phone', required: true, type: 'String', length: 24},
-      {name: 'Fax', required: true, type: 'String', length: 24},
-      {name: 'HomePage', required: true, type: 'String'},
-      {name: 'Products', required: false, type: 'NorthwindModel.ProductCollection'}
-    ],
-    defaults: {}
+      {name: 'SupplierID', type: 'Number', required: true},
+      {name: 'CompanyName', type: 'String', required: true, length: 40},
+      {name: 'ContactName', type: 'String', required: true, length: 30},
+      {name: 'ContactTitle', type: 'String', required: true, length: 30},
+      {name: 'Address', type: 'String', required: true, length: 60},
+      {name: 'City', type: 'String', required: true, length: 15},
+      {name: 'Region', type: 'String', required: true, length: 15},
+      {name: 'PostalCode', type: 'String', required: true, length: 10},
+      {name: 'Country', type: 'String', required: true, length: 15},
+      {name: 'Phone', type: 'String', required: true, length: 24},
+      {name: 'Fax', type: 'String', required: true, length: 24},
+      {name: 'HomePage', type: 'String', required: true},
+      {name: 'Products', type: 'NorthwindModel.ProductCollection', ctor: true, related: true, collection: true}
+    ]
   });
   SupplierID: number;
   CompanyName: string;
@@ -36,14 +36,7 @@ export class Supplier extends ODataModel {
   Phone: string;
   Fax: string;
   HomePage: string;
+  Products?: ProductCollection;
 
-  public getProducts(): ODataCollection<Product> {
-    return this.relatedODataCollection('Products') as ODataCollection<Product>;
-  }
-  public addProductToProducts(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Products', target, options);
-  }
-  public removeProductFromProducts(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Products', target, options);
-  }
+  
 }

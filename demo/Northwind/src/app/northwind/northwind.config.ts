@@ -54,7 +54,7 @@ export const NorthwindConfig = {
   baseUrl: 'https://services.odata.org/V4/Northwind/Northwind.svc/',
   metadataUrl: 'https://services.odata.org/V4/Northwind/Northwind.svc/$metadata',
   withCredentials: true,
-  creation: new Date('2019-07-24T18:29:21.3342518-03:00'),
+  creation: new Date('2019-08-02T21:37:20.1298628-03:00'),
   version: '4.0',
   enums: {
     

@@ -1,33 +1,26 @@
 import { Product } from './product.model';
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { ProductCollection } from './product.collection';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
 
 export class Category extends ODataModel {
   static type = 'NorthwindModel.Category';
   static schema = Schema.create({
     keys: [
-        'CategoryID'
+      {name: 'CategoryID'}
     ],
     fields: [
-      {name: 'CategoryID', required: true, type: 'Number'},
-      {name: 'CategoryName', required: true, type: 'String', length: 15},
-      {name: 'Description', required: true, type: 'String'},
-      {name: 'Picture', required: true, type: 'String'},
-      {name: 'Products', required: false, type: 'NorthwindModel.ProductCollection'}
-    ],
-    defaults: {}
+      {name: 'CategoryID', type: 'Number', required: true},
+      {name: 'CategoryName', type: 'String', required: true, length: 15},
+      {name: 'Description', type: 'String', required: true},
+      {name: 'Picture', type: 'String', required: true},
+      {name: 'Products', type: 'NorthwindModel.ProductCollection', ctor: true, related: true, collection: true}
+    ]
   });
   CategoryID: number;
   CategoryName: string;
   Description: string;
   Picture: string;
+  Products?: ProductCollection;
 
-  public getProducts(): ODataCollection<Product> {
-    return this.relatedODataCollection('Products') as ODataCollection<Product>;
-  }
-  public addProductToProducts(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Products', target, options);
-  }
-  public removeProductFromProducts(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Products', target, options);
-  }
+  
 }

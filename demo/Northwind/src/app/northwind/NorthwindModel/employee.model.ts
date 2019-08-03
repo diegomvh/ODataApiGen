@@ -1,38 +1,40 @@
 import { Order } from './order.model';
 import { Territory } from './territory.model';
-import { Schema, Model, ODataQueryBase, ODataModel, ODataCollection } from 'angular-odata';
+import { OrderCollection } from './order.collection';
+import { TerritoryCollection } from './territory.collection';
+import { Schema, Model, ODataQueryBuilder, ODataModel, ODataCollection, PlainObject } from 'angular-odata';
+import { EmployeeCollection } from './employee.collection';
 
 export class Employee extends ODataModel {
   static type = 'NorthwindModel.Employee';
   static schema = Schema.create({
     keys: [
-        'EmployeeID'
+      {name: 'EmployeeID'}
     ],
     fields: [
-      {name: 'EmployeeID', required: true, type: 'Number'},
-      {name: 'LastName', required: true, type: 'String', length: 20},
-      {name: 'FirstName', required: true, type: 'String', length: 10},
-      {name: 'Title', required: true, type: 'String', length: 30},
-      {name: 'TitleOfCourtesy', required: true, type: 'String', length: 25},
-      {name: 'BirthDate', required: true, type: 'Date'},
-      {name: 'HireDate', required: true, type: 'Date'},
-      {name: 'Address', required: true, type: 'String', length: 60},
-      {name: 'City', required: true, type: 'String', length: 15},
-      {name: 'Region', required: true, type: 'String', length: 15},
-      {name: 'PostalCode', required: true, type: 'String', length: 10},
-      {name: 'Country', required: true, type: 'String', length: 15},
-      {name: 'HomePhone', required: true, type: 'String', length: 24},
-      {name: 'Extension', required: true, type: 'String', length: 4},
-      {name: 'Photo', required: true, type: 'String'},
-      {name: 'Notes', required: true, type: 'String'},
-      {name: 'ReportsTo', required: true, type: 'Number'},
-      {name: 'PhotoPath', required: true, type: 'String', length: 255},
-      {name: 'Employees1', required: false, type: 'NorthwindModel.EmployeeCollection'},
-      {name: 'Employee1', required: false, type: 'NorthwindModel.Employee'},
-      {name: 'Orders', required: false, type: 'NorthwindModel.OrderCollection'},
-      {name: 'Territories', required: false, type: 'NorthwindModel.TerritoryCollection'}
-    ],
-    defaults: {}
+      {name: 'EmployeeID', type: 'Number', required: true},
+      {name: 'LastName', type: 'String', required: true, length: 20},
+      {name: 'FirstName', type: 'String', required: true, length: 10},
+      {name: 'Title', type: 'String', required: true, length: 30},
+      {name: 'TitleOfCourtesy', type: 'String', required: true, length: 25},
+      {name: 'BirthDate', type: 'Date', required: true},
+      {name: 'HireDate', type: 'Date', required: true},
+      {name: 'Address', type: 'String', required: true, length: 60},
+      {name: 'City', type: 'String', required: true, length: 15},
+      {name: 'Region', type: 'String', required: true, length: 15},
+      {name: 'PostalCode', type: 'String', required: true, length: 10},
+      {name: 'Country', type: 'String', required: true, length: 15},
+      {name: 'HomePhone', type: 'String', required: true, length: 24},
+      {name: 'Extension', type: 'String', required: true, length: 4},
+      {name: 'Photo', type: 'String', required: true},
+      {name: 'Notes', type: 'String', required: true},
+      {name: 'ReportsTo', type: 'Number', required: true},
+      {name: 'PhotoPath', type: 'String', required: true, length: 255},
+      {name: 'Employees1', type: 'NorthwindModel.Employee', collection: true},
+      {name: 'Employee1', type: 'NorthwindModel.Employee'},
+      {name: 'Orders', type: 'NorthwindModel.OrderCollection', ctor: true, related: true, collection: true},
+      {name: 'Territories', type: 'NorthwindModel.TerritoryCollection', ctor: true, related: true, collection: true}
+    ]
   });
   EmployeeID: number;
   LastName: string;
@@ -52,41 +54,10 @@ export class Employee extends ODataModel {
   Notes: string;
   ReportsTo: number;
   PhotoPath: string;
+  Employees1?: EmployeeCollection;
+  Employee1?: Employee;
+  Orders?: OrderCollection;
+  Territories?: TerritoryCollection;
 
-  public getEmployees1(): ODataCollection<Employee> {
-    return this.relatedODataCollection('Employees1') as ODataCollection<Employee>;
-  }
-  public addEmployeeToEmployees1(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Employees1', target, options);
-  }
-  public removeEmployeeFromEmployees1(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Employees1', target, options);
-  }
-  public getEmployee1(): Employee {
-    return this.relatedODataModel('Employee1') as Employee;
-  }
-  public setEmployeeAsEmployee1(target: ODataQueryBase, options?) {
-    return this.createODataModelRef('Employee1', target, options);
-  }
-  public unsetEmployeeAsEmployee1(target: ODataQueryBase, options?) {
-    return this.deleteODataModelRef('Employee1', target, options);
-  }
-  public getOrders(): ODataCollection<Order> {
-    return this.relatedODataCollection('Orders') as ODataCollection<Order>;
-  }
-  public addOrderToOrders(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Orders', target, options);
-  }
-  public removeOrderFromOrders(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Orders', target, options);
-  }
-  public getTerritories(): ODataCollection<Territory> {
-    return this.relatedODataCollection('Territories') as ODataCollection<Territory>;
-  }
-  public addTerritoryToTerritories(target: ODataQueryBase, options?) {
-    return this.createODataCollectionRef('Territories', target, options);
-  }
-  public removeTerritoryFromTerritories(target: ODataQueryBase, options?) {
-    return this.deleteODataCollectionRef('Territories', target, options);
-  }
+  
 }

@@ -3,5 +3,5 @@ import { Collection, ODataCollection } from 'angular-odata';
 
 export class Summary_of_Sales_by_QuarterCollection extends ODataCollection<Summary_of_Sales_by_Quarter> {
   static type = 'NorthwindModel.Summary_of_Sales_by_QuarterCollection';
-  static model = 'NorthwindModel.Summary_of_Sales_by_Quarter';
+  static Model = Summary_of_Sales_by_Quarter;
 }

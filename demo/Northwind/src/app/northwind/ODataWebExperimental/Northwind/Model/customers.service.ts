@@ -11,9 +11,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class CustomersService extends ODataModelService<Customer> {
-  static model = 'NorthwindModel.Customer';
-  static collection = 'NorthwindModel.CustomerCollection';
+export class CustomersService extends ODataModelService {
+  static modelType = 'NorthwindModel.Customer';
+  static collectionType = 'NorthwindModel.CustomerCollection';
 
   constructor(
     protected http: HttpClient,

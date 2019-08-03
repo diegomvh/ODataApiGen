@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductsService, ProductCollection } from './northwind';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -20,16 +21,16 @@ export class AppComponent implements OnInit {
 
   async fetchProducts() {
     let products = await this.products.fetch().toPromise();
-    for (var p of products.models)
-      console.log(p.toJSON());
+    for (var p of products)
+      console.log(p);
     products = await products.getNextPage().toPromise();
-    for (var p of products.models)
-      console.log(p.toJSON());
+    for (var p of products)
+      console.log(p);
     products = await products.getNextPage().toPromise();
-    for (var p of products.models)
-      console.log(p.toJSON());
+    for (var p of products)
+      console.log(p);
     products = await products.getNextPage().toPromise();
-    for (var p of products.models)
-      console.log(p.toJSON());
+    for (var p of products)
+      console.log(p);
   }
 }
