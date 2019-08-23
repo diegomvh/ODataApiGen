@@ -1,0 +1,10 @@
+{
+    "MetadataPath": "http://nb-mdp-dev02:57970/$metadata",
+    "EndpointName": "SiuApi",
+    "Output": "../../../../../DefensaChubut/SIU-Angular/src/app/siuapi",
+    "Secure": true,
+    "Batch": false,
+    "PurgeOutput": true,
+    "UseInterfaces": true,
+    "UseReferences": true
+}

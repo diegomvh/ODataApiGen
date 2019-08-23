@@ -52,7 +52,7 @@ import {{ Collection, ODataCollection }} from 'angular-odata';
 
 export {this.GetSignature()} {{
   static type = '{this.Type}';
-  static Model = {this.GetTypescriptType(this.EdmStructuredType.Type)};
+  static modelType = '{this.Model.Type}';
 }}";
         }
 

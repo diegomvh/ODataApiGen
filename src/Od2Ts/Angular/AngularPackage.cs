@@ -17,7 +17,7 @@ namespace Od2Ts.Angular
         public ICollection<Angular.Collection> Collections { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
 
-        public AngularPackage(string endpointName, string metadataPath, bool secure, string version) : base(endpointName, metadataPath, secure, version)
+        public AngularPackage(string endpointName, string metadataPath, bool secure, bool batch, string version) : base(endpointName, metadataPath, secure, batch, version)
         {
             this.Module = new Module(this);
             Config = new Angular.Config(this);

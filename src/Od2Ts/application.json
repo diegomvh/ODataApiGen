@@ -3,7 +3,8 @@
     "EndpointName": "Northwind",
     "Output": "../../demo/Northwind/src/app/northwind",
     "Secure": true,
+    "Batch": false,
     "PurgeOutput": true,
-    "UseInterfaces": false,
+    "UseInterfaces": true,
     "UseReferences": true
 }

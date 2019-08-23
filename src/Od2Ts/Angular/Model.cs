@@ -31,7 +31,6 @@ namespace Od2Ts.Angular
             {
                 var types = this.EdmStructuredType.NavigationProperties
                     .Select(a => a.Type)
-                    .Where(a => a != this.EdmStructuredType.Type)
                     .ToList();
                 /*For Not-EDM types (e.g. enums with namespaces, complex types*/
                 types.AddRange(this.EdmStructuredType.Properties

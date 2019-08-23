@@ -13,24 +13,28 @@ namespace Od2Ts.Angular {
         public override string Render() {
             var imports = this.RenderImports();
             var enums = this.Package.Enums.Select(enu => $"'{enu.EdmEnumType.Type}': {enu.Name}");
-            var models = this.Package.Models.Where(m => m is ModelClass).Select(model => $"'{model.EdmStructuredType.Type}': {model.Name}");
-            var collections = this.Package.Collections.Select(col => $"'{col.EdmStructuredType.Type}Collection': {col.Name}");
+            var models = this.Package.Models
+              .Where(m => m is ModelClass)
+              .Select(model => model.Name);
+            var collections = this.Package.Collections
+              .Select(col => col.Name);
             return $@"{String.Join("\n", imports)}
 export const {this.Name} = {{
   baseUrl: '{this.Package.MetadataPath.TrimEnd("$metadata".ToCharArray())}',
   metadataUrl: '{this.Package.MetadataPath}',
   withCredentials: {this.Package.Secure.ToString().ToLower()},
+  batchQueries: {this.Package.BatchQueries.ToString().ToLower()},
   creation: new Date('{DateTime.Now.ToString("o")}'),
   version: '{this.Package.Version}',
   enums: {{
     {String.Join(",\n    ", enums)}
   }},
-  models: {{
+  models: [
     {String.Join(",\n    ", models)}
-  }},
-  collections: {{
+  ],
+  collections: [
     {String.Join(",\n    ", collections)}
-  }}
+  ]
 }}";
         }
         public override string Name => this.Package.EndpointName + "Config";

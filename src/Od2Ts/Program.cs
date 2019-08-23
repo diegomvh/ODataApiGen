@@ -18,6 +18,7 @@ namespace Od2Ts
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
         public static bool Secure { get; set; }
+        public static bool Batch { get; set; }
         public static bool UseInterfaces { get; set; }
         public static bool UseReferences { get; set; }
         public static bool PurgeOutput { get; set; }
@@ -42,6 +43,7 @@ namespace Od2Ts
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
             Secure = Configuration.GetValue<bool>("Secure");
+            Batch = Configuration.GetValue<bool>("Batch");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
             UseInterfaces = Configuration.GetValue<bool>("UseInterfaces");
             UseReferences = Configuration.GetValue<bool>("UseReferences");
@@ -53,7 +55,7 @@ namespace Od2Ts
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var package = new Angular.AngularPackage(EndpointName, MetadataPath, Secure, "4.0");
+            var package = new Angular.AngularPackage(EndpointName, MetadataPath, Secure, Batch, "4.0");
             package.UseInterfaces = UseInterfaces;
             package.UseReferences = UseReferences;
             package.LoadMetadata(metadataReader);
