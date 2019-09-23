@@ -26,9 +26,16 @@ namespace Od2Ts.Angular
         {
             get
             {
+                var parameters = new List<Models.Parameter>();
+                foreach (var cal in this.EdmEntitySet.CustomActions)
+                    parameters.AddRange(cal.Parameters);
+                foreach (var cal in this.EdmEntitySet.CustomFunctions)
+                    parameters.AddRange(cal.Parameters);
+
                 var list = new List<string> {
                     this.EdmEntitySet.EntityType
                 };
+                //list.AddRange(parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList().SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
@@ -49,10 +56,16 @@ namespace Od2Ts.Angular
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
                 var returnTypeName = this.GetTypescriptType(callable.ReturnType);
-                var returnType = returnTypeName + (callable.ReturnsCollection ? "[]" : "");
+                var returnType = callable.ReturnsCollection ? $"ODataSet<{returnTypeName}>" : $"{returnTypeName}"; 
                 var baseMethodName = callable.IsCollectionAction
                     ? $"customCollection{callable.Type}"
                     : $"custom{callable.Type}";
+
+                baseMethodName = callable.IsEdmReturnType ? 
+                        $"{baseMethodName}Property" : 
+                    callable.ReturnsCollection ?
+                        $"{baseMethodName}Set" : 
+                        $"{baseMethodName}"; 
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
@@ -74,21 +87,22 @@ namespace Od2Ts.Angular
                     (p.IsCollection? "[]" : "") + 
                     (optionals.Contains(p)? " = null" : "")
                 ));
-                argumentWithType.Add("options?");
+                argumentWithType.Add(@"options?: {
+    headers?: HttpHeaders | {[header: string]: string | string[]},
+    params?: HttpParams|{[param: string]: string | string[]},
+    reportProgress?: boolean,
+    withCredentials?: boolean
+  }");
 
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{returnType}> {{" +
                     $"\n    var body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
-                    $"\n    return this.{baseMethodName}(" +
+                    $"\n    return this.{baseMethodName}<{returnTypeName}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
-                    (parameters.Any()? ", body, options)" : ", options)") + 
-                    (callable.IsEdmReturnType ? 
-                        $"\n      .pipe(map(resp => resp.toPropertyValue<{returnTypeName}>()))\n  }}" : 
-                    callable.ReturnsCollection ?
-                        $"\n      .pipe(map(resp => resp.toEntitySet<{returnTypeName}>().getEntities()))\n  }}" : 
-                        $"\n      .pipe(map(resp => resp.toEntity<{returnTypeName}>()))\n  }}");
+                    (parameters.Any()? @", body, options);" : ", options);") +
+                    $"\n  }}";
             }
         }
 
@@ -99,23 +113,36 @@ namespace Od2Ts.Angular
                 var methodRelationName = nav.Name;
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+                var baseMethodGetName = nav.IsCollection ? "navigationPropertySet" : "navigationProperty";
                 var baseMethodCreateName = nav.IsCollection ? $"createCollectionRef" : $"createRef";
                 var baseMethodDeleteName = nav.IsCollection ? $"deleteCollectionRef" : $"deleteRef";
-                var returnType = (nav.IsCollection) ? 
-                    $"EntitySet<{this.GetTypescriptType(nav.Type)}>" :
-                    $"{this.GetTypescriptType(nav.Type)}";
+                var returnType = (nav.IsCollection) ? $"ODataSet<{type}>" : $"{type}"; 
 
                 // Navigation
-                yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?): Observable<{returnType}> {{
-    return this.navigationProperty(entity, '{nav.Name}', options)
-        .pipe(map(resp => {(nav.IsCollection? $"resp.toEntitySet<{this.GetTypescriptType(nav.Type)}>()" : $"resp.toEntity<{this.GetTypescriptType(nav.Type)}>()")}));
+                yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?: {{
+    headers?: HttpHeaders | {{[header: string]: string | string[]}},
+    params?: HttpParams|{{[param: string]: string | string[]}},
+    reportProgress?: boolean,
+    withCredentials?: boolean
+  }}): Observable<{returnType}> {{
+    return this.{baseMethodGetName}<{type}>(entity, '{nav.Name}', options);
   }}";
                 // Link
-                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataQueryBase, options?) {{
+                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataRequest, options?: {{
+    headers?: HttpHeaders | {{[header: string]: string | string[]}},
+    params?: HttpParams|{{[param: string]: string | string[]}},
+    reportProgress?: boolean,
+    withCredentials?: boolean
+  }}) {{
     return this.{baseMethodCreateName}(entity, '{nav.Name}', target, options);
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataQueryBase, options?) {{
+                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataRequest, options?: {{
+    headers?: HttpHeaders | {{[header: string]: string | string[]}},
+    params?: HttpParams|{{[param: string]: string | string[]}},
+    reportProgress?: boolean,
+    withCredentials?: boolean
+  }}) {{
     return this.{baseMethodDeleteName}(entity, '{nav.Name}', target, options);
   }}";
             }
@@ -170,19 +197,14 @@ namespace Od2Ts.Angular
 
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
-import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataEntityService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
+import {{ HttpHeaders, HttpParams }} from '@angular/common/http';
+import {{ ODataEntityService, ODataContext, ODataRequest, ODataSet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
 @Injectable()
 export {this.GetSignature()} {{
-  constructor(
-    protected http: HttpClient,
-    public context: ODataContext
-  ) {{
-    super(http, context, '{this.EdmEntitySet.EntitySetName}');
-  }}
+  static set: string = '{this.EdmEntitySet.EntitySetName}';
   
   {RenderKeyResolver()}
   
@@ -209,7 +231,7 @@ export {this.GetSignature()} {{
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataModelService, ODataContext, ODataQueryBase, EntitySet }} from 'angular-odata';
+import {{ ODataModelService, ODataContext, ODataRequest, ODataSet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 

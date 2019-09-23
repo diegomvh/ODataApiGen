@@ -23,7 +23,7 @@ export const {this.Name} = {{
   baseUrl: '{this.Package.MetadataPath.TrimEnd("$metadata".ToCharArray())}',
   metadataUrl: '{this.Package.MetadataPath}',
   withCredentials: {this.Package.Secure.ToString().ToLower()},
-  batchQueries: {this.Package.BatchQueries.ToString().ToLower()},
+  batch: {this.Package.BatchQueries.ToString().ToLower()},
   creation: new Date('{DateTime.Now.ToString("o")}'),
   version: '{this.Package.Version}',
   enums: {{
