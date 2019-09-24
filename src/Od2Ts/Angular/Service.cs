@@ -56,16 +56,16 @@ namespace Od2Ts.Angular
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
                 var returnTypeName = this.GetTypescriptType(callable.ReturnType);
-                var returnType = callable.ReturnsCollection ? $"ODataSet<{returnTypeName}>" : $"{returnTypeName}"; 
+                var returnType = callable.ReturnsCollection ? $"ODataEntitySet<{returnTypeName}>" : $"{returnTypeName}"; 
                 var baseMethodName = callable.IsCollectionAction
                     ? $"customCollection{callable.Type}"
                     : $"custom{callable.Type}";
 
-                baseMethodName = callable.IsEdmReturnType ? 
-                        $"{baseMethodName}Property" : 
+                var responseType = callable.IsEdmReturnType ? 
+                        $"property" : 
                     callable.ReturnsCollection ?
-                        $"{baseMethodName}Set" : 
-                        $"{baseMethodName}"; 
+                        $"set" : 
+                        $"json"; 
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
@@ -101,8 +101,14 @@ namespace Od2Ts.Angular
                     $"\n    return this.{baseMethodName}<{returnTypeName}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
-                    (parameters.Any()? @", body, options);" : ", options);") +
-                    $"\n  }}";
+                    $@",body, {{
+      headers: options && options.headers,
+      params: options && options.params,
+      responseType: '{responseType}',
+      reportProgress: options && options.reportProgress,
+      withCredentials: options && options.withCredentials
+    }});
+  }}";
             }
         }
 
@@ -111,12 +117,11 @@ namespace Od2Ts.Angular
                 var type = this.GetTypescriptType(nav.Type);
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
+
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
-                var baseMethodGetName = nav.IsCollection ? "navigationPropertySet" : "navigationProperty";
-                var baseMethodCreateName = nav.IsCollection ? $"createCollectionRef" : $"createRef";
-                var baseMethodDeleteName = nav.IsCollection ? $"deleteCollectionRef" : $"deleteRef";
-                var returnType = (nav.IsCollection) ? $"ODataSet<{type}>" : $"{type}"; 
+
+                var returnType = (nav.IsCollection) ? $"ODataEntitySet<{type}>" : $"{type}"; 
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?: {{
@@ -125,25 +130,43 @@ namespace Od2Ts.Angular
     reportProgress?: boolean,
     withCredentials?: boolean
   }}): Observable<{returnType}> {{
-    return this.{baseMethodGetName}<{type}>(entity, '{nav.Name}', options);
+    return this.navigationProperty<{type}>(entity, '{nav.Name}', {{
+        headers: options && options.headers,
+        params: options && options.params,
+        responseType: {(nav.IsCollection? "'set'" : "'json'")},
+        reportProgress: options && options.reportProgress,
+        withCredentials: options && options.withCredentials
+    }});
   }}";
                 // Link
-                yield return $@"public {methodCreateName}(entity: {EdmEntityTypeName}, target: ODataRequest, options?: {{
+                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>, options?: {{
     headers?: HttpHeaders | {{[header: string]: string | string[]}},
     params?: HttpParams|{{[param: string]: string | string[]}},
     reportProgress?: boolean,
     withCredentials?: boolean
   }}) {{
-    return this.{baseMethodCreateName}(entity, '{nav.Name}', target, options);
+    return this.createRef(entity, '{nav.Name}', target, {{
+        headers: options && options.headers,
+        params: options && options.params,
+        responseType: {(nav.IsCollection? "'set'" : "'json'")},
+        reportProgress: options && options.reportProgress,
+        withCredentials: options && options.withCredentials
+    }});
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}(entity: {EdmEntityTypeName}, target: ODataRequest, options?: {{
+                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>, options?: {{
     headers?: HttpHeaders | {{[header: string]: string | string[]}},
     params?: HttpParams|{{[param: string]: string | string[]}},
     reportProgress?: boolean,
     withCredentials?: boolean
   }}) {{
-    return this.{baseMethodDeleteName}(entity, '{nav.Name}', target, options);
+    return this.deleteRef(entity, '{nav.Name}', target, {{
+        headers: options && options.headers,
+        params: options && options.params,
+        responseType: {(nav.IsCollection? "'set'" : "'json'")},
+        reportProgress: options && options.reportProgress,
+        withCredentials: options && options.withCredentials
+    }});
   }}";
             }
         }
@@ -198,9 +221,10 @@ namespace Od2Ts.Angular
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpHeaders, HttpParams }} from '@angular/common/http';
-import {{ ODataEntityService, ODataContext, ODataRequest, ODataSet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
+
+import {{ ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet }} from 'angular-odata';
 
 @Injectable()
 export {this.GetSignature()} {{
@@ -231,7 +255,7 @@ export {this.GetSignature()} {{
             return $@"{String.Join("\n", imports)}
 import {{ Injectable }} from '@angular/core';
 import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataModelService, ODataContext, ODataRequest, ODataSet }} from 'angular-odata';
+import {{ ODataModelService, ODataContext, ODataRequest, ODataEntitySet }} from 'angular-odata';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
