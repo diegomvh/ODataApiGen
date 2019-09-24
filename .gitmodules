@@ -1,6 +1,6 @@
+[submodule "demo/TripPin/projects/angular-odata"]
+	path = demo/TripPin/projects/angular-odata
+	url = git@github.com:diegomvh/angular-odata.git
 [submodule "demo/Northwind/projects/angular-odata"]
 	path = demo/Northwind/projects/angular-odata
-	url = https://github.com/diegomvh/angular-odata.git
-[submodule "demo/server"]
-	path = demo/server
-	url = git@github.com:jaystack/odata-v4-server-mongodb-example.git
+	url = git@github.com:diegomvh/angular-odata.git
