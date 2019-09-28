@@ -29,7 +29,7 @@ export const NorthwindConfig = {
   metadataUrl: 'https://services.odata.org/V4/Northwind/Northwind.svc/$metadata',
   withCredentials: true,
   batch: false,
-  creation: new Date('2019-09-24T16:32:12.2229499-03:00'),
+  creation: new Date('2019-09-28T09:05:41.4170701-03:00'),
   version: '4.0',
   enums: {
     

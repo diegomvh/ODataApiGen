@@ -64,8 +64,8 @@ namespace Od2Ts.Angular
                 var responseType = callable.IsEdmReturnType ? 
                         $"property" : 
                     callable.ReturnsCollection ?
-                        $"set" : 
-                        $"json"; 
+                        $"entityset" : 
+                        $"entity"; 
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
@@ -133,7 +133,7 @@ namespace Od2Ts.Angular
     return this.navigationProperty<{type}>(entity, '{nav.Name}', {{
         headers: options && options.headers,
         params: options && options.params,
-        responseType: {(nav.IsCollection? "'set'" : "'json'")},
+        responseType: {(nav.IsCollection? "'entityset'" : "'entity'")},
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     }});
@@ -148,7 +148,7 @@ namespace Od2Ts.Angular
     return this.createRef(entity, '{nav.Name}', target, {{
         headers: options && options.headers,
         params: options && options.params,
-        responseType: {(nav.IsCollection? "'set'" : "'json'")},
+        responseType: {(nav.IsCollection? "'entityset'" : "'entity'")},
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     }});
@@ -163,7 +163,7 @@ namespace Od2Ts.Angular
     return this.deleteRef(entity, '{nav.Name}', target, {{
         headers: options && options.headers,
         params: options && options.params,
-        responseType: {(nav.IsCollection? "'set'" : "'json'")},
+        responseType: {(nav.IsCollection? "'entityset'" : "'entity'")},
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     }});
@@ -224,12 +224,16 @@ import {{ HttpHeaders, HttpParams }} from '@angular/common/http';
 import {{ Observable }} from 'rxjs';
 import {{ map }} from 'rxjs/operators';
 
-import {{ ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet }} from 'angular-odata';
+import {{ ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet }} from 'angular-odata';
 
 @Injectable()
 export {this.GetSignature()} {{
   static set: string = '{this.EdmEntitySet.EntitySetName}';
   
+  constructor(protected odata: ODataClient) {{
+    super(odata);
+  }}
+
   {RenderKeyResolver()}
   
   {String.Join("\n\n  ", methods)}

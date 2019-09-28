@@ -5,12 +5,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class CategoriesService extends ODataEntityService<Category> {
   static set: string = 'Categories';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Category>) {
     return entity.CategoryID;
   }
@@ -24,7 +28,7 @@ export class CategoriesService extends ODataEntityService<Category> {
     return this.navigationProperty<Product>(entity, 'Products', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -39,7 +43,7 @@ export class CategoriesService extends ODataEntityService<Category> {
     return this.createRef(entity, 'Products', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -54,7 +58,7 @@ export class CategoriesService extends ODataEntityService<Category> {
     return this.deleteRef(entity, 'Products', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });

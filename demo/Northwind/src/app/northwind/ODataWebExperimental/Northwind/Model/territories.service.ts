@@ -6,12 +6,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class TerritoriesService extends ODataEntityService<Territory> {
   static set: string = 'Territories';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Territory>) {
     return entity.TerritoryID;
   }
@@ -25,7 +29,7 @@ export class TerritoriesService extends ODataEntityService<Territory> {
     return this.navigationProperty<Region>(entity, 'Region', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -40,7 +44,7 @@ export class TerritoriesService extends ODataEntityService<Territory> {
     return this.createRef(entity, 'Region', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -55,7 +59,7 @@ export class TerritoriesService extends ODataEntityService<Territory> {
     return this.deleteRef(entity, 'Region', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -70,7 +74,7 @@ export class TerritoriesService extends ODataEntityService<Territory> {
     return this.navigationProperty<Employee>(entity, 'Employees', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -85,7 +89,7 @@ export class TerritoriesService extends ODataEntityService<Territory> {
     return this.createRef(entity, 'Employees', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -100,7 +104,7 @@ export class TerritoriesService extends ODataEntityService<Territory> {
     return this.deleteRef(entity, 'Employees', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });

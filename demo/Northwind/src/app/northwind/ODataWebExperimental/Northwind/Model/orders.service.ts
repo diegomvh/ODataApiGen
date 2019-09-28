@@ -8,12 +8,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class OrdersService extends ODataEntityService<Order> {
   static set: string = 'Orders';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Order>) {
     return entity.OrderID;
   }
@@ -27,7 +31,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.navigationProperty<Customer>(entity, 'Customer', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -42,7 +46,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.createRef(entity, 'Customer', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -57,7 +61,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.deleteRef(entity, 'Customer', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -72,7 +76,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.navigationProperty<Employee>(entity, 'Employee', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -87,7 +91,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.createRef(entity, 'Employee', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -102,7 +106,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.deleteRef(entity, 'Employee', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -117,7 +121,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.navigationProperty<Order_Detail>(entity, 'Order_Details', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -132,7 +136,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.createRef(entity, 'Order_Details', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -147,7 +151,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.deleteRef(entity, 'Order_Details', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -162,7 +166,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.navigationProperty<Shipper>(entity, 'Shipper', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -177,7 +181,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.createRef(entity, 'Shipper', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -192,7 +196,7 @@ export class OrdersService extends ODataEntityService<Order> {
     return this.deleteRef(entity, 'Shipper', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });

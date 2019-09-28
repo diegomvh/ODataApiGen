@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
     let get = (query: ODataEntitySetRequest<Product>, skip = null) => {
       if (skip)
         query.skip(skip);
-      return query.get();
+      return query.get({withCount: true});
     }
     get(q)
     .pipe(

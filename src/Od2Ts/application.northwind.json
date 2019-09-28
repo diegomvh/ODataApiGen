@@ -2,7 +2,7 @@
     "MetadataPath": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
     "EndpointName": "Northwind",
     "Output": "../../demo/Northwind/src/app/northwind",
-    "Secure": true,
+    "Secure": false,
     "Batch": false,
     "PurgeOutput": true,
     "UseInterfaces": true,

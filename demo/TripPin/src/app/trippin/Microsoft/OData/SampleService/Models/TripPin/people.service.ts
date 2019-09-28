@@ -8,12 +8,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class PeopleService extends ODataEntityService<Person> {
   static set: string = 'People';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Person>) {
     return entity.UserName;
   }
@@ -27,7 +31,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.navigationProperty<Person>(entity, 'Friends', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -42,7 +46,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.createRef(entity, 'Friends', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -57,7 +61,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.deleteRef(entity, 'Friends', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -72,7 +76,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.navigationProperty<Trip>(entity, 'Trips', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -87,7 +91,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.createRef(entity, 'Trips', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -102,7 +106,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.deleteRef(entity, 'Trips', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -117,7 +121,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.navigationProperty<Photo>(entity, 'Photo', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -132,7 +136,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.createRef(entity, 'Photo', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -147,7 +151,7 @@ export class PeopleService extends ODataEntityService<Person> {
     return this.deleteRef(entity, 'Photo', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'json',
+        responseType: 'entity',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });

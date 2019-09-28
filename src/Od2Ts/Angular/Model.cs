@@ -161,8 +161,14 @@ namespace Od2Ts.Angular
                     d.Add("ctor", "true");
                 if (!property.IsNullable)
                     d.Add("required", "true");
-                if (property is NavigationProperty)
+                if (property is NavigationProperty) {
                     d.Add("related", "true");
+                    var nav = property as NavigationProperty;
+                    if (!String.IsNullOrEmpty(nav.ReferentialConstraint))
+                        d.Add("field", $"'{nav.ReferentialConstraint}'");
+                    if (!String.IsNullOrEmpty(nav.ReferencedProperty))
+                        d.Add("ref", $"'{nav.ReferencedProperty}'");
+                }
                 if (property.IsCollection)
                     d.Add("collection", "true");
             }

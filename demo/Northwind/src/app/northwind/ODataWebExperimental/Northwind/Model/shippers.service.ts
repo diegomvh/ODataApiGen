@@ -5,12 +5,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class ShippersService extends ODataEntityService<Shipper> {
   static set: string = 'Shippers';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Shipper>) {
     return entity.ShipperID;
   }
@@ -24,7 +28,7 @@ export class ShippersService extends ODataEntityService<Shipper> {
     return this.navigationProperty<Order>(entity, 'Orders', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -39,7 +43,7 @@ export class ShippersService extends ODataEntityService<Shipper> {
     return this.createRef(entity, 'Orders', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -54,7 +58,7 @@ export class ShippersService extends ODataEntityService<Shipper> {
     return this.deleteRef(entity, 'Orders', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });

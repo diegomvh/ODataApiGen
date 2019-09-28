@@ -4,12 +4,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class Summary_of_Sales_by_YearsService extends ODataEntityService<Summary_of_Sales_by_Year> {
   static set: string = 'Summary_of_Sales_by_Years';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Summary_of_Sales_by_Year>) {
     return entity.OrderID;
   }

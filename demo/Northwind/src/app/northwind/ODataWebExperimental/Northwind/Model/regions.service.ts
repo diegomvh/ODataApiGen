@@ -5,12 +5,16 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataContext, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
+import { ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 @Injectable()
 export class RegionsService extends ODataEntityService<Region> {
   static set: string = 'Regions';
   
+  constructor(protected odata: ODataClient) {
+    super(odata);
+  }
+
   protected resolveEntityKey(entity: Partial<Region>) {
     return entity.RegionID;
   }
@@ -24,7 +28,7 @@ export class RegionsService extends ODataEntityService<Region> {
     return this.navigationProperty<Territory>(entity, 'Territories', {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -39,7 +43,7 @@ export class RegionsService extends ODataEntityService<Region> {
     return this.createRef(entity, 'Territories', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });
@@ -54,7 +58,7 @@ export class RegionsService extends ODataEntityService<Region> {
     return this.deleteRef(entity, 'Territories', target, {
         headers: options && options.headers,
         params: options && options.params,
-        responseType: 'set',
+        responseType: 'entityset',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     });

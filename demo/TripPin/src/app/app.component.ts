@@ -8,7 +8,6 @@ import { PeopleService, PhotosService, AirlinesService, AirportsService } from '
 })
 export class AppComponent {
   title = 'TripPin';
-  data = []
 
   constructor(
     private photos: PhotosService,
