@@ -49,13 +49,13 @@ namespace Od2Ts
             UseReferences = Configuration.GetValue<bool>("UseReferences");
             
             var directoryManager = new DirectoryManager(Output);
-            var templateRenderer = new TemplateRenderer(Output);
+            var templateRenderer = new Renderer(Output);
 
             var metadataReader = new MetadataReader(
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var package = new Angular.AngularPackage(EndpointName, MetadataPath, Secure, Batch, "4.0");
+            var package = new Angular.Package(EndpointName, MetadataPath, Secure, Batch, "4.0");
             package.UseInterfaces = UseInterfaces;
             package.UseReferences = UseReferences;
             package.LoadMetadata(metadataReader);

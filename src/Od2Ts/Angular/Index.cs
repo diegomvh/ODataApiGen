@@ -6,8 +6,8 @@ namespace Od2Ts.Angular
 {
     public class Index : AngularRenderable
     {
-        public Angular.AngularPackage Package {get; private set;}
-        public Index(Angular.AngularPackage package)
+        public Angular.Package Package {get; private set;}
+        public Index(Angular.Package package)
         {
             this.Package = package;
         }

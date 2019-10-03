@@ -4,8 +4,8 @@ using System.Linq;
 
 namespace Od2Ts.Angular {
     public class Config : AngularRenderable {
-        public Angular.AngularPackage Package {get; private set;}
-        public Config(AngularPackage package) {
+        public Angular.Package Package {get; private set;}
+        public Config(Package package) {
             this.Package = package;
         }
         public override string Render() {

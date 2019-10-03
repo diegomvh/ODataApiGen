@@ -11,6 +11,7 @@ namespace Od2Ts.Angular
         public StructuredType EdmStructuredType { get; private set; }
 
         public Model Model { get; private set; }
+        public Angular.Service Service {get; private set;}
 
         public Collection(StructuredType type)
         {
@@ -20,6 +21,11 @@ namespace Od2Ts.Angular
         public void SetModel(Model model)
         {
             this.Model = model;
+        }
+        
+        public void SetService(Service service)
+        {
+            this.Service = service;
         }
 
         public override string Name => this.EdmStructuredType.Name + "Collection";
@@ -38,9 +44,11 @@ namespace Od2Ts.Angular
         {
             var signature = $"class {this.Name}";
             if (this.EdmStructuredType is ComplexType)
-                signature = $"{signature} extends Collection<{this.GetTypescriptType(this.EdmStructuredType.Type)}>";
+                signature = $"{signature} extends Collection";
+                //signature = $"{signature} extends Collection<{this.GetTypescriptType(this.EdmStructuredType.Type)}>";
             else
-                signature = $"{signature} extends ODataCollection<{this.GetTypescriptType(this.EdmStructuredType.Type)}>";
+                signature = $"{signature} extends ODataCollection";
+                //signature = $"{signature} extends ODataCollection<{this.GetTypescriptType(this.EdmStructuredType.Type)}>";
             return signature;
         }
         public override string Render()
@@ -51,6 +59,7 @@ namespace Od2Ts.Angular
 import {{ Collection, ODataCollection }} from 'angular-odata';
 
 export {this.GetSignature()} {{
+  static set = '{(this.Service != null ? this.Service.EdmEntitySet.EntitySetName : "")}';
   static type = '{this.Type}';
   static modelType = '{this.Model.Type}';
 }}";

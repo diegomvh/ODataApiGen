@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DotLiquid;
 using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
-    public abstract class Service : AngularRenderable
+    public abstract class Service : AngularRenderable, ILiquidizable
     {
         public Angular.Model Model {get; private set;}
+        public Angular.Collection Collection {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
         public bool References { get; set; } = false;
@@ -22,6 +24,10 @@ namespace Od2Ts.Angular
         public void SetModel(Angular.Model model) {
             this.Model = model;
         }
+        public void SetCollection(Angular.Collection collection) {
+            this.Collection = collection;
+        }
+
         public override IEnumerable<string> ImportTypes
         {
             get
@@ -170,119 +176,15 @@ namespace Od2Ts.Angular
   }}";
             }
         }
+
+        public object ToLiquid()
+        {
+            return new {Name=this.Name};
+        }
+
         public override string Name => this.EdmEntitySet.Name + "Service";
         public override string NameSpace => this.EdmEntitySet.NameSpace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-    }
-
-    public class ServiceEntity : Service
-    {
-        public ServiceEntity(EntitySet type, bool refe) : base(type, refe)
-        {
-        }
-
-        protected string RenderKeyResolver() {
-            var model = this.Model;
-            var keys = model.EdmStructuredType.Keys.ToList(); 
-            var baseModel = model.Base;
-            while (baseModel != null) {
-                keys.AddRange(model.Base.EdmStructuredType.Keys);
-                baseModel = baseModel.Base;
-            }
-            if (keys.Count() == 0)
-                return "";
-            var parts = keys.Select(k => 
-                !String.IsNullOrEmpty(k.Alias) ? 
-                    $"{k.Alias}: entity.{k.Name.Replace('/','.')}" : 
-                    $"{k.Name}: entity.{k.Name}");
-            var key = keys.Count() > 1 ? 
-                $"{{{String.Join(", ", parts)}}}" : 
-                $"entity.{keys.First().Name}";
-
-            return $@"protected resolveEntityKey(entity: Partial<{EdmEntityTypeName}>) {{
-    return {key};
-  }}";
-        }
-
-        public string GetSignature() {
-            var signature = $"class {this.Name}";
-            return $"{signature} extends ODataEntityService<{this.EdmEntityTypeName}>";
-        }
-        public override string Render()
-        {
-            var methods = new List<string>();
-            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomActions));
-            methods.AddRange(this.RenderCallables(this.EdmEntitySet.CustomFunctions));
-            if (References)
-                methods.AddRange(this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties));
-            var imports = this.RenderImports();
-
-            return $@"{String.Join("\n", imports)}
-import {{ Injectable }} from '@angular/core';
-import {{ HttpHeaders, HttpParams }} from '@angular/common/http';
-import {{ Observable }} from 'rxjs';
-import {{ map }} from 'rxjs/operators';
-
-import {{ ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet }} from 'angular-odata';
-
-@Injectable()
-export {this.GetSignature()} {{
-  static set: string = '{this.EdmEntitySet.EntitySetName}';
-  
-  constructor(protected odata: ODataClient) {{
-    super(odata);
-  }}
-
-  {RenderKeyResolver()}
-  
-  {String.Join("\n\n  ", methods)}
-}}";
-        }
-    }
-
-    public class ServiceModel : Service
-    {
-        public ServiceModel(EntitySet type, bool refe) : base(type, refe)
-        {
-        }
-
-        public string GetSignature() {
-            var signature = $"class {this.Name}";
-            return $"{signature} extends ODataModelService";
-        }
-
-        public override string Render()
-        {
-            var imports = this.RenderImports();
-
-            return $@"{String.Join("\n", imports)}
-import {{ Injectable }} from '@angular/core';
-import {{ HttpClient }} from '@angular/common/http';
-import {{ ODataModelService, ODataContext, ODataRequest, ODataEntitySet }} from 'angular-odata';
-import {{ Observable }} from 'rxjs';
-import {{ map }} from 'rxjs/operators';
-
-@Injectable()
-export {this.GetSignature()} {{
-  static modelType = '{this.EdmEntitySet.EntityType}';
-  static collectionType = '{this.EdmEntitySet.EntityType}Collection';
-
-  constructor(
-    protected http: HttpClient,
-    public context: ODataContext
-  ) {{
-    super(http, context, '{this.EdmEntitySet.EntitySetName}');
-  }}
-  
-  model(attrs?: any): {this.Model.Name} {{
-    return super.model(attrs) as {this.Model.Name};
-  }}
-
-  collection(attrs?: any): {this.Model.Name}Collection {{
-    return super.collection(attrs) as {this.Model.Name}Collection;
-  }}
-}}";
-        }
     }
 }
