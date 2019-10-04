@@ -8,6 +8,16 @@ namespace Od2Ts.Angular {
         public Config(Package package) {
             this.Package = package;
         }
+        // Imports
+        public override IEnumerable<string> ImportTypes => Package.Models.SelectMany(m => m.ImportTypes);
+        // Exports
+        public override IEnumerable<string> ExportTypes => new string[] {this.Name};
+        public override IEnumerable<Import> Imports => GetImportRecords();
+        public override string Name => this.Package.EndpointName + "Config";
+        public override string NameSpace => "";
+        public override string FileName => this.Package.EndpointName.ToLower() + ".config";
+        public override string Directory => this.NameSpace;
+
         public override string Render() {
             var imports = this.RenderImports();
             var enums = this.Package.Enums.Select(enu => $"'{enu.EdmEnumType.Type}': {enu.Name}");
@@ -35,18 +45,5 @@ export const {this.Name} = {{
   ]
 }}";
         }
-        public override string Name => this.Package.EndpointName + "Config";
-        public override string NameSpace => "";
-        public override string FileName => this.Package.EndpointName.ToLower() + ".config";
-        public override string Directory => this.NameSpace;
-        public override IEnumerable<string> ImportTypes 
-        {
-            get { 
-                var ns = new List<String>();
-                ns.AddRange(Package.Models.SelectMany(m => m.ImportTypes));
-                return ns;
-            }
-        }
-        public override IEnumerable<string> ExportTypes => new string[] {this.Name};
     }
 }

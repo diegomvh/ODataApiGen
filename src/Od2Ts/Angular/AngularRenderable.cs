@@ -59,7 +59,7 @@ namespace Od2Ts.Angular
             });
         }
 
-        public IEnumerable<Import> Imports => GetImportRecords();
+        public abstract IEnumerable<Import> Imports {get;}
         protected IEnumerable<Import> GetImportRecords()
         {
             var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i => i.Uri).Select(group =>

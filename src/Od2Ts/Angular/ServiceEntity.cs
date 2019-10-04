@@ -11,6 +11,7 @@ namespace Od2Ts.Angular
         public ServiceEntity(EntitySet type, bool refe) : base(type, refe)
         {
         }
+        public override IEnumerable<Import> Imports => GetImportRecords();
         protected string RenderKeyResolver() {
             var model = this.Model;
             var keys = model.EdmStructuredType.Keys.ToList(); 

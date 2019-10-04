@@ -28,6 +28,11 @@ namespace Od2Ts.Angular
             this.Collection = collection;
         }
 
+        public override string Name => this.EdmEntitySet.Name + "Service";
+        public override string NameSpace => this.EdmEntitySet.NameSpace;
+        public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
+        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        // Imports
         public override IEnumerable<string> ImportTypes
         {
             get
@@ -50,8 +55,8 @@ namespace Od2Ts.Angular
             }
         }
 
+        // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
@@ -182,9 +187,5 @@ namespace Od2Ts.Angular
             return new {Name=this.Name};
         }
 
-        public override string Name => this.EdmEntitySet.Name + "Service";
-        public override string NameSpace => this.EdmEntitySet.NameSpace;
-        public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
     }
 }

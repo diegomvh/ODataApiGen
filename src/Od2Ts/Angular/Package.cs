@@ -137,16 +137,14 @@ this.Models.Where(e => types.Contains(e.EdmStructuredType.Type))
 this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
                 );
             }
-            if (this.UseInterfaces)
-                this.Module.Dependencies.AddRange(this.Services);
+            this.Module.Dependencies.AddRange(this.Services);
             this.Config.Dependencies.AddRange(this.Enums);
             this.Config.Dependencies.AddRange(this.Models);
             this.Config.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Enums);
             this.Index.Dependencies.AddRange(this.Models);
             this.Index.Dependencies.AddRange(this.Collections);
-            if (this.UseInterfaces)
-                this.Index.Dependencies.AddRange(this.Services);
+            this.Index.Dependencies.AddRange(this.Services);
         }
 
         public IEnumerable<string> GetAllDirectories()
@@ -174,8 +172,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
             renderables.AddRange(this.Enums);
             renderables.AddRange(this.Models);
             renderables.AddRange(this.Collections);
-            if (this.UseInterfaces)
-                renderables.AddRange(this.Services);
+            renderables.AddRange(this.Services);
             renderables.Add(this.Module);
             renderables.Add(this.Config);
             renderables.Add(this.Index);

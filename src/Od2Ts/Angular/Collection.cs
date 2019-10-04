@@ -9,7 +9,6 @@ namespace Od2Ts.Angular
     public class Collection : AngularRenderable
     {
         public StructuredType EdmStructuredType { get; private set; }
-
         public Model Model { get; private set; }
         public Angular.Service Service {get; private set;}
 
@@ -17,7 +16,6 @@ namespace Od2Ts.Angular
         {
             EdmStructuredType = type;
         }
-
         public void SetModel(Model model)
         {
             this.Model = model;
@@ -27,19 +25,14 @@ namespace Od2Ts.Angular
         {
             this.Service = service;
         }
-
+        // Imports
+        public override IEnumerable<string> ImportTypes => this.Model.ExportTypes.Distinct();
+        // Exports
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.EdmStructuredType.Name + "Collection";
         public override string NameSpace => this.EdmStructuredType.NameSpace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override IEnumerable<string> ImportTypes
-        {
-            get
-            {
-                var types = this.Model.ExportTypes
-                    .ToList();
-                return types.Distinct();
-            }
-        }
         public string GetSignature()
         {
             var signature = $"class {this.Name}";
@@ -66,6 +59,5 @@ export {this.GetSignature()} {{
         }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
     }
 }

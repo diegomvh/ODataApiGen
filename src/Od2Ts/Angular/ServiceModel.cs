@@ -11,6 +11,7 @@ namespace Od2Ts.Angular
         public ServiceModel(EntitySet type, bool refe) : base(type, refe)
         {
         }
+        public override IEnumerable<Import> Imports => GetImportRecords();
         public string GetSignature() {
             var signature = $"class {this.Name}";
             return $"{signature} extends ODataModelService";

@@ -11,10 +11,7 @@ namespace Od2Ts.Angular
         {
             this.Package = package;
         }
-        public override string Name => this.Package.EndpointName;
-        public override string NameSpace => "";
-        public override string FileName => "index";
-        public override string Directory => this.NameSpace;
+        // Imports
         public override IEnumerable<string> ImportTypes 
         {
             get { 
@@ -27,7 +24,13 @@ namespace Od2Ts.Angular
                 return ns;
             }
         }
+        // Exports
         public override IEnumerable<string> ExportTypes => new string[] {};
+        public override IEnumerable<Import> Imports => GetImportRecords();
+        public override string Name => this.Package.EndpointName;
+        public override string NameSpace => "";
+        public override string FileName => "index";
+        public override string Directory => this.NameSpace;
         public override string Render()
         {
             var exports = this.GetImportRecords().Select(record => $"export * from './{record.From}';");

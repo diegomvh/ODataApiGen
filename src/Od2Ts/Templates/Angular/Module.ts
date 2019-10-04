@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 @NgModule({
   providers: [
     {% for service in Services %}{{service.Name}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}]
+    {% endunless %}{% endfor %}
+  ]
 })
 export class {{Name}} { }

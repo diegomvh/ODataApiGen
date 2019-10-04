@@ -11,7 +11,9 @@ namespace Od2Ts.Angular
         public ModelClass(StructuredType type) : base(type)
         {
         }
-
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public override IEnumerable<Import> Imports => GetImportRecords();
         public string GetModelType(string type)
         {
             if (String.IsNullOrWhiteSpace(type))
@@ -41,7 +43,7 @@ namespace Od2Ts.Angular
                     }
             }
         }
-        protected string RenderProperty(Property prop)
+        protected string RenderProperty(Models.Property prop)
         {
             var field = $"{prop.Name}" +
                 (prop.IsNullable ? "?:" : ":") +
@@ -107,7 +109,7 @@ namespace Od2Ts.Angular
             }
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
-        public string RenderField(Property property)
+        public string RenderField(Models.Property property)
         {
             var d = new Dictionary<string, string>() {
                 {"name", $"'{property.Name}'"}
@@ -195,7 +197,5 @@ export {this.GetSignature()} {{
   {String.Join("\n  ", methods)}
 }}";
         }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
     }
 }

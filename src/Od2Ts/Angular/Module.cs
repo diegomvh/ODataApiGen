@@ -19,15 +19,9 @@ namespace Od2Ts.Angular
         public override string Directory => this.NameSpace;
         public IEnumerable<Service> Services => this.Package.Services;
         // Imports and Exports
-        public override IEnumerable<string> ImportTypes
-        {
-            get
-            {
-                return this.Package.Services.Select(a => a.EdmEntitySet.EntityType);
-            }
-        }
-
+        public override IEnumerable<string> ImportTypes => this.Package.Services.Select(a => a.EdmEntitySet.EntityType);
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public override IEnumerable<Import> Imports => GetImportRecords();
 
         public override string Render()
         {
