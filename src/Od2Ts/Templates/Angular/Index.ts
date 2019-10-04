@@ -1,6 +1,2 @@
-{% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
-{% endfor %}
-
-export enum {{Name}} {
-    {% for memebr in members %}{{member}}{% endfor %}
-}
+export * from './{{Package.Endpoint}}.config';
+export * from './{{Package.Endpoint}}.module';

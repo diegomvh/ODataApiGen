@@ -13,11 +13,11 @@ namespace Od2Ts.Angular
         public Angular.Collection Collection {get; private set;}
         public string EdmEntityTypeName {get; set;}
         public Models.EntitySet EdmEntitySet { get; private set; }
-        public bool References { get; set; } = false;
+        public bool UseReferences { get; set; } = false;
         public Service(Models.EntitySet type, bool refe)
         {
             EdmEntitySet = type;
-            References = refe;
+            UseReferences = refe;
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
@@ -57,6 +57,9 @@ namespace Od2Ts.Angular
 
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public string EntityType => this.EdmEntityTypeName;
+        public string EntitySet => this.EdmEntitySet.EntitySetName;
+
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);

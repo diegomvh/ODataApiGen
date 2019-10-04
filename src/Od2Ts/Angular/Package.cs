@@ -163,7 +163,8 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
                 MetadataUrl = this.MetadataPath,
                 WithCredentials = this.Secure.ToString().ToLower(),
                 Creation = DateTime.Now,
-                Version = this.Version 
+                Version = this.Version,
+                Endpoint = this.EndpointName.ToLower()
             };
         }
 

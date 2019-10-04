@@ -31,7 +31,7 @@ namespace Od2Ts
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.trippin.json")
+                .AddJsonFile("application.siu.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-MetadataPath", "MetadataPath"},
                     {"-EndpointName", "EndpointName"},

@@ -16,9 +16,9 @@ namespace Od2Ts.Angular
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        public IEnumerable<Angular.Property> Properties => this.EdmStructuredType.Properties
+        public IEnumerable<Angular.EntityProperty> Properties => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => new Angular.Property(prop));
+                .Select(prop => new Angular.EntityProperty(prop));
 
         public override string Render()
         {

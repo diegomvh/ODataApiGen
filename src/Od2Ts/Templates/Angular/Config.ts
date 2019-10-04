@@ -1,6 +1,5 @@
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
-
 export const {{Name}} = {
   baseUrl: '{{Package.BaseUrl}}',
   metadataUrl: '{{Package.MetadataUrl}}',

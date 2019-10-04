@@ -5,22 +5,29 @@ using DotLiquid;
 
 namespace Od2Ts.Angular
 {
-    public class Property : ILiquidizable
+    public class EntityProperty : ILiquidizable
     {
         private Models.Property Value { get; set; }
-        public Property(Od2Ts.Models.Property prop)
+        public EntityProperty(Od2Ts.Models.Property prop)
         {
             this.Value = prop;
         }
         public IEnumerable<string> Name { get; set; }
 
-        public string Type
+        public string Type => EntityProperty.GetTypescriptType(Value.Type);
+        public object ToLiquid()
         {
-            get
+            return new
             {
-                if (String.IsNullOrWhiteSpace(Value.Type))
+                Name = Value.Name + (Value.IsNullable ? "?" : ""),
+                Type = this.Type + (Value.IsCollection ? "[]" : "")
+            };
+        }
+
+        public static string GetTypescriptType(string type) {
+                if (String.IsNullOrWhiteSpace(type))
                     return "any";
-                switch (Value.Type)
+                switch (type)
                 {
                     case "Edm.String":
                     case "Edm.Duration":
@@ -41,20 +48,11 @@ namespace Od2Ts.Angular
                         return "Date";
                     default:
                         {
-                            return Value.Type.Contains(".") && !Value.Type.StartsWith("Edm") ?
-                                Value.Type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
+                            return type.Contains(".") && !type.StartsWith("Edm") ?
+                                type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
                         }
                 }
-            }
-        }
 
-        public object ToLiquid()
-        {
-            return new
-            {
-                Name = Value.Name + (Value.IsNullable ? "?" : ""),
-                Type = this.Type + (Value.IsCollection ? "[]" : "")
-            };
         }
     }
 }
