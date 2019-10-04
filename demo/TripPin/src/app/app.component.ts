@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { PeopleService, PhotosService, AirlinesService, AirportsService } from './trippin';
+import { ODataModelService } from 'angular-odata';
+import { Photo, Airline } from './trippin';
 
 @Component({
   selector: 'app-root',
@@ -10,14 +11,10 @@ export class AppComponent {
   title = 'TripPin';
 
   constructor(
-    private photos: PhotosService,
-    private people: PeopleService,
-    private airlines: AirlinesService,
-    private airports: AirportsService
+    private models: ODataModelService
     ) {
-    this.photos.all().subscribe(console.log);
-    this.people.all().subscribe(console.log);
-    this.airlines.all().subscribe(console.log);
-    this.airports.all().subscribe(console.log);
+      let PhotoModel = this.models.model(Airline.type) as typeof Airline;
+      let photo = new PhotoModel({AirlineCode: "'AA'"});
+      photo.fetch().subscribe(console.log);
   }
 }

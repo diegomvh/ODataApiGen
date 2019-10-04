@@ -1,9 +1,7 @@
-
-
-export interface PlanItem {
+ export interface PlanItem {
   PlanItemId: number;
   ConfirmationCode: string;
   StartsAt: Date;
   EndsAt: Date;
-  Duration: string;
+  Duration: string
 }

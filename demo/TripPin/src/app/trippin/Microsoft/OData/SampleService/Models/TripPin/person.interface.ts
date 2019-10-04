@@ -2,8 +2,7 @@ import { PersonGender } from './persongender.enum';
 import { Location } from './location.interface';
 import { Photo } from './photo.interface';
 import { Trip } from './trip.interface';
-
-export interface Person {
+ export interface Person {
   UserName: string;
   FirstName: string;
   LastName: string;
@@ -13,5 +12,5 @@ export interface Person {
   Concurrency: number;
   Friends?: Person[];
   Trips?: Trip[];
-  Photo?: Photo;
+  Photo?: Photo
 }

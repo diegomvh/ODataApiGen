@@ -12,20 +12,12 @@ import { PublicTransportation } from './Microsoft/OData/SampleService/Models/Tri
 import { Flight } from './Microsoft/OData/SampleService/Models/TripPin/flight.interface';
 import { Event } from './Microsoft/OData/SampleService/Models/TripPin/event.interface';
 import { Trip } from './Microsoft/OData/SampleService/Models/TripPin/trip.interface';
+
+
 export const TripPinConfig = {
   baseUrl: 'https://services.odata.org/V4/TripPinServiceRW/',
   metadataUrl: 'https://services.odata.org/V4/TripPinServiceRW/$metadata',
   withCredentials: false,
-  batch: false,
-  creation: new Date('2019-09-28T09:06:56.3773111-03:00'),
-  version: '4.0',
-  enums: {
-    'Microsoft.OData.SampleService.Models.TripPin.PersonGender': PersonGender
-  },
-  models: [
-    
-  ],
-  collections: [
-    
-  ]
+  creation: '2019-10-03T21:40:19.8860391-03:00',
+  version: '4.0'
 }

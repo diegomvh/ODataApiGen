@@ -1,7 +1,6 @@
 import { Photo } from './photo.interface';
 import { PlanItem } from './planitem.interface';
-
-export interface Trip {
+ export interface Trip {
   TripId: number;
   ShareId: string;
   Description: string;
@@ -11,5 +10,5 @@ export interface Trip {
   EndsAt: Date;
   Tags: string[];
   Photos?: Photo[];
-  PlanItems?: PlanItem[];
+  PlanItems?: PlanItem[]
 }

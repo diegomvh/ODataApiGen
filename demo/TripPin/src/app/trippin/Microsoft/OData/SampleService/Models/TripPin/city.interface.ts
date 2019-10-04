@@ -1,7 +1,5 @@
-
-
-export interface City {
+ export interface City {
   CountryRegion: string;
   Name: string;
-  Region: string;
+  Region: string
 }

@@ -1,6 +1,4 @@
-
-
-export interface Airline {
+ export interface Airline {
   AirlineCode: string;
-  Name: string;
+  Name: string
 }
