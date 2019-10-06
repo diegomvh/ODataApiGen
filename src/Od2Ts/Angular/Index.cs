@@ -31,13 +31,10 @@ namespace Od2Ts.Angular
         public override string NameSpace => "";
         public override string FileName => "index";
         public override string Directory => this.NameSpace;
+        public IEnumerable<string> Exports =>this.GetImportRecords().Select(import => $"export * from './{import.From}'");
         public override string Render()
         {
-            var exports = this.GetImportRecords().Select(record => $"export * from './{record.From}';");
-
-            return $@"{String.Join("\n", exports)}
-export * from './{this.Package.EndpointName.ToLower()}.config';
-export * from './{this.Package.EndpointName.ToLower()}.module';";
+            return "";
         }
     }
 }

@@ -1,6 +1,14 @@
+import { Injectable } from '@angular/core';
+
+import { ODataModelService } from 'angular-odata';
+
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 
-export enum {{Name}} {
-    {% for memebr in members %}{{member}}{% endfor %}
+@Injectable()
+export class {{Name}} extends ODataModelService<{{ModelName}}, {{CollectionName}}> {
+  static set: string = '{{EntitySet}}';
+  static model = {{ModelName}};
+  static collection = {{CollectionName}};
+  
 }

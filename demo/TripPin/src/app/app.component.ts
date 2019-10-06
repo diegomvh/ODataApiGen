@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { ODataModelService } from 'angular-odata';
-import { Photo, Airline } from './trippin';
+import { Airline, PhotosService } from './trippin';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +10,9 @@ export class AppComponent {
   title = 'TripPin';
 
   constructor(
-    private models: ODataModelService
+    private photos: PhotosService
     ) {
-      let PhotoModel = this.models.model(Airline.type) as typeof Airline;
-      let photo = new PhotoModel({AirlineCode: "'AA'"});
-      photo.fetch().subscribe(console.log);
+      let photoCollection = this.photos.collection();
+      photoCollection.fetch().subscribe(console.log);
   }
 }

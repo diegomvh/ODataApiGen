@@ -6,6 +6,25 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
+    public class ModelProperty : DotLiquid.ILiquidizable
+    {
+        private Models.Property Value { get; set; }
+        public ModelProperty(Od2Ts.Models.Property prop)
+        {
+            this.Value = prop;
+        }
+        public IEnumerable<string> Name { get; set; }
+
+        public string Type => EntityProperty.GetTypescriptType(Value.Type);
+        public object ToLiquid()
+        {
+            return new
+            {
+                Name = Value.Name + (Value.IsNullable ? "?" : ""),
+                Type = this.Type + (Value.IsCollection ? Value.IsEdmType ? "[]" : "Collection" : "")
+            };
+        }
+    }
     public class ModelClass : Model
     {
         public ModelClass(StructuredType type) : base(type)
@@ -109,6 +128,7 @@ namespace Od2Ts.Angular
             }
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
+        public IEnumerable<string> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => this.RenderKey(prop));
         public string RenderField(Models.Property property)
         {
             var d = new Dictionary<string, string>() {
@@ -129,8 +149,6 @@ namespace Od2Ts.Angular
                     d.Add("collection", "true");
             } else {
                 d.Add("type", $"'{type.Type}'");
-                if (!(type is Enum))
-                    d.Add("ctor", "true");
                 if (!property.IsNullable)
                     d.Add("required", "true");
                 if (property is NavigationProperty) {
@@ -146,21 +164,14 @@ namespace Od2Ts.Angular
             }
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
-        public string GetSignature()
-        {
-            var signature = $"class {this.Name}";
-            if (this.Base != null)
-                signature = $"{signature} extends {this.Base.Name}";
-            else if (this.EdmStructuredType is ComplexType)
-                signature = $"{signature} extends Model";
-            else
-                signature = $"{signature} extends ODataModel";
-            return signature;
-        }
+        public IEnumerable<string> SchemaFields => this.EdmStructuredType.Properties
+                .Union(this.EdmStructuredType.NavigationProperties)
+                .Select(prop => this.RenderField(prop));
+        public IEnumerable<Angular.ModelProperty> Properties => this.EdmStructuredType.Properties
+                .Union(this.EdmStructuredType.NavigationProperties)
+                .Select(prop => new Angular.ModelProperty(prop));
         public override string Render()
         {
-            var keys = this.EdmStructuredType.Keys
-                .Select(prop => this.RenderKey(prop));
             var properties = this.EdmStructuredType.Properties
                 .Select(prop => this.RenderProperty(prop)).ToList();
             properties.AddRange(this.EdmStructuredType.NavigationProperties
@@ -170,26 +181,17 @@ namespace Od2Ts.Angular
                     (EdmStructuredType is ComplexType) ? 
                     this.RenderModelMethods(nav) : 
                     this.RenderODataModelMethods(nav));
-            // Sin metodos para probar
-            methods = Enumerable.Empty<string>();
-            var fields = this.EdmStructuredType.Properties
-                .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => this.RenderField(prop)
-            );
 
             var imports = this.RenderImports();
             return $@"{String.Join("\n", imports)}
 import {{ Schema, Model, ODataModel, ODataCollection, PlainObject }} from 'angular-odata';
 
-export {this.GetSignature()} {{
   static set = '{(this.Service != null ? this.Service.EdmEntitySet.EntitySetName : "")}';
   static type = '{this.Type}';
   static schema = {(this.Base == null ? $"Schema.create({{" : $"{this.Base.Name}.schema.extend({{")}
     keys: [
-      {String.Join(",\n      ", keys)}
     ],
     fields: [
-      {String.Join(",\n      ", fields)}
     ]
   }});
   {String.Join("\n  ", properties)}

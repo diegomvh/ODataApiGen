@@ -20,7 +20,7 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     MatTableModule,
-    ODataModule.forContext(TripPinConfig),
+    ODataModule.forConfig(TripPinConfig),
     TripPinModule,
     BrowserAnimationsModule,
   ],

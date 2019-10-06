@@ -1,9 +1,9 @@
-import {{ Injectable }} from '@angular/core';
-import {{ HttpHeaders, HttpParams }} from '@angular/common/http';
-import {{ Observable }} from 'rxjs';
-import {{ map }} from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import {{ ODataEntityService, ODataClient, ODataEntityRequest, ODataEntitySet }} from 'angular-odata';
+import { ODataEntityService, ODataEntityRequest, ODataEntitySet } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}

@@ -5,6 +5,6 @@
     "Secure": false,
     "Batch": false,
     "PurgeOutput": true,
-    "UseInterfaces": true,
+    "UseInterfaces": false,
     "UseReferences": true
 }

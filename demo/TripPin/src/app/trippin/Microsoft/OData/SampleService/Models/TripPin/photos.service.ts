@@ -1,6 +1,15 @@
-import { Photo } from './photo.interface';
+import { Injectable } from '@angular/core';
+
+import { ODataModelService } from 'angular-odata';
+
+import { Photo } from './photo.model';
+import { PhotoCollection } from './photo.collection';
 
 
-export enum PhotosService {
-    
+@Injectable()
+export class PhotosService extends ODataModelService<Photo, PhotoCollection> {
+  static set: string = 'Photos';
+  static model = Photo;
+  static collection = PhotoCollection;
+  
 }
