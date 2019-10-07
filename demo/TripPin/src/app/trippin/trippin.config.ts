@@ -32,12 +32,9 @@ export const TripPinConfig: ODataConfig = {
   baseUrl: 'https://services.odata.org/V4/TripPinServiceRW/',
   metadataUrl: 'https://services.odata.org/V4/TripPinServiceRW/$metadata',
   withCredentials: false,
-  withCount: true,
-  maxPageSize: 30,
-  creation: new Date('2019-10-06T14:09:51.2491967-03:00'),
+  creation: new Date('2019-10-06T22:13:50.8229357-03:00'),
   version: '4.0',
   types: {
-    'Microsoft.OData.SampleService.Models.TripPin.PersonGender': PersonGender,
     'Microsoft.OData.SampleService.Models.TripPin.City': City,
     'Microsoft.OData.SampleService.Models.TripPin.Location': Location,
     'Microsoft.OData.SampleService.Models.TripPin.EventLocation': EventLocation,

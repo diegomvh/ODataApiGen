@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Airline, PhotosService } from './trippin';
+import { Airline, PhotosService, AirportsService, PeopleService } from './trippin';
 
 @Component({
   selector: 'app-root',
@@ -10,9 +10,9 @@ export class AppComponent {
   title = 'TripPin';
 
   constructor(
-    private photos: PhotosService
+    private people: PeopleService
     ) {
-      let photoCollection = this.photos.collection();
-      photoCollection.fetch().subscribe(console.log);
+      let peopleCollection = this.people.collection();
+      peopleCollection.fetch().subscribe(console.log);
   }
 }

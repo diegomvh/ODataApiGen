@@ -17,10 +17,9 @@ namespace Od2Ts.Angular {
         public override string NameSpace => "";
         public override string FileName => this.Package.EndpointName.ToLower() + ".config";
         public override string Directory => this.NameSpace;
-        public IEnumerable<string> Types => this.Package.Enums.Select(enu => $"'{enu.EdmEnumType.Type}': {enu.Name}")
-          .Union(this.Package.Models
+        public IEnumerable<string> Types => this.Package.Models
               .Where(m => m is ModelClass)
-              .Select(model => $"'{model.Type}': {model.Name}"))
+              .Select(model => $"'{model.Type}': {model.Name}")
           .Union(this.Package.Collections
               .Select(col => $"'{col.Type}': {col.Name}"));
 
