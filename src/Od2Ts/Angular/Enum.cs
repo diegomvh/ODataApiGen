@@ -19,6 +19,7 @@ namespace Od2Ts.Angular {
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public IEnumerable<string> Members => this.EdmEnumType.Members.Select(m => $"{m.Name} = {m.Value}");
+        public string IsFlags => this.EdmEnumType.IsFlags.ToString().ToLower();
         public override string Render() {
             return "";
         }

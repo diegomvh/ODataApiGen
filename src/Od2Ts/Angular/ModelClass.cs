@@ -151,7 +151,11 @@ namespace Od2Ts.Angular
                 d.Add("type", $"'{type.Type}'");
                 if (!property.IsNullable)
                     d.Add("required", "true");
-                if (property is NavigationProperty) {
+                if (type is Enum) {
+                    d.Add("enum", "true");
+                    d.Add("flags", (type as Enum).IsFlags);
+                } else if (property is NavigationProperty) {
+                    // Is Navigation
                     d.Add("navigation", "true");
                     var nav = property as NavigationProperty;
                     if (!String.IsNullOrEmpty(nav.ReferentialConstraint))
