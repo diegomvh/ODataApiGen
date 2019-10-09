@@ -8,8 +8,16 @@ export const {{Name}}: ODataConfig = {
   withCredentials: {{Package.WithCredentials}},
   creation: new Date('{{Package.Creation | date: "o"}}'),
   version: '{{Package.Version}}',
-  types: {
-    {% for type in Types %}{{type}}{% unless forloop.last %},
+  enums: {
+    {% for enum in Enums %}{{enum}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}
+  },
+  models: {
+    {% for model in Models %}{{model}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}
+  },
+  collections: {
+    {% for col in Collections %}{{col}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
 }

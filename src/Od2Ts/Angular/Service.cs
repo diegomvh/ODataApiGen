@@ -168,16 +168,16 @@ namespace Od2Ts.Angular
     }});
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>, options?: {{
+                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityRequest<{type}>, options?: {{
     headers?: HttpHeaders | {{[header: string]: string | string[]}},
     params?: HttpParams|{{[param: string]: string | string[]}},
     reportProgress?: boolean,
     withCredentials?: boolean
   }}) {{
-    return this.deleteRef(entity, '{nav.Name}', target, {{
+    return this.deleteRef(entity, '{nav.Name}', {{
+        target: target,
         headers: options && options.headers,
         params: options && options.params,
-        responseType: {(nav.IsCollection? "'entityset'" : "'entity'")},
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     }});
