@@ -1,0 +1,51 @@
+import { alertFeedback } from './alertfeedback.enum';
+import { alertSeverity } from './alertseverity.enum';
+import { alertStatus } from './alertstatus.enum';
+import { cloudAppSecurityState } from './cloudappsecuritystate.interface';
+import { fileSecurityState } from './filesecuritystate.interface';
+import { alertHistoryState } from './alerthistorystate.interface';
+import { hostSecurityState } from './hostsecuritystate.interface';
+import { malwareState } from './malwarestate.interface';
+import { networkConnection } from './networkconnection.interface';
+import { process } from './process.interface';
+import { registryKeyState } from './registrykeystate.interface';
+import { alertTrigger } from './alerttrigger.interface';
+import { userSecurityState } from './usersecuritystate.interface';
+import { securityVendorInformation } from './securityvendorinformation.interface';
+import { vulnerabilityState } from './vulnerabilitystate.interface';
+import { entity } from './entity.interface';
+
+export interface alert extends entity {
+  activityGroupName: string;
+  assignedTo: string;
+  azureSubscriptionId: string;
+  azureTenantId: string;
+  category: string;
+  closedDateTime: Date;
+  cloudAppStates: cloudAppSecurityState[];
+  comments: string[];
+  confidence: number;
+  createdDateTime: Date;
+  description: string;
+  detectionIds: string[];
+  eventDateTime: Date;
+  feedback: alertFeedback;
+  fileStates: fileSecurityState[];
+  historyStates: alertHistoryState[];
+  hostStates: hostSecurityState[];
+  lastModifiedDateTime: Date;
+  malwareStates: malwareState[];
+  networkConnections: networkConnection[];
+  processes: process[];
+  recommendedActions: string[];
+  registryKeyStates: registryKeyState[];
+  severity: alertSeverity;
+  sourceMaterials: string[];
+  status: alertStatus;
+  tags: string[];
+  title: string;
+  triggers: alertTrigger[];
+  userStates: userSecurityState[];
+  vendorInformation: securityVendorInformation;
+  vulnerabilityStates: vulnerabilityState[]
+}

@@ -1,0 +1,10 @@
+{
+    "MetadataPath": "https://graph.microsoft.com/v1.0/$metadata",
+    "EndpointName": "MsGraph",
+    "Output": "../../demo/MsGraph/src/app/northwind",
+    "Secure": true,
+    "Batch": false,
+    "PurgeOutput": true,
+    "UseInterfaces": true,
+    "UseReferences": true
+}
