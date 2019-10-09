@@ -13,6 +13,12 @@ export class AppComponent {
     private people: PeopleService
     ) {
       let peopleCollection = this.people.collection();
-      peopleCollection.fetch().subscribe(console.log);
+      peopleCollection.fetch().subscribe(col => {
+        for (var person of col) {
+          person.Friends.fetch().subscribe(console.log);
+          person.Trips.fetch().subscribe(console.log);
+          person.Photo.fetch().subscribe(console.log);
+        }
+      });
   }
 }

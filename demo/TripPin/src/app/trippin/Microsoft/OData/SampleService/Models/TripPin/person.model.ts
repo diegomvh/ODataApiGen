@@ -20,7 +20,7 @@ export class Person extends ODataModel {
       {name: 'LastName', type: 'String', required: true},
       {name: 'Emails', type: 'String', required: true, collection: true},
       {name: 'AddressInfo', type: 'Microsoft.OData.SampleService.Models.TripPin.LocationCollection', required: true, collection: true},
-      {name: 'Gender', type: 'Microsoft.OData.SampleService.Models.TripPin.PersonGender', required: true},
+      {name: 'Gender', type: 'Microsoft.OData.SampleService.Models.TripPin.PersonGender', required: true, enum: true, flags: false},
       {name: 'Concurrency', type: 'Number', required: true},
       {name: 'Friends', type: 'Microsoft.OData.SampleService.Models.TripPin.PersonCollection', navigation: true, collection: true},
       {name: 'Trips', type: 'Microsoft.OData.SampleService.Models.TripPin.TripCollection', navigation: true, collection: true},

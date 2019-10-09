@@ -32,9 +32,12 @@ export const TripPinConfig: ODataConfig = {
   baseUrl: 'https://services.odata.org/V4/TripPinServiceRW/',
   metadataUrl: 'https://services.odata.org/V4/TripPinServiceRW/$metadata',
   withCredentials: false,
-  creation: new Date('2019-10-06T22:13:50.8229357-03:00'),
+  creation: new Date('2019-10-08T22:10:30.8735357-03:00'),
   version: '4.0',
-  types: {
+  enums: {
+    'Microsoft.OData.SampleService.Models.TripPin.PersonGender': PersonGender
+  },
+  models: {
     'Microsoft.OData.SampleService.Models.TripPin.City': City,
     'Microsoft.OData.SampleService.Models.TripPin.Location': Location,
     'Microsoft.OData.SampleService.Models.TripPin.EventLocation': EventLocation,
@@ -47,7 +50,9 @@ export const TripPinConfig: ODataConfig = {
     'Microsoft.OData.SampleService.Models.TripPin.PublicTransportation': PublicTransportation,
     'Microsoft.OData.SampleService.Models.TripPin.Flight': Flight,
     'Microsoft.OData.SampleService.Models.TripPin.Event': Event,
-    'Microsoft.OData.SampleService.Models.TripPin.Trip': Trip,
+    'Microsoft.OData.SampleService.Models.TripPin.Trip': Trip
+  },
+  collections: {
     'Microsoft.OData.SampleService.Models.TripPin.CityCollection': CityCollection,
     'Microsoft.OData.SampleService.Models.TripPin.LocationCollection': LocationCollection,
     'Microsoft.OData.SampleService.Models.TripPin.EventLocationCollection': EventLocationCollection,
