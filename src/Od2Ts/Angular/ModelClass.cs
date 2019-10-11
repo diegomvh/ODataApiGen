@@ -138,33 +138,23 @@ namespace Od2Ts.Angular
             if (property.IsCollection)
                 propType = $"{propType}Collection";
             var type = this.Dependencies.FirstOrDefault(dep => dep.Type == propType);
-            if (type == null) {
-                // Is Edm
-                d.Add("type", $"'{this.GetModelType(property.Type)}'");
-                if (!property.IsNullable)
-                    d.Add("required", "true");
-                if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
-                    d.Add("length", property.MaxLength);
-                if (property.IsCollection)
-                    d.Add("collection", "true");
-            } else {
-                d.Add("type", $"'{type.Type}'");
-                if (!property.IsNullable)
-                    d.Add("required", "true");
-                if (type is Enum) {
-                    d.Add("enum", "true");
-                    d.Add("flags", (type as Enum).IsFlags);
-                } else if (property is NavigationProperty) {
-                    // Is Navigation
-                    d.Add("navigation", "true");
-                    var nav = property as NavigationProperty;
-                    if (!String.IsNullOrEmpty(nav.ReferentialConstraint))
-                        d.Add("field", $"'{nav.ReferentialConstraint}'");
-                    if (!String.IsNullOrEmpty(nav.ReferencedProperty))
-                        d.Add("ref", $"'{nav.ReferencedProperty}'");
-                }
-                if (property.IsCollection)
-                    d.Add("collection", "true");
+            d.Add("type", type == null ? $"'{this.GetModelType(property.Type)}'" : $"'{type.Type}'");
+            if (property.IsNullable)
+                d.Add("isNullable", "true");
+            if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
+                d.Add("maxLength", property.MaxLength);
+            if (property.IsCollection)
+                d.Add("isCollection", "true");
+            if (type is Enum) {
+                d.Add("isFlags", (type as Enum).IsFlags);
+            } else if (property is NavigationProperty) {
+                // Is Navigation
+                d.Add("isNavigation", "true");
+                var nav = property as NavigationProperty;
+                if (!String.IsNullOrEmpty(nav.ReferentialConstraint))
+                    d.Add("field", $"'{nav.ReferentialConstraint}'");
+                if (!String.IsNullOrEmpty(nav.ReferencedProperty))
+                    d.Add("ref", $"'{nav.ReferencedProperty}'");
             }
             return $"{{{String.Join(", ", d.Select(p => $"{p.Key}: {p.Value}"))}}}";
         }
