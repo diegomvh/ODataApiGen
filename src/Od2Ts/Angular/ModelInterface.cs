@@ -16,7 +16,7 @@ namespace Od2Ts.Angular
         }
         public IEnumerable<string> Name { get; set; }
 
-        public string Type => EntityProperty.GetTypescriptType(Value.Type);
+        public string Type => AngularRenderable.GetTypescriptType(Value.Type);
         public object ToLiquid()
         {
             return new
@@ -25,55 +25,33 @@ namespace Od2Ts.Angular
                 Type = this.Type + (Value.IsCollection ? "[]" : "")
             };
         }
-
-        public static string GetTypescriptType(string type) {
-                if (String.IsNullOrWhiteSpace(type))
-                    return "any";
-                switch (type)
-                {
-                    case "Edm.String":
-                    case "Edm.Duration":
-                    case "Edm.Guid":
-                    case "Edm.Binary":
-                        return "string";
-                    case "Edm.Int16":
-                    case "Edm.Int32":
-                    case "Edm.Int64":
-                    case "Edm.Double":
-                    case "Edm.Decimal":
-                    case "Edm.Single":
-                    case "Edm.Byte":
-                        return "number";
-                    case "Edm.Boolean":
-                        return "boolean";
-                    case "Edm.DateTimeOffset":
-                        return "Date";
-                    default:
-                        {
-                            return type.Contains(".") && !type.StartsWith("Edm") ?
-                                type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
-                        }
-                }
-
-        }
     }
-    public class ModelInterface : Model
+    public class ModelInterface : Model, DotLiquid.ILiquidizable
     {
         public ModelInterface(StructuredType type) : base(type)
         {
         }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".interface";
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
         // Exports
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.SchemaName };
         public override IEnumerable<Import> Imports => GetImportRecords();
+        public string SchemaName => this.EdmStructuredType.Name + "Schema";
 
         public IEnumerable<Angular.EntityProperty> Properties => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => new Angular.EntityProperty(prop));
 
-        public override string Render()
+        public IEnumerable<string> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => this.RenderKey(prop));
+        public IEnumerable<string> SchemaFields => this.EdmStructuredType.Properties
+                .Union(this.EdmStructuredType.NavigationProperties)
+                .Select(prop => this.RenderField(prop));
+
+        public object ToLiquid()
         {
-            return "";
+            return new {
+                Name = this.Name,
+                SchemaName = this.SchemaName
+            };
         }
     }
 }

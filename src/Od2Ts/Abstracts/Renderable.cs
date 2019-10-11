@@ -11,7 +11,6 @@ namespace Od2Ts.Abstracts
         public abstract string Directory { get; }
         public abstract IEnumerable<string> ImportTypes {get; }
         public abstract IEnumerable<string> ExportTypes { get; }
-        public abstract string Render();
         public string Type => $"{this.NameSpace}.{this.Name}";
         public Uri Uri => !String.IsNullOrEmpty(Directory) ? new Uri($"r://{Directory}{Path.DirectorySeparatorChar}{FileName}", UriKind.Absolute) : new Uri($"r://{FileName}");
         public List<Renderable> Dependencies {get; set;} = new List<Renderable>();

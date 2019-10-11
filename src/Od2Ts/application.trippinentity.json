@@ -1,10 +1,10 @@
 {
     "MetadataPath": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
     "EndpointName": "TripPin",
-    "Output": "../../demo/TripPin/src/app/trippin",
+    "Output": "../../../TripPinEntity/src/app/trippin",
     "Secure": false,
     "Batch": false,
     "PurgeOutput": true,
-    "UseInterfaces": false,
+    "UseInterfaces": true,
     "UseReferences": true
 }

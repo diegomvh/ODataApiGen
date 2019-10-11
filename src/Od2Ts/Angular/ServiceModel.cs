@@ -14,10 +14,5 @@ namespace Od2Ts.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public string ModelName => this.Model.Name;
         public string CollectionName => this.Collection.Name;
-
-        public override string Render()
-        {
-            return "";
-        }
     }
 }

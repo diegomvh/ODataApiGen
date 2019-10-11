@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using DotLiquid;
-using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {

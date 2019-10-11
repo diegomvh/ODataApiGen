@@ -34,11 +34,6 @@ namespace Od2Ts.Angular
         public override string NameSpace => this.EdmStructuredType.NameSpace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public string ModelName => this.Model.Name;
-        public override string Render()
-        {
-            return "";
-        }
-
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
     }
 }

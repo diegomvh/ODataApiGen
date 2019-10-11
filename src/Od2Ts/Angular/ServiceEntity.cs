@@ -39,12 +39,10 @@ namespace Od2Ts.Angular
             }
         }
 
+        public string EntityName => this.Model.Name;
+        public string SchemaName => (this.Model as ModelInterface).SchemaName;
         public IEnumerable<string> Actions => this.RenderCallables(this.EdmEntitySet.CustomActions);
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.CustomFunctions);
         public IEnumerable<string> Navigations => this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties);
-        public override string Render()
-        {
-            return "";
-        }
     }
 }

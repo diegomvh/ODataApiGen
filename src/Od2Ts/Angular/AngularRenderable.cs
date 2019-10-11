@@ -5,8 +5,9 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
-    public abstract class AngularRenderable : Od2Ts.Abstracts.Renderable {
-        public string GetTypescriptType(string type)
+    public abstract class AngularRenderable : Od2Ts.Abstracts.Renderable
+    {
+        public static string GetTypescriptType(string type)
         {
             if (String.IsNullOrWhiteSpace(type))
                 return "any";
@@ -31,7 +32,7 @@ namespace Od2Ts.Angular
                     return "Date";
                 default:
                     {
-                        return type.Contains(".") && !type.StartsWith("Edm") ? 
+                        return type.Contains(".") && !type.StartsWith("Edm") ?
                             type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
                     }
             }
@@ -51,7 +52,8 @@ namespace Od2Ts.Angular
         }
         public IEnumerable<string> RenderImports()
         {
-            return this.GetImportRecords().Select(r => {
+            return this.GetImportRecords().Select(r =>
+            {
                 var path = r.From.ToString();
                 if (!path.StartsWith("../"))
                     path = $"./{path}";
@@ -59,7 +61,7 @@ namespace Od2Ts.Angular
             });
         }
 
-        public abstract IEnumerable<Import> Imports {get;}
+        public abstract IEnumerable<Import> Imports { get; }
         protected IEnumerable<Import> GetImportRecords()
         {
             var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i => i.Uri).Select(group =>

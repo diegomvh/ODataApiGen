@@ -1,7 +1,7 @@
 {
     "MetadataPath": "https://graph.microsoft.com/v1.0/$metadata",
     "EndpointName": "MsGraph",
-    "Output": "../../demo/MsGraph/src/app/northwind",
+    "Output": "../../demo/MsGraph/src/app/msgraph",
     "Secure": true,
     "Batch": false,
     "PurgeOutput": true,

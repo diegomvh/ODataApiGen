@@ -46,7 +46,7 @@ namespace Od2Ts.Angular
                 var list = new List<string> {
                     this.EdmEntitySet.EntityType
                 };
-                //list.AddRange(parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList().SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
@@ -57,7 +57,6 @@ namespace Od2Ts.Angular
 
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-        public string EntityType => this.EdmEntityTypeName;
         public string EntitySet => this.EdmEntitySet.EntitySetName;
 
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
@@ -69,8 +68,12 @@ namespace Od2Ts.Angular
                 var overload = callables.Count() > 1;
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
-                var returnTypeName = this.GetTypescriptType(callable.ReturnType);
-                var returnType = callable.ReturnsCollection ? $"ODataEntitySet<{returnTypeName}>" : $"{returnTypeName}"; 
+                var returnTypeName = AngularRenderable.GetTypescriptType(callable.ReturnType);
+                var returnType = callable.IsEdmReturnType ? 
+                        $"ODataProperty<{returnTypeName}>" : 
+                    callable.ReturnsCollection ?
+                        $"ODataEntitySet<{returnTypeName}>" :
+                        $"{returnTypeName}";
                 var baseMethodName = callable.IsCollectionAction
                     ? $"customCollection{callable.Type}"
                     : $"custom{callable.Type}";
@@ -97,7 +100,7 @@ namespace Od2Ts.Angular
                     argumentWithType.Add($"{boundArgument}: any");
 
                 argumentWithType.AddRange(parameters.Select(p => 
-                    $"{p.Name}: {this.GetTypescriptType(p.Type)}" + 
+                    $"{p.Name}: {AngularRenderable.GetTypescriptType(p.Type)}" + 
                     (p.IsCollection? "[]" : "") + 
                     (optionals.Contains(p)? " = null" : "")
                 ));
@@ -128,7 +131,7 @@ namespace Od2Ts.Angular
 
         protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations) {
             foreach (var nav in navigations) {
-                var type = this.GetTypescriptType(nav.Type);
+                var type = AngularRenderable.GetTypescriptType(nav.Type);
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
 

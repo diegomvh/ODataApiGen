@@ -1,9 +1,9 @@
-import { ODataModel, Schema } from 'angular-odata';
+import { ODataModel, ModelSchema } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 export class {{Name}} extends {% if Base != null %}{{Base.Name}}{% else %}ODataModel{% endif %} {
-  static schema = {% if Base == null %}Schema.create({ {% else %}{{Base.Name}}.schema.extend({ {% endif %}
+  static schema = {% if Base == null %}ModelSchema.create<{{Name}}>({ {% else %}{{Base.Name}}.schema.extend<{{Name}}>({ {% endif %}
     keys: [
       {% for key in SchemaKeys %}{{key}}{% unless forloop.last %},
       {% endunless %}{% endfor %}

@@ -32,9 +32,5 @@ namespace Od2Ts.Angular
         public override string FileName => "index";
         public override string Directory => this.NameSpace;
         public IEnumerable<string> Exports =>this.GetImportRecords().Select(import => $"export * from './{import.From}'");
-        public override string Render()
-        {
-            return "";
-        }
     }
 }
