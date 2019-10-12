@@ -9,11 +9,11 @@ export interface {{Name}}{% if Base != null %} extends {{Base.Name}}{% endif %} 
 
 export const {{SchemaName}} = {% if Base == null %}EntitySchema.create<{{Name}}>({ {% else %}{{Base.SchemaName}}.extend<{{Name}}>({ {% endif %}
   keys: [
-    {% for key in SchemaKeys %}{{key}}{% unless forloop.last %},
+    {% for key in SchemaKeys %}{{key.AsKey}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   ],
   fields: [
-    {% for field in SchemaFields %}{{field}}{% unless forloop.last %},
+    {% for field in SchemaFields %}{{field.AsField}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   ]
 });

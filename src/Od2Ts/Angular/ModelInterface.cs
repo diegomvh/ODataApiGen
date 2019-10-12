@@ -7,6 +7,17 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
+    public class EntitySchemaField : SchemaField
+    {
+        public EntitySchemaField(Property property, AngularRenderable type, bool self = false) : base(property, type)
+        {
+            if (type is Enum) {
+                this.Add("enum", type.Name);
+            } else if (type != null || self) {
+                this.Add("schema", self ? "'self'" : AngularRenderable.GetTypescriptType(property.Type) + "Schema");
+            }
+        }
+    }
     public class EntityProperty : ILiquidizable
     {
         private Models.Property Value { get; set; }
@@ -41,10 +52,14 @@ namespace Od2Ts.Angular
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => new Angular.EntityProperty(prop));
 
-        public IEnumerable<string> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => this.RenderKey(prop));
-        public IEnumerable<string> SchemaFields => this.EdmStructuredType.Properties
+        public IEnumerable<SchemaKey> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => new SchemaKey(prop));
+        public IEnumerable<EntitySchemaField> SchemaFields => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => this.RenderField(prop));
+                .Select(prop => {
+                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
+                    var self = prop.Type == this.Type;
+                    return new EntitySchemaField(prop, type as AngularRenderable, self); 
+                    });
 
         public object ToLiquid()
         {

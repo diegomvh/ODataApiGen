@@ -5,11 +5,11 @@ import { ODataModel, ModelSchema } from 'angular-odata';
 export class {{Name}} extends {% if Base != null %}{{Base.Name}}{% else %}ODataModel{% endif %} {
   static schema = {% if Base == null %}ModelSchema.create<{{Name}}>({ {% else %}{{Base.Name}}.schema.extend<{{Name}}>({ {% endif %}
     keys: [
-      {% for key in SchemaKeys %}{{key}}{% unless forloop.last %},
+      {% for key in SchemaKeys %}{{key.AsKey}}{% unless forloop.last %},
       {% endunless %}{% endfor %}
     ],
     fields: [
-      {% for field in SchemaFields %}{{field}}{% unless forloop.last %},
+      {% for field in SchemaFields %}{{field.AsField}}{% unless forloop.last %},
       {% endunless %}{% endfor %}
     ]
   });
