@@ -4,13 +4,6 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
-    public class ModelSchemaField : SchemaField
-    {
-        public ModelSchemaField(Property property, AngularRenderable type) : base(property, type)
-        {
-        }
-    }
-
     public class ModelProperty : DotLiquid.ILiquidizable
     {
         private Models.Property Value { get; set; }
@@ -94,12 +87,12 @@ namespace Od2Ts.Angular
             return methods;
         }
         public IEnumerable<SchemaKey> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => new SchemaKey(prop));
-        public IEnumerable<ModelSchemaField> SchemaFields => this.EdmStructuredType.Properties
+        public IEnumerable<SchemaField> SchemaFields => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => {
                     var propType = (prop.IsCollection) ? $"{prop.Type}Collection" : prop.Type;
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == propType);
-                    return new ModelSchemaField(prop, type as AngularRenderable); 
+                    return new SchemaField(prop, type as AngularRenderable); 
                     });
         public IEnumerable<Angular.ModelProperty> Properties => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
