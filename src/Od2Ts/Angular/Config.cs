@@ -24,5 +24,8 @@ namespace Od2Ts.Angular {
               .Select(model => $"'{model.Type}': {model.Name}");
         public IEnumerable<string> Collections => this.Package.Collections
               .Select(col => $"'{col.Type}': {col.Name}");
+        public IEnumerable<string> Schemas => this.Package.Models
+              .Where(m => m is ModelInterface)
+              .Select(model => $"'{model.Type}': {(model as ModelInterface).SchemaName}");
     }
 }

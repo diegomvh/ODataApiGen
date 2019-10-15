@@ -68,12 +68,11 @@ namespace Od2Ts.Angular
                 var overload = callables.Count() > 1;
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
-                var returnTypeName = AngularRenderable.GetTypescriptType(callable.ReturnType);
-                var returnType = callable.IsEdmReturnType ? 
-                        $"ODataProperty<{returnTypeName}>" : 
-                    callable.ReturnsCollection ?
-                        $"ODataEntitySet<{returnTypeName}>" :
-                        $"{returnTypeName}";
+                var returnType = AngularRenderable.GetType(callable.ReturnType);
+                var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
+                var callableReturnType = callable.ReturnsCollection ?
+                        $"{typescriptType}[]" :
+                        $"{typescriptType}";
                 var baseMethodName = callable.IsCollectionAction
                     ? $"customCollection{callable.Type}"
                     : $"custom{callable.Type}";
@@ -111,14 +110,15 @@ namespace Od2Ts.Angular
     withCredentials?: boolean
   }");
 
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{returnType}> {{" +
+                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    var body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
-                    $"\n    return this.{baseMethodName}<{returnTypeName}>(" +
+                    $"\n    return this.{baseMethodName}<{typescriptType}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
                     $@",body, {{
+      returnType: '{returnType}',
       headers: options && options.headers,
       params: options && options.params,
       responseType: '{responseType}',
@@ -138,7 +138,7 @@ namespace Od2Ts.Angular
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
-                var returnType = (nav.IsCollection) ? $"ODataEntitySet<{type}>" : $"{type}"; 
+                var returnType = (nav.IsCollection) ? $"EntityCollection<{type}>" : $"{type}"; 
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?: {{

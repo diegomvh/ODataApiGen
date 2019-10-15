@@ -10,14 +10,14 @@ export const {{Name}}: ODataConfig = {
   version: '{{Package.Version}}',
   enums: {
     {% for enum in Enums %}{{enum}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}
-  },
+    {% endunless %}{% endfor %}},
   models: {
     {% for model in Models %}{{model}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}
-  },
+    {% endunless %}{% endfor %}},
   collections: {
     {% for col in Collections %}{{col}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}
-  }
+    {% endunless %}{% endfor %}},
+  schemas: {
+    {% for schema in Schemas %}{{schema}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}}
 }
