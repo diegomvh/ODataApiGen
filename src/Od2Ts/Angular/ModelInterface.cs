@@ -52,6 +52,7 @@ namespace Od2Ts.Angular
         {
             return new {
                 Name = this.Name,
+                Type = this.Type,
                 SchemaName = this.SchemaName
             };
         }

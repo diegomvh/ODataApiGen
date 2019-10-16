@@ -11,7 +11,7 @@ import { ODataEntityService, ODataEntityRequest, EntityCollection } from 'angula
 @Injectable()
 export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   static set: string = '{{EntitySet}}';
-  schema = {{SchemaName}};
+  static entity: string = '{{EntityType}}';
   
   // Actions
   {% for action in Actions %}{{action}}
