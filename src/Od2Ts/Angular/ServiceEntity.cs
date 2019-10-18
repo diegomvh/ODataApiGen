@@ -41,8 +41,8 @@ namespace Od2Ts.Angular
 
         public string EntityName => this.Model.Name;
         public string EntityType => this.Model.Type;
-        public IEnumerable<string> Actions => this.RenderCallables(this.EdmEntitySet.CustomActions);
-        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.CustomFunctions);
+        public IEnumerable<string> Actions => this.RenderCallables(this.EdmEntitySet.Actions);
+        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions);
         public IEnumerable<string> Navigations => this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties);
     }
 }

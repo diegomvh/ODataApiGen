@@ -3,9 +3,9 @@ using Od2Ts.Abstracts;
 
 namespace Od2Ts.Models
 {
-    public class CustomFunction : Callable
+    public class Function : Callable
     {
-        public CustomFunction(XElement xElement) : base(xElement)
+        public Function(XElement xElement) : base(xElement)
         {
             this.Type = "Function";
         }

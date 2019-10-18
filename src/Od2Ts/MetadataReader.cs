@@ -13,8 +13,11 @@ namespace Od2Ts
         public List<ComplexType> ComplexTypes { get; private set; }
         public List<EnumType> EnumTypes { get; private set; }
         public List<EntitySet> EntitySets { get; private set; }
-        public List<CustomAction> CustomActions { get; private set; }
-        public List<CustomFunction> CustomFunctions { get; private set; }
+        public List<Singleton> Singletons { get; private set; }
+        public List<FunctionImport> FunctionImports { get; private set; }
+        public List<ActionImport> ActionImports { get; private set; }
+        public List<Action> Actions { get; private set; }
+        public List<Function> Functions { get; private set; }
 
 
         private void ReadEntityTypes(XDocument xdoc)
@@ -63,7 +66,7 @@ namespace Od2Ts
 
         }
 
-        private void ReadEntitySets(XDocument xdoc, List<CustomAction> actions, List<CustomFunction> functions)
+        private void ReadEntitySets(XDocument xdoc, List<Action> actions, List<Function> functions)
         {
             Logger.LogDebug("Parsing entity sets...");
             var entitySetList = new List<EntitySet>();
@@ -79,32 +82,73 @@ namespace Od2Ts
             EntitySets = entitySetList;
         }
 
-        private void ReadCustomActions(XDocument xDoc)
+        private void ReadActions(XDocument xDoc)
         {
-            Logger.LogDebug("Parsing custom actions...");
-            List<CustomAction> customActionList = new List<CustomAction>();
+            Logger.LogDebug("Parsing actions...");
+            List<Action> customActionList = new List<Action>();
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Action");
             foreach (var xElement in elements)
             {
-                var tCustomAction = new CustomAction(xElement);
+                var tCustomAction = new Action(xElement);
                 customActionList.Add(tCustomAction);
-                Logger.LogInformation($"Custom Action '{tCustomAction.Name}' parsed");
+                Logger.LogInformation($"Action '{tCustomAction.Name}' parsed");
             }
-            CustomActions = customActionList;
+            Actions = customActionList;
         }
 
-        private void ReadCustomFunctions(XDocument xDoc)
+        private void ReadFunctions(XDocument xDoc)
         {
-            Logger.LogDebug("Parsing custom functions...");
-            List<CustomFunction> customFunctionList = new List<CustomFunction>();
+            Logger.LogDebug("Parsing functions...");
+            List<Function> customFunctionList = new List<Function>();
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Function");
             foreach (var xElement in elements)
             {
-                var tCustomAction = new CustomFunction(xElement);
-                customFunctionList.Add(tCustomAction);
-                Logger.LogInformation($"Custom Action '{tCustomAction.Name}' parsed");
+                var tCustomFunction = new Function(xElement);
+                customFunctionList.Add(tCustomFunction);
+                Logger.LogInformation($"Function '{tCustomFunction.Name}' parsed");
             }
-            CustomFunctions = customFunctionList;
+            Functions = customFunctionList;
+        }
+
+        private void ReadSingletons(XDocument xDoc)
+        {
+            Logger.LogDebug("Parsing singletons...");
+            List<Singleton> singletonList = new List<Singleton>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Singleton");
+            foreach (var xElement in elements)
+            {
+                var tSingleton = new Singleton(xElement);
+                singletonList.Add(tSingleton);
+                Logger.LogInformation($"Singleton '{tSingleton.Name}' parsed");
+            }
+            Singletons = singletonList;
+        }
+
+        private void ReadFunctionImports(XDocument xDoc, List<Function> functions)
+        {
+            Logger.LogDebug("Parsing function imports...");
+            List<FunctionImport> functionImportList = new List<FunctionImport>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "FunctionImport");
+            foreach (var xElement in elements)
+            {
+                var tFuncionImport = new FunctionImport(xElement);
+                functionImportList.Add(tFuncionImport);
+                Logger.LogInformation($"FunctionImport '{tFuncionImport.Name}' parsed");
+            }
+            FunctionImports = functionImportList;
+        }
+        private void ReadActionImports(XDocument xDoc, List<Action> actions)
+        {
+            Logger.LogDebug("Parsing actions imports...");
+            List<ActionImport> actionImportList = new List<ActionImport>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "ActionImport");
+            foreach (var xElement in elements)
+            {
+                var tActionImport = new ActionImport(xElement);
+                actionImportList.Add(tActionImport);
+                Logger.LogInformation($"ActionImport '{tActionImport.Name}' parsed");
+            }
+            ActionImports = actionImportList;
         }
 
 
@@ -114,10 +158,13 @@ namespace Od2Ts
             ReadComplexTypes(xdoc);
             ReadEnums(xdoc);
 
-            ReadCustomActions(xdoc);
-            ReadCustomFunctions(xdoc);
+            ReadActions(xdoc);
+            ReadFunctions(xdoc);
+            ReadSingletons(xdoc);
+            ReadActionImports(xdoc, Actions);
+            ReadFunctionImports(xdoc, Functions);
 
-            ReadEntitySets(xdoc, CustomActions, CustomFunctions);
+            ReadEntitySets(xdoc, Actions, Functions);
         }
     }
 }

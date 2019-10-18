@@ -38,17 +38,17 @@ namespace Od2Ts.Angular
             get
             {
                 var parameters = new List<Models.Parameter>();
-                foreach (var cal in this.EdmEntitySet.CustomActions)
+                foreach (var cal in this.EdmEntitySet.Actions)
                     parameters.AddRange(cal.Parameters);
-                foreach (var cal in this.EdmEntitySet.CustomFunctions)
+                foreach (var cal in this.EdmEntitySet.Functions)
                     parameters.AddRange(cal.Parameters);
 
                 var list = new List<string> {
                     this.EdmEntitySet.EntityType
                 };
                 list.AddRange(parameters.Select(p => p.Type));
-                list.AddRange(this.EdmEntitySet.CustomActions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmEntitySet.CustomFunctions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmEntitySet.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
                 list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
                 return list;

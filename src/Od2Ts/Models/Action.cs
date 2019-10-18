@@ -2,9 +2,9 @@
 
 namespace Od2Ts.Models
 {
-    public class CustomAction : Callable
+    public class Action : Callable
     {
-        public CustomAction(XElement xElement) : base(xElement)
+        public Action(XElement xElement) : base(xElement)
         {
             this.Type = "Action";
         }
