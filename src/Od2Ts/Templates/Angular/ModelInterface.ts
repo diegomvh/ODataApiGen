@@ -1,5 +1,3 @@
-import { EntitySchema } from 'angular-odata';
-
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 export interface {{Name}}{% if Base != null %} extends {{Base.Name}}{% endif %} {

@@ -161,11 +161,10 @@ namespace Od2Ts.Angular
     params?: HttpParams|{{[param: string]: string | string[]}},
     reportProgress?: boolean,
     withCredentials?: boolean
-  }}) {{
+  }}): Observable<any> {{
     return this.createRef(entity, '{nav.Name}', target, {{
         headers: options && options.headers,
         params: options && options.params,
-        responseType: {(nav.IsCollection? "'entityset'" : "'entity'")},
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
     }});
@@ -176,7 +175,7 @@ namespace Od2Ts.Angular
     params?: HttpParams|{{[param: string]: string | string[]}},
     reportProgress?: boolean,
     withCredentials?: boolean
-  }}) {{
+  }}): Observable<any> {{
     return this.deleteRef(entity, '{nav.Name}', {{
         target: target,
         headers: options && options.headers,
