@@ -1,3 +1,0 @@
-[submodule "demo/Northwind/projects/angular-odata"]
-	path = demo/Northwind/projects/angular-odata
-	url = git@github.com:diegomvh/angular-odata.git
