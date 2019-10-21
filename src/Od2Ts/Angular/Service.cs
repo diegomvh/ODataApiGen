@@ -117,8 +117,8 @@ namespace Od2Ts.Angular
                     $"\n    return this.{baseMethodName}<{typescriptType}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
-                    $@",body, {{
-      returnType: '{returnType}',
+                    $@", {(callable.Type == "Function" ? "" : "body, ")}'{returnType}')
+                    .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
       headers: options && options.headers,
       params: options && options.params,
       responseType: '{responseType}',
@@ -147,42 +147,18 @@ namespace Od2Ts.Angular
     reportProgress?: boolean,
     withCredentials?: boolean
   }}): Observable<{returnType}> {{
-    return this.navigationProperty<{type}>(entity, '{nav.Name}', {{
-        headers: options && options.headers,
-        params: options && options.params,
-        responseType: {(nav.IsCollection? "'entityset'" : "'entity'")},
-        reportProgress: options && options.reportProgress,
-        withCredentials: options && options.withCredentials
-    }});
+    return this.navigationProperty<{type}>(entity, '{nav.Name}')
+      .{(nav.IsCollection? "collection" : "single")}(options);
   }}";
                 // Link
-                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>, options?: {{
-    headers?: HttpHeaders | {{[header: string]: string | string[]}},
-    params?: HttpParams|{{[param: string]: string | string[]}},
-    reportProgress?: boolean,
-    withCredentials?: boolean
-  }}): Observable<any> {{
-    return this.createRef(entity, '{nav.Name}', target, {{
-        headers: options && options.headers,
-        params: options && options.params,
-        reportProgress: options && options.reportProgress,
-        withCredentials: options && options.withCredentials
-    }});
+                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>): Observable<any> {{
+    return this.ref(entity, '{nav.Name}')
+      .{(nav.IsCollection? "add" : "set")}(target{(nav.IsCollection? "" : ", {etag: this.client.resolveEtag(entity)}")});
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityRequest<{type}>, options?: {{
-    headers?: HttpHeaders | {{[header: string]: string | string[]}},
-    params?: HttpParams|{{[param: string]: string | string[]}},
-    reportProgress?: boolean,
-    withCredentials?: boolean
-  }}): Observable<any> {{
-    return this.deleteRef(entity, '{nav.Name}', {{
-        target: target,
-        headers: options && options.headers,
-        params: options && options.params,
-        reportProgress: options && options.reportProgress,
-        withCredentials: options && options.withCredentials
-    }});
+                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityRequest<{type}>): Observable<any> {{
+    return this.ref(entity, '{nav.Name}')
+      .remove({{etag: this.resolveEtag(entity), target}});
   }}";
             }
         }
