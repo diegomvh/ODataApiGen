@@ -9,9 +9,9 @@ namespace Od2Ts.Angular
     public class SchemaKey : Dictionary<string, string>, DotLiquid.ILiquidizable {
         public SchemaKey(PropertyRef property) {
             this.Add("name", $"'{property.Name}'");
+            this.Add("ref", $"'{property.Name}'");
             if (!String.IsNullOrWhiteSpace(property.Alias)) {
                 this.Add("name", $"'{property.Alias}'");
-                this.Add("resolve", $"(model) => model.{property.Name.Replace('/', '.')}");
             }
         }
 
