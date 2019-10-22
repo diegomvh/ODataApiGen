@@ -70,9 +70,13 @@ namespace Od2Ts.Angular
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
                 var returnType = AngularRenderable.GetType(callable.ReturnType);
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
-                var callableReturnType = callable.ReturnsCollection ?
-                        $"{typescriptType}[]" :
+
+                var callableReturnType = callable.IsEdmReturnType ? 
+                        $"ODataProperty<{typescriptType}>" : 
+                    callable.ReturnsCollection ?
+                        $"ODataEntitySet<{typescriptType}>" :
                         $"{typescriptType}";
+
                 var baseMethodName = callable.IsCollectionAction
                     ? $"collection{callable.Type}"
                     : $"{callable.Type.ToLower()}";
@@ -117,7 +121,7 @@ namespace Od2Ts.Angular
                     $"\n    return this.{baseMethodName}<{typescriptType}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
-                    $@", {(callable.Type == "Function" ? "" : "body, ")}'{returnType}')
+                    $@", {(callable.Type != "Function" ? "" : "body, ")}'{returnType}')
                     .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
       headers: options && options.headers,
       params: options && options.params,
@@ -158,7 +162,7 @@ namespace Od2Ts.Angular
                 // Unlink
                 yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityRequest<{type}>): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
-      .remove({{etag: this.resolveEtag(entity), target}});
+      .remove({{etag: this.client.resolveEtag(entity), target}});
   }}";
             }
         }
