@@ -142,7 +142,7 @@ namespace Od2Ts.Angular
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
-                var returnType = (nav.IsCollection) ? $"Collection<{type}>" : $"{type}"; 
+                var returnType = (nav.IsCollection) ? $"ODataCollection<{type}>" : $"{type}"; 
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?: {{

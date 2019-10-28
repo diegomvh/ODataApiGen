@@ -19,7 +19,7 @@ namespace Od2Ts.Angular
             return new
             {
                 Name = Value.Name + (Value.IsNullable ? "?" : ""),
-                Type = this.Type + (Value.IsCollection ? Value.IsEdmType ? "[]" : "Collection" : "")
+                Type = this.Type + (Value.IsCollection ? Value.IsEdmType ? "[]" : "ODataCollection" : "")
             };
         }
     }
@@ -39,7 +39,7 @@ namespace Od2Ts.Angular
             if (prop.IsEdmType) {
                 field = $"{field}" + (prop.IsCollection ? "[];" : ";");
             } else {
-                field = $"{field}" + (prop.IsCollection ? "Collection;" : ";");
+                field = $"{field}" + (prop.IsCollection ? "ODataCollection;" : ";");
             }
             return field;
         }
@@ -51,7 +51,7 @@ namespace Od2Ts.Angular
             var methodRelationName = $"get{name}";
             var baseMethodRelationName = nav.IsCollection ? $"relatedCollection" : $"relatedModel";
             var returnType = (nav.IsCollection) ?
-                $"Collection<{type}>" :
+                $"ODataCollection<{type}>" :
                 $"{type}";
             // Navigation
             var methods = new List<string>() {$@"public {methodRelationName}(): {returnType} {{
