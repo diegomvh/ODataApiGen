@@ -86,13 +86,12 @@ namespace Od2Ts.Angular
   }}");
             return methods;
         }
-        public IEnumerable<SchemaKey> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => new SchemaKey(prop));
         public IEnumerable<SchemaField> SchemaFields => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => {
                     var propType = (prop.IsCollection) ? $"{prop.Type}Collection" : prop.Type;
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == propType);
-                    return new SchemaField(prop, type as AngularRenderable); 
+                    return new SchemaField(prop, this.EdmStructuredType.Keys, type as AngularRenderable); 
                     });
         public IEnumerable<Angular.ModelProperty> Properties => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)

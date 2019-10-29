@@ -39,13 +39,12 @@ namespace Od2Ts.Angular
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => new Angular.EntityProperty(prop));
 
-        public IEnumerable<SchemaKey> SchemaKeys => this.EdmStructuredType.Keys.Select(prop => new SchemaKey(prop));
         public IEnumerable<SchemaField> SchemaFields => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
                     var self = prop.Type == this.Type;
-                    return new SchemaField(prop, type as AngularRenderable); 
+                    return new SchemaField(prop, this.EdmStructuredType.Keys, type as AngularRenderable); 
                     });
 
         public object ToLiquid()

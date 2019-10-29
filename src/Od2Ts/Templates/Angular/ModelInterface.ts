@@ -5,14 +5,7 @@ export interface {{Name}}{% if Base != null %} extends {{Base.Name}}{% endif %} 
   {% endunless %}{% endfor %}
 }
 
-export const {{SchemaName}} = {
-  {% if Base != null %}base: '{{Base.Type}}',{% endif %}
-  keys: [ 
-    {% for key in SchemaKeys %}{{key.AsKey}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}
-  ],
-  fields: [
-    {% for field in SchemaFields %}{{field.AsField}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}
-  ]
-};
+export const {{SchemaName}} = {% if Base != null %}Object.assign({}, {{Base.SchemaName}}, {% endif %}{
+  {% for field in SchemaFields %}{{field.Name}}: {{field.AsField}}{% unless forloop.last %},
+  {% endunless %}{% endfor %}
+}{% if Base != null %}){% endif %};

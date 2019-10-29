@@ -6,27 +6,19 @@ using Od2Ts.Models;
 
 namespace Od2Ts.Angular
 {
-    public class SchemaKey : Dictionary<string, string>, DotLiquid.ILiquidizable {
-        public SchemaKey(PropertyRef property) {
-            this.Add("name", $"'{property.Name}'");
-            this.Add("ref", $"'{property.Name}'");
-            if (!String.IsNullOrWhiteSpace(property.Alias)) {
-                this.Add("name", $"'{property.Alias}'");
-            }
-        }
-
-        public object ToLiquid()
-        {
-            return new {
-                AsKey = $"{{{String.Join(", ", this.Select(p => $"{p.Key}: {p.Value}"))}}}"
-            };
-        }
-    }
-
     public class SchemaField : Dictionary<string, string>, DotLiquid.ILiquidizable {
-        public SchemaField(Models.Property property, AngularRenderable type) {
-            this.Add("name", $"'{property.Name}'");
+        public string Name {get; set;}
+        public SchemaField(Models.Property property, IEnumerable<PropertyRef> keys, AngularRenderable type) {
+            this.Name = property.Name;
             this.Add("type", type == null ? $"'{AngularRenderable.GetType(property.Type)}'" : $"'{type.Type}'");
+            var key = keys.FirstOrDefault(k => k.Name == property.Name);
+            if (key != null) {
+                this.Add("isKey", "true");
+                this.Add("ref", $"'{key.Name}'");
+                if (!String.IsNullOrWhiteSpace(key.Alias)) {
+                    this.Add("name", $"'{key.Alias}'");
+                }
+            }
             if (property.IsNullable)
                 this.Add("isNullable", "true");
             if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
@@ -49,6 +41,7 @@ namespace Od2Ts.Angular
         public object ToLiquid()
         {
             return new {
+                Name = this.Name,
                 AsField = $"{{{String.Join(", ", this.Select(p => $"{p.Key}: {p.Value}"))}}}"
             };
         }
