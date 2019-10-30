@@ -11,7 +11,7 @@ import { ODataEntityService, ODataEntitySet, ODataProperty, ODataEntityRequest, 
 @Injectable()
 export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   static set: string = '{{EntitySet}}';
-  static entity: string = '{{EntityType}}';
+  static type: string = '{{EntityType}}';
   
   // Actions
   {% for action in Actions %}{{action}}

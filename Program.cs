@@ -18,7 +18,7 @@ namespace Od2Ts
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
         public static bool PurgeOutput { get; set; }
-        public static bool Secure { get; set; }
+        public static bool WithCredentials { get; set; }
         public static bool StringAsEnum { get; set; }
         public static bool Models { get; set; }
 
@@ -30,10 +30,13 @@ namespace Od2Ts
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.trippinentity.json")
+                .AddJsonFile("application.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-MetadataPath", "MetadataPath"},
                     {"-EndpointName", "EndpointName"},
+                    {"-Output", "Output"},
+                    {"-WithCredentials", "WithCredentials"},
+                    {"-StringAsEnum", "StringAsEnum"},
                     {"-Models", "Models"}
                 });
             Configuration = builder.Build();
@@ -41,7 +44,7 @@ namespace Od2Ts
             MetadataPath = Configuration.GetValue<string>("MetadataPath");
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
-            Secure = Configuration.GetValue<bool>("Secure");
+            WithCredentials = Configuration.GetValue<bool>("WithCredentials");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
             StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
@@ -53,7 +56,7 @@ namespace Od2Ts
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var package = new Angular.Package(EndpointName, MetadataPath, Secure, StringAsEnum, Models, "4.0");
+            var package = new Angular.Package(EndpointName, MetadataPath, WithCredentials, StringAsEnum, Models, "4.0");
             package.LoadMetadata(metadataReader);
             package.ResolveDependencies();
 

@@ -51,7 +51,8 @@ namespace Od2Ts.Angular
             {
                 var entity = new Angular.Entity(t);
                 this.Entities.Add(entity);
-                if (this.CreateModels) {
+                if (this.CreateModels)
+                {
                     var model = new Angular.Model(t, entity);
                     this.Models.Add(model);
                     this.Collections.Add(new Angular.Collection(t, model));
@@ -65,7 +66,8 @@ namespace Od2Ts.Angular
             {
                 var entity = new Angular.Entity(t);
                 this.Entities.Add(entity);
-                if (this.CreateModels) {
+                if (this.CreateModels)
+                {
                     var model = new Angular.Model(t, entity);
                     this.Models.Add(model);
                     this.Collections.Add(new Angular.Collection(t, model));
@@ -77,9 +79,12 @@ namespace Od2Ts.Angular
         {
             foreach (var s in sets)
             {
-                if (this.CreateModels) {
+                if (this.CreateModels)
+                {
                     this.Services.Add(new Angular.ServiceModel(s));
-                } else {
+                }
+                else
+                {
                     this.Services.Add(new Angular.ServiceEntity(s));
                 }
             }
@@ -94,9 +99,14 @@ namespace Od2Ts.Angular
             {
                 if (!String.IsNullOrEmpty(entity.EdmStructuredType.BaseType))
                 {
-                    var baseInter = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Type == entity.EdmStructuredType.BaseType);
+                    var baseInter = this.Entities.FirstOrDefault(e => e.EdmStructuredType.Type == entity.EdmStructuredType.BaseType);
                     entity.SetBase(baseInter);
                 }
+                var types = entity.ImportTypes;
+                entity.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type)));
+                entity.Dependencies.AddRange(
+this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.Type)));
             }
             foreach (var model in Models)
             {
@@ -107,14 +117,13 @@ namespace Od2Ts.Angular
                 }
                 var types = model.ImportTypes;
                 model.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
-                );
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type)));
                 model.Dependencies.AddRange(
-this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type))
-                );
+this.Entities.Where(e => types.Contains(e.EdmStructuredType.Type)));
                 model.Dependencies.AddRange(
-this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
-                );
+this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type)));
+                model.Dependencies.AddRange(
+                    this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type)));
             }
             foreach (var service in Services)
             {
@@ -169,10 +178,11 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
 
         public object ToLiquid()
         {
-            return new {
+            return new
+            {
                 BaseUrl = this.MetadataPath.TrimEnd("$metadata".ToCharArray()),
                 MetadataUrl = this.MetadataPath,
-                WithCredentials = this.Secure.ToString().ToLower(),
+                WithCredentials = this.WithCredentials.ToString().ToLower(),
                 StringAsEnum = this.StringAsEnum.ToString().ToLower(),
                 Creation = DateTime.Now,
                 Version = this.Version,
@@ -180,17 +190,21 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
             };
         }
 
-        public override IEnumerable<Renderable> Renderables { get {
-            var renderables = new List<Renderable>();
-            renderables.AddRange(this.Enums);
-            renderables.AddRange(this.Entities);
-            renderables.AddRange(this.Models);
-            renderables.AddRange(this.Collections);
-            renderables.AddRange(this.Services);
-            renderables.Add(this.Module);
-            renderables.Add(this.Config);
-            renderables.Add(this.Index);
-            return renderables;
-        }}
+        public override IEnumerable<Renderable> Renderables
+        {
+            get
+            {
+                var renderables = new List<Renderable>();
+                renderables.AddRange(this.Enums);
+                renderables.AddRange(this.Entities);
+                renderables.AddRange(this.Models);
+                renderables.AddRange(this.Collections);
+                renderables.AddRange(this.Services);
+                renderables.Add(this.Module);
+                renderables.Add(this.Config);
+                renderables.Add(this.Index);
+                return renderables;
+            }
+        }
     }
 }
