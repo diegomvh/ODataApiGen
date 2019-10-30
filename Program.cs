@@ -17,11 +17,10 @@ namespace Od2Ts
         public static string MetadataPath { get; set; }
         public static string EndpointName { get; set; }
         public static string Output { get; set; }
-        public static bool Secure { get; set; }
-        public static bool Batch { get; set; }
-        public static bool UseInterfaces { get; set; }
-        public static bool UseReferences { get; set; }
         public static bool PurgeOutput { get; set; }
+        public static bool Secure { get; set; }
+        public static bool StringAsEnum { get; set; }
+        public static bool Models { get; set; }
 
         static void Main(string[] args)
         {
@@ -35,7 +34,7 @@ namespace Od2Ts
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-MetadataPath", "MetadataPath"},
                     {"-EndpointName", "EndpointName"},
-                    {"-UseInterfaces", "UseInterfaces"}
+                    {"-Models", "Models"}
                 });
             Configuration = builder.Build();
 
@@ -43,10 +42,9 @@ namespace Od2Ts
             EndpointName = Configuration.GetValue<string>("EndpointName");
             Output = Configuration.GetValue<string>("Output");
             Secure = Configuration.GetValue<bool>("Secure");
-            Batch = Configuration.GetValue<bool>("Batch");
             PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
-            UseInterfaces = Configuration.GetValue<bool>("UseInterfaces");
-            UseReferences = Configuration.GetValue<bool>("UseReferences");
+            StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
+            Models = Configuration.GetValue<bool>("Models");
             
             var directoryManager = new DirectoryManager(Output);
             var templateRenderer = new Renderer(Output);
@@ -55,9 +53,7 @@ namespace Od2Ts
                 System.Xml.Linq.XDocument.Load(MetadataPath));
 
             directoryManager.PrepareOutput(PurgeOutput);
-            var package = new Angular.Package(EndpointName, MetadataPath, Secure, Batch, "4.0");
-            package.UseInterfaces = UseInterfaces;
-            package.UseReferences = UseReferences;
+            var package = new Angular.Package(EndpointName, MetadataPath, Secure, StringAsEnum, Models, "4.0");
             package.LoadMetadata(metadataReader);
             package.ResolveDependencies();
 

@@ -8,22 +8,22 @@ namespace Od2Ts.Angular
 {
     public class Package : Od2Ts.Abstracts.Package, ILiquidizable
     {
-        public bool UseInterfaces {get;set;}
-        public bool UseReferences {get;set;}
         public Angular.Module Module { get; private set; }
         public Angular.Config Config { get; private set; }
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Enum> Enums { get; private set; }
+        public ICollection<Angular.Entity> Entities { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
         public ICollection<Angular.Collection> Collections { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
 
-        public Package(string endpointName, string metadataPath, bool secure, bool batch, string version) : base(endpointName, metadataPath, secure, batch, version)
+        public Package(string endpointName, string metadataPath, bool secure, bool stringAsEnums, bool models, string version) : base(endpointName, metadataPath, secure, stringAsEnums, models, version)
         {
             this.Module = new Module(this);
             Config = new Angular.Config(this);
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
+            Entities = new List<Angular.Entity>();
             Models = new List<Angular.Model>();
             Collections = new List<Angular.Collection>();
             Services = new List<Angular.Service>();
@@ -32,9 +32,9 @@ namespace Od2Ts.Angular
         public override void LoadMetadata(MetadataReader reader)
         {
             this.AddEnums(reader.EnumTypes);
-            this.AddModels(reader.ComplexTypes, UseInterfaces);
-            this.AddModels(reader.EntityTypes, UseInterfaces);
-            this.AddServices(reader.EntitySets, UseInterfaces, UseReferences);
+            this.AddModels(reader.ComplexTypes);
+            this.AddModels(reader.EntityTypes);
+            this.AddServices(reader.EntitySets);
         }
 
         public void AddEnums(IEnumerable<Models.EnumType> enums)
@@ -45,40 +45,42 @@ namespace Od2Ts.Angular
             }
         }
 
-        public void AddModels(IEnumerable<Models.EntityType> entities, bool inter)
+        public void AddModels(IEnumerable<Models.EntityType> entities)
         {
-            foreach (var m in entities)
+            foreach (var t in entities)
             {
-                if (inter) {
-                    this.Models.Add(new Angular.ModelInterface(m));
-                } else {
-                    this.Models.Add(new Angular.ModelClass(m));
-                    this.Collections.Add(new Angular.Collection(m));
+                var entity = new Angular.Entity(t);
+                this.Entities.Add(entity);
+                if (this.CreateModels) {
+                    var model = new Angular.Model(t, entity);
+                    this.Models.Add(model);
+                    this.Collections.Add(new Angular.Collection(t, model));
                 }
             }
         }
 
-        public void AddModels(IEnumerable<Models.ComplexType> complexs, bool inter)
+        public void AddModels(IEnumerable<Models.ComplexType> complexs)
         {
-            foreach (var c in complexs)
+            foreach (var t in complexs)
             {
-                if (inter) {
-                    this.Models.Add(new Angular.ModelInterface(c));
-                } else {
-                    this.Models.Add(new Angular.ModelClass(c));
-                    this.Collections.Add(new Angular.Collection(c));
+                var entity = new Angular.Entity(t);
+                this.Entities.Add(entity);
+                if (this.CreateModels) {
+                    var model = new Angular.Model(t, entity);
+                    this.Models.Add(model);
+                    this.Collections.Add(new Angular.Collection(t, model));
                 }
             }
         }
 
-        public void AddServices(IEnumerable<Models.EntitySet> sets, bool inter, bool refe)
+        public void AddServices(IEnumerable<Models.EntitySet> sets)
         {
             foreach (var s in sets)
             {
-                if (inter) {
-                    this.Services.Add(new Angular.ServiceEntity(s, refe));
+                if (this.CreateModels) {
+                    this.Services.Add(new Angular.ServiceModel(s));
                 } else {
-                    this.Services.Add(new Angular.ServiceModel(s, refe));
+                    this.Services.Add(new Angular.ServiceEntity(s));
                 }
             }
         }
@@ -87,6 +89,14 @@ namespace Od2Ts.Angular
         {
             foreach (var enumm in Enums)
             {
+            }
+            foreach (var entity in Entities)
+            {
+                if (!String.IsNullOrEmpty(entity.EdmStructuredType.BaseType))
+                {
+                    var baseInter = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Type == entity.EdmStructuredType.BaseType);
+                    entity.SetBase(baseInter);
+                }
             }
             foreach (var model in Models)
             {
@@ -106,14 +116,14 @@ this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type))
 this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
                 );
             }
-            foreach (var collection in Collections)
-            {
-                var model = this.Models.FirstOrDefault(m => m.EdmStructuredType == collection.EdmStructuredType);
-                collection.SetModel(model);
-                collection.Dependencies.Add(model);
-            }
             foreach (var service in Services)
             {
+                var entity = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
+                if (entity != null)
+                {
+                    service.SetEntity(entity);
+                    entity.SetService(service);
+                }
                 var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
                 if (model != null)
                 {
@@ -139,6 +149,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
             }
             this.Module.Dependencies.AddRange(this.Services);
             this.Config.Dependencies.AddRange(this.Enums);
+            this.Config.Dependencies.AddRange(this.Entities);
             this.Config.Dependencies.AddRange(this.Models);
             this.Config.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Enums);
@@ -162,6 +173,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
                 BaseUrl = this.MetadataPath.TrimEnd("$metadata".ToCharArray()),
                 MetadataUrl = this.MetadataPath,
                 WithCredentials = this.Secure.ToString().ToLower(),
+                StringAsEnum = this.StringAsEnum.ToString().ToLower(),
                 Creation = DateTime.Now,
                 Version = this.Version,
                 Endpoint = this.EndpointName.ToLower()
@@ -171,6 +183,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
         public override IEnumerable<Renderable> Renderables { get {
             var renderables = new List<Renderable>();
             renderables.AddRange(this.Enums);
+            renderables.AddRange(this.Entities);
             renderables.AddRange(this.Models);
             renderables.AddRange(this.Collections);
             renderables.AddRange(this.Services);

@@ -1,0 +1,9 @@
+{
+    "MetadataPath": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
+    "EndpointName": "TripPin",
+    "Output": "../TripPinEntity/src/app/trippin",
+    "PurgeOutput": true,
+    "Secure": true,
+    "StringAsEnum": true,
+    "Models": false
+}

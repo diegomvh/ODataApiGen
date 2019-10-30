@@ -9,22 +9,27 @@ namespace Od2Ts.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
     {
-        public Angular.Model Model {get; private set;}
-        public Angular.Collection Collection {get; private set;}
-        public string EdmEntityTypeName {get; set;}
+        public Angular.Entity Entity { get; private set; }
+        public Angular.Model Model { get; private set; }
+        public Angular.Collection Collection { get; private set; }
+        public string EdmEntityTypeName { get; set; }
         public Models.EntitySet EdmEntitySet { get; private set; }
-        public bool UseReferences { get; set; } = false;
-        public Service(Models.EntitySet type, bool refe)
+        public Service(Models.EntitySet type)
         {
             EdmEntitySet = type;
-            UseReferences = refe;
             EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
         }
 
-        public void SetModel(Angular.Model model) {
+        public void SetEntity(Angular.Entity entity)
+        {
+            this.Entity = entity;
+        }
+        public void SetModel(Angular.Model model)
+        {
             this.Model = model;
         }
-        public void SetCollection(Angular.Collection collection) {
+        public void SetCollection(Angular.Collection collection)
+        {
             this.Collection = collection;
         }
 
@@ -49,8 +54,16 @@ namespace Od2Ts.Angular
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmEntitySet.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
-                list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                if (this.Entity != null)
+                {
+                    list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
+                    list.AddRange(this.Entity.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                }
+                if (this.Model != null)
+                {
+                    list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
+                    list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                }
                 return list;
             }
         }
@@ -71,8 +84,8 @@ namespace Od2Ts.Angular
                 var returnType = AngularRenderable.GetType(callable.ReturnType);
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
 
-                var callableReturnType = callable.IsEdmReturnType ? 
-                        $"ODataProperty<{typescriptType}>" : 
+                var callableReturnType = callable.IsEdmReturnType ?
+                        $"ODataProperty<{typescriptType}>" :
                     callable.ReturnsCollection ?
                         $"ODataEntitySet<{typescriptType}>" :
                         $"{typescriptType}";
@@ -81,31 +94,31 @@ namespace Od2Ts.Angular
                     ? $"collection{callable.Type}"
                     : $"{callable.Type.ToLower()}";
 
-                var responseType = callable.IsEdmReturnType ? 
-                        $"property" : 
+                var responseType = callable.IsEdmReturnType ?
+                        $"property" :
                     callable.ReturnsCollection ?
-                        $"entityset" : 
-                        $"entity"; 
+                        $"entityset" :
+                        $"entity";
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
                     parameters.AddRange(cal.Parameters);
-                var optionals = parameters.Where(p => 
+                var optionals = parameters.Where(p =>
                     !callables.All(c => c.Parameters.Contains(p))).ToList();
                 parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
 
                 var argumentWithType = new List<string>();
-                var boundArgument = callable.IsCollectionAction ? 
-                    "" : 
+                var boundArgument = callable.IsCollectionAction ?
+                    "" :
                     callable.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)).ToLower() + "Id";
 
                 if (!callable.IsCollectionAction)
                     argumentWithType.Add($"{boundArgument}: any");
 
-                argumentWithType.AddRange(parameters.Select(p => 
-                    $"{p.Name}: {AngularRenderable.GetTypescriptType(p.Type)}" + 
-                    (p.IsCollection? "[]" : "") + 
-                    (optionals.Contains(p)? " = null" : "")
+                argumentWithType.AddRange(parameters.Select(p =>
+                    $"{p.Name}: {AngularRenderable.GetTypescriptType(p.Type)}" +
+                    (p.IsCollection ? "[]" : "") +
+                    (optionals.Contains(p) ? " = null" : "")
                 ));
                 argumentWithType.Add(@"options?: {
     headers?: HttpHeaders | {[header: string]: string | string[]},
@@ -133,8 +146,10 @@ namespace Od2Ts.Angular
             }
         }
 
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations) {
-            foreach (var nav in navigations) {
+        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
+        {
+            foreach (var nav in navigations)
+            {
                 var type = AngularRenderable.GetTypescriptType(nav.Type);
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
@@ -142,7 +157,7 @@ namespace Od2Ts.Angular
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
-                var returnType = (nav.IsCollection) ? $"ODataCollection<{type}>" : $"{type}"; 
+                var returnType = (nav.IsCollection) ? $"ODataCollection<{type}>" : $"{type}";
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?: {{
@@ -152,12 +167,12 @@ namespace Od2Ts.Angular
     withCredentials?: boolean
   }}): Observable<{returnType}> {{
     return this.navigationProperty<{type}>(entity, '{nav.Name}')
-      .{(nav.IsCollection? "collection" : "single")}(options);
+      .{(nav.IsCollection ? "collection" : "single")}(options);
   }}";
                 // Link
                 yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
-      .{(nav.IsCollection? "add" : "set")}(target{(nav.IsCollection? "" : ", {etag: this.client.resolveEtag(entity)}")});
+      .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag: this.client.resolveEtag(entity)}")});
   }}";
                 // Unlink
                 yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityRequest<{type}>): Observable<any> {{
@@ -169,7 +184,7 @@ namespace Od2Ts.Angular
 
         public object ToLiquid()
         {
-            return new {Name=this.Name};
+            return new { Name = this.Name };
         }
 
     }

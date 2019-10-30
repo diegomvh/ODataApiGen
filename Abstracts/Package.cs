@@ -8,14 +8,16 @@ namespace Od2Ts.Abstracts
         public string EndpointName {get; private set;}
         public string MetadataPath {get; private set;}
         public bool Secure {get; private set;}
-        public bool BatchQueries {get; private set;}
+        public bool StringAsEnum {get; private set;}
+        public bool CreateModels {get; private set;}
         public string Version {get; private set;}
-        public Package(string endpointName, string metadataPath, bool secure, bool batch, string version)
+        public Package(string endpointName, string metadataPath, bool secure, bool stringAsEnum, bool models, string version)
         {
             this.EndpointName = endpointName;
             this.MetadataPath = metadataPath;
             this.Secure = secure;
-            this.BatchQueries = batch;
+            this.StringAsEnum = stringAsEnum;
+            this.CreateModels = models;
             this.Version = version;
         }
         public abstract IEnumerable<Renderable> Renderables { get; }

@@ -6,6 +6,7 @@ export const {{Name}}: ODataConfig = {
   baseUrl: '{{Package.BaseUrl}}',
   metadataUrl: '{{Package.MetadataUrl}}',
   withCredentials: {{Package.WithCredentials}},
+  stringAsEnum: {{Package.StringAsEnum}},
   creation: new Date('{{Package.Creation | date: "o"}}'),
   version: '{{Package.Version}}',
   enums: {

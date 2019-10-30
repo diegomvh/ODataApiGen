@@ -12,13 +12,11 @@ namespace Od2Ts.Angular
         public Model Model { get; private set; }
         public Angular.Service Service {get; private set;}
 
-        public Collection(StructuredType type)
+        public Collection(StructuredType type, Angular.Model model)
         {
             EdmStructuredType = type;
-        }
-        public void SetModel(Model model)
-        {
             this.Model = model;
+            this.Dependencies.Add(model);
         }
         
         public void SetService(Service service)

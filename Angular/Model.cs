@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Od2Ts.Models;
 
 namespace Od2Ts.Angular
@@ -23,11 +24,53 @@ namespace Od2Ts.Angular
             };
         }
     }
-    public class ModelClass : Model, DotLiquid.ILiquidizable
+    public class Model : AngularRenderable, DotLiquid.ILiquidizable
     {
-        public ModelClass(StructuredType type) : base(type)
+        public StructuredType EdmStructuredType { get; private set; }
+        public Model(StructuredType type, Angular.Entity entity)
         {
+            EdmStructuredType = type;
+            Entity = entity;
+            this.Dependencies.Add(entity);
         }
+        public Model Base { get; private set; }
+        public Angular.Entity Entity {get; private set;}
+        public Angular.Collection Collection {get; private set;}
+        public Angular.Service Service {get; private set;}
+
+        public void SetBase(Model b)
+        {
+            this.Base = b;
+        }
+        public void SetCollection(Collection collection)
+        {
+            this.Collection = collection;
+        }
+        public void SetService(Service service)
+        {
+            this.Service = service;
+        }
+
+        // Imports
+        public override IEnumerable<string> ImportTypes
+        {
+            get
+            {
+                var types = this.EdmStructuredType.NavigationProperties
+                    .Select(a => a.Type)
+                    .ToList();
+                /*For Not-EDM types (e.g. enums with namespaces, complex types*/
+                types.AddRange(this.EdmStructuredType.Properties
+                    .Where(a => !a.IsEdmType)
+                    .Select(a => a.Type));
+                if (this.Base != null)
+                    types.Add(this.Base.EdmStructuredType.Type);
+                return types.Distinct();
+            }
+        }
+        public override string Name => this.EdmStructuredType.Name;
+        public override string NameSpace => this.EdmStructuredType.NameSpace;
+        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();

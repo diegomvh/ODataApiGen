@@ -8,7 +8,7 @@ namespace Od2Ts.Angular
 {
     public class ServiceModel : Service
     {
-        public ServiceModel(EntitySet type, bool refe) : base(type, refe)
+        public ServiceModel(EntitySet type) : base(type)
         {
         }
         public override IEnumerable<Import> Imports => GetImportRecords();
