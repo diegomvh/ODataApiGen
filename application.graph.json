@@ -1,10 +1,9 @@
 {
-    "MetadataPath": "https://graph.microsoft.com/v1.0/$metadata",
-    "EndpointName": "MsGraph",
+    "Name": "MsGraph",
+    "Metadata": "https://graph.microsoft.com/v1.0/$metadata",
     "Output": "../../demo/MsGraph/src/app/msgraph",
+    "Purge": true,
     "Secure": true,
-    "Batch": false,
-    "PurgeOutput": true,
-    "UseInterfaces": true,
-    "UseReferences": true
+    "StringAsEnum": true,
+    "Models": true
 }

@@ -14,10 +14,10 @@ namespace Od2Ts
         public static ILogger CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
         public static ILogger Logger { get; } = Program.CreateLogger<Program>();
         public static IConfiguration Configuration { get; set; }
-        public static string MetadataPath { get; set; }
-        public static string EndpointName { get; set; }
+        public static string Metadata { get; set; }
+        public static string Name { get; set; }
         public static string Output { get; set; }
-        public static bool PurgeOutput { get; set; }
+        public static bool Purge { get; set; }
         public static bool WithCredentials { get; set; }
         public static bool StringAsEnum { get; set; }
         public static bool Models { get; set; }
@@ -32,8 +32,9 @@ namespace Od2Ts
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("application.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
-                    {"-MetadataPath", "MetadataPath"},
-                    {"-EndpointName", "EndpointName"},
+                    {"-Name", "Name"},
+                    {"-Metadata", "MetadataPath"},
+                    {"-Purge", "Purge"},
                     {"-Output", "Output"},
                     {"-WithCredentials", "WithCredentials"},
                     {"-StringAsEnum", "StringAsEnum"},
@@ -41,11 +42,11 @@ namespace Od2Ts
                 });
             Configuration = builder.Build();
 
-            MetadataPath = Configuration.GetValue<string>("MetadataPath");
-            EndpointName = Configuration.GetValue<string>("EndpointName");
+            Metadata = Configuration.GetValue<string>("Metadata");
+            Name = Configuration.GetValue<string>("Name");
             Output = Configuration.GetValue<string>("Output");
+            Purge = Configuration.GetValue<bool>("Purge");
             WithCredentials = Configuration.GetValue<bool>("WithCredentials");
-            PurgeOutput = Configuration.GetValue<bool>("PurgeOutput");
             StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
             
@@ -53,10 +54,10 @@ namespace Od2Ts
             var templateRenderer = new Renderer(Output);
 
             var metadataReader = new MetadataReader(
-                System.Xml.Linq.XDocument.Load(MetadataPath));
+                System.Xml.Linq.XDocument.Load(Metadata));
 
-            directoryManager.PrepareOutput(PurgeOutput);
-            var package = new Angular.Package(EndpointName, MetadataPath, WithCredentials, StringAsEnum, Models, "4.0");
+            directoryManager.PrepareOutput(Purge);
+            var package = new Angular.Package(Name, Metadata, WithCredentials, StringAsEnum, Models, "4.0");
             package.LoadMetadata(metadataReader);
             package.ResolveDependencies();
 

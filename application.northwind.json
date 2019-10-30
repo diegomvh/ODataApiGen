@@ -1,9 +1,9 @@
 {
-    "MetadataPath": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
-    "EndpointName": "Northwind",
+    "Name": "Northwind",
+    "Metadata": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
     "Output": "../../demo/Northwind/src/app/northwind",
-    "PurgeOutput": true,
-    "Secure": true,
+    "Purge": true,
+    "WithCredentials": true,
     "StringAsEnum": true,
     "Models": true
 }
