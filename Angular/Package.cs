@@ -125,7 +125,7 @@ this.Entities.Where(e => types.Contains(e.EdmStructuredType.Type)));
                 model.Dependencies.AddRange(
 this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type)));
                 model.Dependencies.AddRange(
-                    this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type)));
+this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type)));
             }
             foreach (var service in Services)
             {
@@ -149,8 +149,13 @@ this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type)));
                 }
                 var types = service.ImportTypes;
                 service.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
-                );
+this.Enums.Where(e => types.Contains(e.EdmEnumType.Type)));
+                service.Dependencies.AddRange(
+this.Entities.Where(e => types.Contains(e.EdmStructuredType.Type)));
+                service.Dependencies.AddRange(
+this.Models.Where(e => types.Contains(e.EdmStructuredType.Type)));
+                service.Dependencies.AddRange(
+this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type)));
             }
             this.Module.Dependencies.AddRange(this.Services);
             this.Config.Dependencies.AddRange(this.Enums);
@@ -158,6 +163,7 @@ this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
             this.Config.Dependencies.AddRange(this.Models);
             this.Config.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Enums);
+            this.Index.Dependencies.AddRange(this.Entities);
             this.Index.Dependencies.AddRange(this.Models);
             this.Index.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Services);
@@ -166,6 +172,7 @@ this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
         public IEnumerable<string> GetAllDirectories()
         {
             return this.Enums.Select(e => e.Directory)
+                .Union(this.Entities.Select(m => m.Directory))
                 .Union(this.Models.Select(m => m.Directory))
                 .Union(this.Collections.Select(m => m.Directory))
                 .Union(this.Services.Select(s => s.Directory))

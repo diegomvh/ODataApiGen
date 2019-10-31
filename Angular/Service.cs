@@ -23,17 +23,14 @@ namespace Od2Ts.Angular
         public void SetEntity(Angular.Entity entity)
         {
             this.Entity = entity;
-            this.Dependencies.Add(entity);
         }
         public void SetModel(Angular.Model model)
         {
             this.Model = model;
-            this.Dependencies.Add(model);
         }
         public void SetCollection(Angular.Collection collection)
         {
             this.Collection = collection;
-            this.Dependencies.Add(collection);
         }
 
         public override string Name => this.EdmEntitySet.Name + "Service";
@@ -173,12 +170,12 @@ namespace Od2Ts.Angular
       .{(nav.IsCollection ? "collection" : "single")}(options);
   }}";
                 // Link
-                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityRequest<{type}>): Observable<any> {{
+                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityResource<{type}>): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
       .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag: this.client.resolveEtag(entity)}")});
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityRequest<{type}>): Observable<any> {{
+                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityResource<{type}>): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
       .remove({{etag: this.client.resolveEtag(entity), target}});
   }}";
