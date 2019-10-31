@@ -15,6 +15,7 @@ namespace Od2Ts.Angular {
         public override IEnumerable<string> ExportTypes => new string[] {this.Name};
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.EdmEnumType.Name;
+        public string EnumType => this.EdmEnumType.Type;
         public override string NameSpace => this.EdmEnumType.NameSpace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);

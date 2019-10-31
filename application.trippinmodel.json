@@ -1,0 +1,9 @@
+{
+    "Name": "TripPin",
+    "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
+    "Output": "../TripPinModel/src/app/trippin",
+    "Purge": true,
+    "WithCredentials": true,
+    "StringAsEnum": true,
+    "Models": true
+}

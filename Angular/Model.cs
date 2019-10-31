@@ -20,18 +20,16 @@ namespace Od2Ts.Angular
             return new
             {
                 Name = Value.Name + (Value.IsNullable ? "?" : ""),
-                Type = this.Type + (Value.IsCollection ? Value.IsEdmType ? "[]" : "ODataCollection" : "")
+                Type = this.Type + (Value.IsCollection ? Value.IsEdmType ? "[]" : "Collection" : ""),
             };
         }
     }
     public class Model : AngularRenderable, DotLiquid.ILiquidizable
     {
         public StructuredType EdmStructuredType { get; private set; }
-        public Model(StructuredType type, Angular.Entity entity)
+        public Model(StructuredType type)
         {
             EdmStructuredType = type;
-            Entity = entity;
-            this.Dependencies.Add(entity);
         }
         public Model Base { get; private set; }
         public Angular.Entity Entity {get; private set;}
@@ -69,11 +67,13 @@ namespace Od2Ts.Angular
             }
         }
         public override string Name => this.EdmStructuredType.Name;
+        public string EntityType => this.EdmStructuredType.Type;
         public override string NameSpace => this.EdmStructuredType.NameSpace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.SchemaName };
         public override IEnumerable<Import> Imports => GetImportRecords();
+        public string SchemaName => this.EdmStructuredType.Name + "Schema";
         protected string RenderProperty(Models.Property prop)
         {
             var field = $"{prop.Name}" +
@@ -82,7 +82,7 @@ namespace Od2Ts.Angular
             if (prop.IsEdmType) {
                 field = $"{field}" + (prop.IsCollection ? "[];" : ";");
             } else {
-                field = $"{field}" + (prop.IsCollection ? "ODataCollection;" : ";");
+                field = $"{field}" + (prop.IsCollection ? "Collection;" : ";");
             }
             return field;
         }
@@ -142,7 +142,10 @@ namespace Od2Ts.Angular
         public object ToLiquid()
         {
             return new {
-                Name = this.Name
+                Name = this.Name,
+                Type = this.Type,
+                EntityType = this.EntityType,
+                SchemaName = this.SchemaName
             };
         }
     }

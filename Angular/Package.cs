@@ -49,13 +49,14 @@ namespace Od2Ts.Angular
         {
             foreach (var t in entities)
             {
-                var entity = new Angular.Entity(t);
-                this.Entities.Add(entity);
                 if (this.CreateModels)
                 {
-                    var model = new Angular.Model(t, entity);
+                    var model = new Angular.Model(t);
                     this.Models.Add(model);
                     this.Collections.Add(new Angular.Collection(t, model));
+                } else {
+                    var inter = new Angular.Entity(t);
+                    this.Entities.Add(inter);
                 }
             }
         }
@@ -64,13 +65,14 @@ namespace Od2Ts.Angular
         {
             foreach (var t in complexs)
             {
-                var entity = new Angular.Entity(t);
-                this.Entities.Add(entity);
                 if (this.CreateModels)
                 {
-                    var model = new Angular.Model(t, entity);
+                    var model = new Angular.Model(t);
                     this.Models.Add(model);
                     this.Collections.Add(new Angular.Collection(t, model));
+                } else {
+                    var entity = new Angular.Entity(t);
+                    this.Entities.Add(entity);
                 }
             }
         }
@@ -148,12 +150,6 @@ this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.Type)));
                 var types = service.ImportTypes;
                 service.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.Type))
-                );
-                service.Dependencies.AddRange(
-this.Models.Where(e => types.Contains(e.EdmStructuredType.Type))
-                );
-                service.Dependencies.AddRange(
-this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type))
                 );
             }
             this.Module.Dependencies.AddRange(this.Services);

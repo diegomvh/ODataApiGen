@@ -8,8 +8,6 @@ import { ODataModelService } from 'angular-odata';
 @Injectable()
 export class {{Name}} extends ODataModelService<{{ModelName}}, {{CollectionName}}> {
   static set: string = '{{EntitySet}}';
-  static type: string = '{{EntityType}}';
-  static model: string = '{{ModelType}}';
-  static collection: string = '{{CollectionType}}';
+  static type: string = '{{ModelType}}';
   
 }

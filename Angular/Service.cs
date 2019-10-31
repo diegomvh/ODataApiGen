@@ -23,14 +23,17 @@ namespace Od2Ts.Angular
         public void SetEntity(Angular.Entity entity)
         {
             this.Entity = entity;
+            this.Dependencies.Add(entity);
         }
         public void SetModel(Angular.Model model)
         {
             this.Model = model;
+            this.Dependencies.Add(model);
         }
         public void SetCollection(Angular.Collection collection)
         {
             this.Collection = collection;
+            this.Dependencies.Add(collection);
         }
 
         public override string Name => this.EdmEntitySet.Name + "Service";

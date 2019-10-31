@@ -102,6 +102,7 @@ namespace Od2Ts.Angular
             }
         }
         public override string Name => this.EdmStructuredType.Name;
+        public string EntityType => this.EdmStructuredType.Type;
         public override string NameSpace => this.EdmStructuredType.NameSpace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
@@ -127,6 +128,7 @@ namespace Od2Ts.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
+                EntityType = this.EntityType,
                 SchemaName = this.SchemaName
             };
         }
