@@ -42,21 +42,22 @@ namespace Od2Ts
                 });
             Configuration = builder.Build();
 
-            Metadata = Configuration.GetValue<string>("Metadata");
             Name = Configuration.GetValue<string>("Name");
             Output = Configuration.GetValue<string>("Output");
-            Purge = Configuration.GetValue<bool>("Purge");
-            WithCredentials = Configuration.GetValue<bool>("WithCredentials");
-            StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
-            Models = Configuration.GetValue<bool>("Models");
-            
+            Output = $"{Output}{Path.DirectorySeparatorChar}{Name.ToLower()}";
             var directories = new DirectoryManager(Output);
             var renderer = new Renderer(Output);
 
+            Metadata = Configuration.GetValue<string>("Metadata");
             var metadataReader = new MetadataReader(
                 System.Xml.Linq.XDocument.Load(Metadata));
 
+            Purge = Configuration.GetValue<bool>("Purge");
             directories.PrepareOutput(Purge);
+
+            WithCredentials = Configuration.GetValue<bool>("WithCredentials");
+            StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
+            Models = Configuration.GetValue<bool>("Models");
             var package = new Angular.Package(Name, Metadata, WithCredentials, StringAsEnum, Models, "4.0");
             package.LoadMetadata(metadataReader);
             package.ResolveDependencies();

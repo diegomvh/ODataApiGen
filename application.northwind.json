@@ -1,7 +1,7 @@
 {
     "Name": "Northwind",
     "Metadata": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
-    "Output": "../../demo/Northwind/src/app/northwind",
+    "Output": "../../demo/Northwind/src/app",
     "Purge": true,
     "WithCredentials": false,
     "StringAsEnum": false,
