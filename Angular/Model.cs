@@ -132,8 +132,7 @@ namespace Od2Ts.Angular
         public IEnumerable<SchemaField> SchemaFields => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => {
-                    var propType = (prop.IsCollection) ? $"{prop.Type}Collection" : prop.Type;
-                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == propType);
+                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
                     return new SchemaField(prop, this.EdmStructuredType.Keys, type as AngularRenderable); 
                     });
         public IEnumerable<Angular.ModelProperty> Properties => this.EdmStructuredType.Properties

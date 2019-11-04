@@ -11,7 +11,7 @@ namespace Od2Ts.Angular
         public string Name {get; set;}
         public SchemaField(Models.Property property, IEnumerable<PropertyRef> keys, AngularRenderable type) {
             this.Name = property.Name;
-            this.Add("type", type == null ? $"'{AngularRenderable.GetType(property.Type)}'" : $"'{type.Type}'");
+            this.Add("type", $"'{AngularRenderable.GetType(property.Type)}'");
             var key = keys.FirstOrDefault(k => k.Name == property.Name);
             if (key != null) {
                 this.Add("isKey", "true");
@@ -27,7 +27,7 @@ namespace Od2Ts.Angular
             if (property.IsCollection)
                 this.Add("isCollection", "true");
             if (type is Enum) {
-                this.Add("isFlags", (type as Enum).IsFlags);
+                this.Add("isFlags", (type as Enum).IsFlags.ToString().ToLower());
             } else if (property is NavigationProperty) {
                 // Is Navigation
                 this.Add("isNavigation", "true");
@@ -119,7 +119,6 @@ namespace Od2Ts.Angular
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    var self = prop.Type == this.Type;
                     return new SchemaField(prop, this.EdmStructuredType.Keys, type as AngularRenderable); 
                     });
 

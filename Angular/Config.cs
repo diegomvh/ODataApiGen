@@ -26,6 +26,7 @@ namespace Od2Ts.Angular {
         public IEnumerable<string> Collections => this.Package.Collections
               .Select(col => $"'{col.EntityType}': {col.Name}");
         public IEnumerable<string> Schemas => this.Package.Entities
-              .Select(entity => $"'{entity.EntityType}': {entity.SchemaName}");
+              .Select(entity => $"'{entity.EntityType}': {entity.SchemaName}")
+              .Union(this.Package.Models.Select(model => $"'{model.EntityType}': {model.SchemaName}"));
     }
 }
