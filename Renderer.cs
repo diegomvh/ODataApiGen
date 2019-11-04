@@ -9,6 +9,7 @@ namespace Od2Ts
     public class Renderer
     {
         private ILogger Logger { get; } = Program.CreateLogger<Renderer>();
+        public string StaticPath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}Static";
         public string TemplatesPath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}Templates";
         public string Output { get; private set; }
         public Renderer(string output)

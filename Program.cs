@@ -30,10 +30,10 @@ namespace Od2Ts
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.siuweb.json")
+                .AddJsonFile("application.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
-                    {"-Metadata", "MetadataPath"},
+                    {"-Metadata", "Metadata"},
                     {"-Purge", "Purge"},
                     {"-Output", "Output"},
                     {"-WithCredentials", "WithCredentials"},
@@ -50,25 +50,25 @@ namespace Od2Ts
             StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
             
-            var directoryManager = new DirectoryManager(Output);
-            var templateRenderer = new Renderer(Output);
+            var directories = new DirectoryManager(Output);
+            var renderer = new Renderer(Output);
 
             var metadataReader = new MetadataReader(
                 System.Xml.Linq.XDocument.Load(Metadata));
 
-            directoryManager.PrepareOutput(Purge);
+            directories.PrepareOutput(Purge);
             var package = new Angular.Package(Name, Metadata, WithCredentials, StringAsEnum, Models, "4.0");
             package.LoadMetadata(metadataReader);
             package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
-            directoryManager.PrepareFolders(package.GetAllDirectories());
+            directories.PrepareFolders(package.GetAllDirectories());
             
             Logger.LogInformation("Copy static content");
-            directoryManager.DirectoryCopy("./StaticContent", Output, true);
+            directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}Angular", Output, true);
 
             Logger.LogInformation("Render");
-            templateRenderer.Render(package);
+            renderer.Render(package);
         }
     }
 }
