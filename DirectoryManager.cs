@@ -74,7 +74,7 @@ namespace Od2Ts
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-
+            
             if (!dir.Exists)
             {
                 throw new DirectoryNotFoundException(

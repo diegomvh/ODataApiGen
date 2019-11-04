@@ -1,5 +1,10 @@
 FROM mcr.microsoft.com/dotnet/core/runtime:2.2
 
-COPY bin/Release/netcoreapp2.2/publish/ app/
+COPY bin/Release/netcoreapp2.2/publish/ /app/
+COPY application.json /app/
+COPY Static /app/Static
+COPY Templates /app/Templates
 
-ENTRYPOINT ["dotnet", "app/ODataApiGen.dll"]
+WORKDIR "/app"
+
+ENTRYPOINT ["dotnet", "ODataApiGen.dll"]
