@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace Od2Ts.Models
+namespace ODataApiGen.Models
 {
     public class Annotation 
     {

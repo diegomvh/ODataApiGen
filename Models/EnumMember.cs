@@ -1,4 +1,4 @@
-﻿namespace Od2Ts.Models
+﻿namespace ODataApiGen.Models
 {
     public class EnumMember
     {

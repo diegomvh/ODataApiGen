@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DotLiquid;
-using Od2Ts.Abstracts;
+using ODataApiGen.Abstracts;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
-    public class Package : Od2Ts.Abstracts.Package, ILiquidizable
+    public class Package : ODataApiGen.Abstracts.Package, ILiquidizable
     {
         public Angular.Module Module { get; private set; }
         public Angular.Config Config { get; private set; }

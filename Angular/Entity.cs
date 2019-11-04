@@ -3,9 +3,9 @@ using System.Linq;
 using System;
 using System.IO;
 using DotLiquid;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class SchemaField : Dictionary<string, string>, DotLiquid.ILiquidizable {
         public string Name {get; set;}
@@ -49,7 +49,7 @@ namespace Od2Ts.Angular
     public class EntityProperty : ILiquidizable
     {
         private Models.Property Value { get; set; }
-        public EntityProperty(Od2Ts.Models.Property prop)
+        public EntityProperty(ODataApiGen.Models.Property prop)
         {
             this.Value = prop;
         }

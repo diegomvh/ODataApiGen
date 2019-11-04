@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
-    public abstract class AngularRenderable : Od2Ts.Abstracts.Renderable
+    public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
     {
         public static string GetType(string type)
         {

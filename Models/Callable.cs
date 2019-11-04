@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts.Models
+namespace ODataApiGen.Models
 {
     public abstract class Callable
     {

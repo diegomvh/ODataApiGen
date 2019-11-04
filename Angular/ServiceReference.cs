@@ -1,7 +1,7 @@
 using System;
 using DotLiquid;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class ServiceReference : ILiquidizable
     {

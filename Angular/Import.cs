@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DotLiquid;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class Import : ILiquidizable 
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotLiquid;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
     {

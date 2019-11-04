@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class ModelProperty : DotLiquid.ILiquidizable
     {
         private Models.Property Value { get; set; }
-        public ModelProperty(Od2Ts.Models.Property prop)
+        public ModelProperty(ODataApiGen.Models.Property prop)
         {
             this.Value = prop;
         }

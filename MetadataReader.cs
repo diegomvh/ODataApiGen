@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts
+namespace ODataApiGen
 {
     public class MetadataReader
     {

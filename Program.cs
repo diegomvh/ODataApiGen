@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Od2Ts
+namespace ODataApiGen
 {
     class Program
     {

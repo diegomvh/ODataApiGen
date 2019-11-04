@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class Module : AngularRenderable
     {

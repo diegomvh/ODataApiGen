@@ -2,9 +2,9 @@
 using DotLiquid;
 using DotLiquid.FileSystems;
 using Microsoft.Extensions.Logging;
-using Od2Ts.Abstracts;
+using ODataApiGen.Abstracts;
 
-namespace Od2Ts
+namespace ODataApiGen
 {
     public class Renderer
     {

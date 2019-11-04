@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Od2Ts.Models
+namespace ODataApiGen.Models
 {
     public class NavigationProperty : Property
     {

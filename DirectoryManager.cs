@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Od2Ts
+namespace ODataApiGen
 {
     public class DirectoryManager
     {

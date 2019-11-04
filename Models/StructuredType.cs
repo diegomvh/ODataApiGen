@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Od2Ts.Models
+namespace ODataApiGen.Models
 {
     public abstract class StructuredType 
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Od2Ts.Models;
+using ODataApiGen.Models;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class ServiceEntity : Service
     {

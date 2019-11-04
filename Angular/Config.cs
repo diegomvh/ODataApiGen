@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Od2Ts.Angular {
+namespace ODataApiGen.Angular {
     public class Config : AngularRenderable {
         public Angular.Package Package {get; private set;}
         public Config(Package package) {

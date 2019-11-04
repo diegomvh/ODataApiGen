@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Od2Ts.Abstracts
+namespace ODataApiGen.Abstracts
 {
     public abstract class Renderable {
         public abstract string Name { get; }

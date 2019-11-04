@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Od2Ts.Angular
+namespace ODataApiGen.Angular
 {
     public class Index : AngularRenderable
     {

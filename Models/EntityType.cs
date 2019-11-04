@@ -1,7 +1,7 @@
 using System.Xml.Linq;
-using Od2Ts.Abstracts;
+using ODataApiGen.Abstracts;
 
-namespace Od2Ts.Models
+namespace ODataApiGen.Models
 {
     public class EntityType : StructuredType {
         public EntityType(XElement sourceElement) : base(sourceElement)
