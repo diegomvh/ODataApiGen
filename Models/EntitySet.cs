@@ -6,22 +6,20 @@ namespace ODataApiGen.Models
 {
     public class EntitySet
     {
-        public EntitySet(XElement xElement,
-        IEnumerable<Action> customActions, IEnumerable<Function> customFunctions)
+        public EntitySet(XElement xElement, IEnumerable<ActionImport> customActions, IEnumerable<FunctionImport> customFunctions)
         {
-            EntitySetName = xElement.Attribute("Name")?.Value;
-            Name = char.ToUpper(EntitySetName[0]) + EntitySetName.Substring(1);
+            Name = xElement.Attribute("Name")?.Value;
             EntityType = xElement.Attribute("EntityType")?.Value;
+            Actions = customActions.Where(a => (a.EntitySet == Name || a.Action.BindingParameter == EntityType)).Select(ai => ai.Action);
+            Functions = customFunctions.Where(a => (a.EntitySet == Name || a.Function.BindingParameter == EntityType)).Select(fi => fi.Function);
             NameSpace =
                 xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
-            Actions = customActions.Where(a => a.BindingParameter == EntityType);
-            Functions = customFunctions.Where(a => a.BindingParameter == EntityType);
         }
 
         public string Name { get; private set; }
         public string NameSpace { get; private set; }
+        public string FullName => $"{this.NameSpace}.{this.Name}";
         public string EntityType { get; private set; }
-        public string EntitySetName { get; private set; }
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
     }

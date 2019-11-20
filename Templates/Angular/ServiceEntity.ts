@@ -3,14 +3,14 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataEntitySet, ODataProperty, ODataEntityResource, ODataCollection } from 'angular-odata';
+import { ODataEntityService, ODataCollection, ODataValue, ODataEntityResource } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 
 @Injectable()
-export class {{Name}} extends ODataEntityService<{{EntityName}}> {
-  static set: string = '{{EntitySet}}';
+export class {{Name}} extends ODataEntityService<{{EdmEntityName}}> {
+  static set: string = '{{EntityName}}';
   static type: string = '{{EntityType}}';
   
   // Actions

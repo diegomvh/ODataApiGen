@@ -12,12 +12,16 @@ namespace ODataApiGen.Angular
         public Angular.Entity Entity { get; private set; }
         public Angular.Model Model { get; private set; }
         public Angular.Collection Collection { get; private set; }
-        public string EdmEntityTypeName { get; set; }
         public Models.EntitySet EdmEntitySet { get; private set; }
+        public Models.Singleton EdmSingleton { get; private set; }
         public Service(Models.EntitySet type)
         {
             EdmEntitySet = type;
-            EdmEntityTypeName = EdmEntitySet.EntityType.Split('.').Last();
+        }
+
+        public Service(Models.Singleton type)
+        {
+            EdmSingleton = type;
         }
 
         public void SetEntity(Angular.Entity entity)
@@ -33,9 +37,12 @@ namespace ODataApiGen.Angular
             this.Collection = collection;
         }
 
-        public override string Name => this.EdmEntitySet.Name + "Service";
-        public override string NameSpace => this.EdmEntitySet.NameSpace;
-        public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
+        public string EdmEntityName =>
+                (EdmEntitySet != null) ? EdmEntitySet.EntityType.Split('.').Last() :
+                EdmSingleton.Type.Split('.').Last();
+        public override string Name => ((this.EdmEntitySet != null) ? this.EdmEntitySet.Name : this.EdmSingleton.Name) + "Service";
+        public override string NameSpace => ((this.EdmEntitySet != null) ? this.EdmEntitySet.NameSpace : this.EdmSingleton.NameSpace);
+        public override string FileName => ((this.EdmEntitySet != null) ? this.EdmEntitySet.Name : this.EdmSingleton.Name).ToLower() + ".service";
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         // Imports
         public override IEnumerable<string> ImportTypes
@@ -43,17 +50,19 @@ namespace ODataApiGen.Angular
             get
             {
                 var parameters = new List<Models.Parameter>();
-                foreach (var cal in this.EdmEntitySet.Actions)
+                var actions = (this.EdmEntitySet != null) ? this.EdmEntitySet.Actions : this.EdmSingleton.Actions;
+                foreach (var cal in actions)
                     parameters.AddRange(cal.Parameters);
-                foreach (var cal in this.EdmEntitySet.Functions)
+                var functions = (this.EdmEntitySet != null) ? this.EdmEntitySet.Functions : this.EdmSingleton.Functions;
+                foreach (var cal in functions)
                     parameters.AddRange(cal.Parameters);
 
                 var list = new List<string> {
-                    this.EdmEntitySet.EntityType
+                    (this.EdmEntitySet != null) ? this.EdmEntitySet.EntityType : this.EdmSingleton.Type
                 };
                 list.AddRange(parameters.Select(p => p.Type));
-                list.AddRange(this.EdmEntitySet.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(actions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(functions.SelectMany(a => this.CallableNamespaces(a)));
                 if (this.Entity != null)
                 {
                     list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
@@ -70,7 +79,7 @@ namespace ODataApiGen.Angular
 
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-        public string EntitySet => this.EdmEntitySet.EntitySetName;
+        public string EntityName => this.EdmEntitySet != null ? this.EdmEntitySet.Name : this.EdmSingleton.Name;
 
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
@@ -85,9 +94,9 @@ namespace ODataApiGen.Angular
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
 
                 var callableReturnType = callable.IsEdmReturnType ?
-                        $"ODataProperty<{typescriptType}>" :
+                        $"ODataValue<{typescriptType}>" :
                     callable.ReturnsCollection ?
-                        $"ODataEntitySet<{typescriptType}>" :
+                        $"ODataCollection<{typescriptType}>" :
                         $"{typescriptType}";
 
                 var baseMethodName = callable.IsCollectionAction
@@ -160,7 +169,7 @@ namespace ODataApiGen.Angular
                 var returnType = (nav.IsCollection) ? $"ODataCollection<{type}>" : $"{type}";
 
                 // Navigation
-                yield return $@"public {methodRelationName}(entity: {EdmEntityTypeName}, options?: {{
+                yield return $@"public {methodRelationName}(entity: {EdmEntityName}, options?: {{
     headers?: HttpHeaders | {{[header: string]: string | string[]}},
     params?: HttpParams|{{[param: string]: string | string[]}},
     reportProgress?: boolean,
@@ -170,12 +179,12 @@ namespace ODataApiGen.Angular
       .{(nav.IsCollection ? "collection" : "single")}(options);
   }}";
                 // Link
-                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityTypeName}, target: ODataEntityResource<{type}>): Observable<any> {{
+                yield return $@"public {methodCreateName}<{type}>(entity: {EdmEntityName}, target: ODataEntityResource<{type}>): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
       .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag: this.client.resolveEtag(entity)}")});
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityTypeName}, target?: ODataEntityResource<{type}>): Observable<any> {{
+                yield return $@"public {methodDeleteName}<{type}>(entity: {EdmEntityName}, target?: ODataEntityResource<{type}>): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
       .remove({{etag: this.client.resolveEtag(entity), target}});
   }}";

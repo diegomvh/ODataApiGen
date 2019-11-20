@@ -8,9 +8,8 @@ namespace ODataApiGen.Angular
 {
     public class ServiceModel : Service
     {
-        public ServiceModel(EntitySet type) : base(type)
-        {
-        }
+        public ServiceModel(EntitySet type) : base(type) { }
+        public ServiceModel(Singleton type) : base(type) { }
         public override IEnumerable<Import> Imports => GetImportRecords();
         public string ModelType => this.Model.Type;
         public string ModelName => this.Model.Name;

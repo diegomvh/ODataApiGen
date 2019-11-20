@@ -6,18 +6,19 @@ namespace ODataApiGen.Models
 {
     public class ActionImport
     {
-        public ActionImport(XElement xElement)
+        public ActionImport(XElement xElement, List<Action> actions)
         {
-            EntitySetName = xElement.Attribute("EntitySet")?.Value;
             Name = xElement.Attribute("Name")?.Value;
-            Action = xElement.Attribute("Action")?.Value;
+            EntitySet = xElement.Attribute("EntitySet")?.Value;
             NameSpace =
                 xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
+            var action = xElement.Attribute("Action").Value;
+            this.Action = actions.Where(a => a.FullName == action).FirstOrDefault();
         }
 
         public string Name { get; private set; }
         public string NameSpace { get; private set; }
-        public string Action { get; private set; }
-        public string EntitySetName { get; private set; }
+        public Action Action { get; private set; }
+        public string EntitySet { get; private set; }
     }
 }

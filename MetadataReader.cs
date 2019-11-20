@@ -66,7 +66,7 @@ namespace ODataApiGen
 
         }
 
-        private void ReadEntitySets(XDocument xdoc, List<Action> actions, List<Function> functions)
+        private void ReadEntitySets(XDocument xdoc, List<ActionImport> actions, List<FunctionImport> functions)
         {
             Logger.LogDebug("Parsing entity sets...");
             var entitySetList = new List<EntitySet>();
@@ -110,14 +110,14 @@ namespace ODataApiGen
             Functions = customFunctionList;
         }
 
-        private void ReadSingletons(XDocument xDoc)
+        private void ReadSingletons(XDocument xDoc, List<ActionImport> actions, List<FunctionImport> functions)
         {
             Logger.LogDebug("Parsing singletons...");
             List<Singleton> singletonList = new List<Singleton>();
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Singleton");
             foreach (var xElement in elements)
             {
-                var tSingleton = new Singleton(xElement);
+                var tSingleton = new Singleton(xElement, actions, functions);
                 singletonList.Add(tSingleton);
                 Logger.LogInformation($"Singleton '{tSingleton.Name}' parsed");
             }
@@ -131,7 +131,7 @@ namespace ODataApiGen
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "FunctionImport");
             foreach (var xElement in elements)
             {
-                var tFuncionImport = new FunctionImport(xElement);
+                var tFuncionImport = new FunctionImport(xElement, functions);
                 functionImportList.Add(tFuncionImport);
                 Logger.LogInformation($"FunctionImport '{tFuncionImport.Name}' parsed");
             }
@@ -144,13 +144,12 @@ namespace ODataApiGen
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "ActionImport");
             foreach (var xElement in elements)
             {
-                var tActionImport = new ActionImport(xElement);
+                var tActionImport = new ActionImport(xElement, actions);
                 actionImportList.Add(tActionImport);
                 Logger.LogInformation($"ActionImport '{tActionImport.Name}' parsed");
             }
             ActionImports = actionImportList;
         }
-
 
         public MetadataReader(XDocument xdoc)
         {
@@ -160,11 +159,11 @@ namespace ODataApiGen
 
             ReadActions(xdoc);
             ReadFunctions(xdoc);
-            ReadSingletons(xdoc);
             ReadActionImports(xdoc, Actions);
             ReadFunctionImports(xdoc, Functions);
 
-            ReadEntitySets(xdoc, Actions, Functions);
+            ReadEntitySets(xdoc, ActionImports, FunctionImports);
+            ReadSingletons(xdoc, ActionImports, FunctionImports);
         }
     }
 }

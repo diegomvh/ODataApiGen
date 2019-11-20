@@ -35,6 +35,7 @@ namespace ODataApiGen.Angular
             this.AddModels(reader.ComplexTypes);
             this.AddModels(reader.EntityTypes);
             this.AddServices(reader.EntitySets);
+            this.AddServices(reader.Singletons);
         }
 
         public void AddEnums(IEnumerable<Models.EnumType> enums)
@@ -91,6 +92,20 @@ namespace ODataApiGen.Angular
                 }
             }
         }
+        public void AddServices(IEnumerable<Models.Singleton> singletons)
+        {
+            foreach (var s in singletons)
+            {
+                if (this.CreateModels)
+                {
+                    this.Services.Add(new Angular.ServiceModel(s));
+                }
+                else
+                {
+                    this.Services.Add(new Angular.ServiceEntity(s));
+                }
+            }
+        }
 
         public void ResolveDependencies()
         {
@@ -129,19 +144,19 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type)));
             }
             foreach (var service in Services)
             {
-                var entity = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
+                var entity = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityName);
                 if (entity != null)
                 {
                     service.SetEntity(entity);
                     entity.SetService(service);
                 }
-                var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
+                var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityName);
                 if (model != null)
                 {
                     service.SetModel(model);
                     model.SetService(service);
                 }
-                var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityTypeName);
+                var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == service.EdmEntityName);
                 if (collection != null)
                 {
                     service.SetCollection(collection);
