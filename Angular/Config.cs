@@ -9,7 +9,7 @@ namespace ODataApiGen.Angular {
             this.Package = package;
         }
         // Imports
-        public override IEnumerable<string> ImportTypes => Package.Models.SelectMany(m => m.ImportTypes);
+        public override IEnumerable<string> ImportTypes => Package.Entities.SelectMany(m => m.ImportTypes);
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] {this.Name};
         public override IEnumerable<Import> Imports => GetImportRecords();
@@ -20,13 +20,12 @@ namespace ODataApiGen.Angular {
         public IEnumerable<string> Enums => this.Package.Enums
               .Select(e => $"'{e.EnumType}': {e.Name}");
         public override string Directory => this.NameSpace;
-        public IEnumerable<string> Models => this.Package.Models
+        public IEnumerable<string> Models => this.Package.Entities
               .Where(m => m is Model)
               .Select(model => $"'{model.EntityType}': {model.Name}");
         public IEnumerable<string> Collections => this.Package.Collections
               .Select(col => $"'{col.EntityType}': {col.Name}");
         public IEnumerable<string> Schemas => this.Package.Entities
-              .Select(entity => $"'{entity.EntityType}': {entity.SchemaName}")
-              .Union(this.Package.Models.Select(model => $"'{model.EntityType}': {model.SchemaName}"));
+              .Select(entity => $"'{entity.EntityType}': {entity.SchemaName}");
     }
 }

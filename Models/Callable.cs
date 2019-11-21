@@ -37,7 +37,7 @@ namespace ODataApiGen.Models
 
             if (!string.IsNullOrWhiteSpace(BindingParameter) && BindingParameter.StartsWith("Collection("))
             {
-                IsCollectionAction = true;
+                IsCollection = true;
                 BindingParameter = BindingParameter.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             }
 
@@ -53,7 +53,7 @@ namespace ODataApiGen.Models
         public string BindingParameter { get; }
         public IEnumerable<Parameter> Parameters { get; }
         public string EntitySetPath { get; }
-        public bool IsCollectionAction { get; }
+        public bool IsCollection { get; }
         public bool IsBound { get; }
         public bool IsComposable { get; }
 

@@ -5,87 +5,25 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class ModelProperty : DotLiquid.ILiquidizable
+    public class ModelProperty : EntityProperty 
     {
-        private Models.Property Value { get; set; }
-        public ModelProperty(ODataApiGen.Models.Property prop)
+        public ModelProperty(ODataApiGen.Models.Property prop) : base(prop)
         {
-            this.Value = prop;
         }
-        public IEnumerable<string> Name { get; set; }
-
-        public string Type => AngularRenderable.GetTypescriptType(Value.Type);
-        public object ToLiquid()
-        {
-            return new
-            {
-                Name = Value.Name + (Value.IsNullable ? "?" : ""),
-                Type = this.Type + (Value.IsCollection ? Value.IsEdmType ? "[]" : "Collection" : ""),
-            };
-        }
+        public override string Name => Value.Name + (Value.IsNullable ? "?" : "");
+        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + 
+            (Value.IsCollection ? Value.IsEdmType ? "[]" : "Collection" : "");
     }
-    public class Model : AngularRenderable, DotLiquid.ILiquidizable
+    public class Model : Entity 
     {
-        public StructuredType EdmStructuredType { get; private set; }
-        public Model(StructuredType type)
-        {
-            EdmStructuredType = type;
-        }
-        public Model Base { get; private set; }
-        public Angular.Entity Entity {get; private set;}
+        public Model(StructuredType type) : base(type) { }
         public Angular.Collection Collection {get; private set;}
-        public Angular.Service Service {get; private set;}
 
-        public void SetBase(Model b)
-        {
-            this.Base = b;
-        }
         public void SetCollection(Collection collection)
         {
             this.Collection = collection;
         }
-        public void SetService(Service service)
-        {
-            this.Service = service;
-        }
-
-        // Imports
-        public override IEnumerable<string> ImportTypes
-        {
-            get
-            {
-                var types = this.EdmStructuredType.NavigationProperties
-                    .Select(a => a.Type)
-                    .ToList();
-                /*For Not-EDM types (e.g. enums with namespaces, complex types*/
-                types.AddRange(this.EdmStructuredType.Properties
-                    .Where(a => !a.IsEdmType)
-                    .Select(a => a.Type));
-                if (this.Base != null)
-                    types.Add(this.Base.EdmStructuredType.Type);
-                return types.Distinct();
-            }
-        }
-        public override string Name => this.EdmStructuredType.Name;
-        public string EntityType => this.EdmStructuredType.Type;
-        public override string NameSpace => this.EdmStructuredType.NameSpace;
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.SchemaName };
-        public override IEnumerable<Import> Imports => GetImportRecords();
-        public string SchemaName => this.EdmStructuredType.Name + "Schema";
-        protected string RenderProperty(Models.Property prop)
-        {
-            var field = $"{prop.Name}" +
-                (prop.IsNullable ? "?:" : ":") +
-                $" {AngularRenderable.GetTypescriptType(prop.Type)}";
-            if (prop.IsEdmType) {
-                field = $"{field}" + (prop.IsCollection ? "[];" : ";");
-            } else {
-                field = $"{field}" + (prop.IsCollection ? "Collection;" : ";");
-            }
-            return field;
-        }
 
         public IEnumerable<string> RenderModelMethods(NavigationProperty nav)
         {
@@ -129,23 +67,8 @@ namespace ODataApiGen.Angular
   }}");
             return methods;
         }
-        public IEnumerable<SchemaField> SchemaFields => this.EdmStructuredType.Properties
-                .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => {
-                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new SchemaField(prop, this.EdmStructuredType.Keys, type as AngularRenderable); 
-                    });
-        public IEnumerable<Angular.ModelProperty> Properties => this.EdmStructuredType.Properties
+        public override IEnumerable<Angular.EntityProperty> Properties => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
                 .Select(prop => new Angular.ModelProperty(prop));
-        public object ToLiquid()
-        {
-            return new {
-                Name = this.Name,
-                Type = this.Type,
-                EntityType = this.EntityType,
-                SchemaName = this.SchemaName
-            };
-        }
     }
 }

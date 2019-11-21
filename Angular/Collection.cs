@@ -17,6 +17,7 @@ namespace ODataApiGen.Angular
             EdmStructuredType = type;
             this.Model = model;
             this.Dependencies.Add(model);
+            model.SetCollection(this);
         }
         
         public void SetService(Service service)

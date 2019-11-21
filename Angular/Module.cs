@@ -18,7 +18,7 @@ namespace ODataApiGen.Angular
         public override string Directory => this.NameSpace;
         public IEnumerable<Service> Services => this.Package.Services;
         // Imports and Exports
-        public override IEnumerable<string> ImportTypes => this.Package.Services.Select(a => a.EdmEntitySet != null ? a.EdmEntitySet.EntityType : a.EdmSingleton.Type);
+        public override IEnumerable<string> ImportTypes => this.Package.Services.Select(a => a.EntityType);
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
     }

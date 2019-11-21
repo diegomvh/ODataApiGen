@@ -46,26 +46,24 @@ namespace ODataApiGen.Angular
             };
         }
     }
-    public class EntityProperty : ILiquidizable
+    public abstract class EntityProperty : ILiquidizable
     {
-        private Models.Property Value { get; set; }
+        protected Models.Property Value { get; set; }
         public EntityProperty(ODataApiGen.Models.Property prop)
         {
             this.Value = prop;
         }
-        public IEnumerable<string> Name { get; set; }
+        public abstract string Name { get; }
 
-        public string Type => AngularRenderable.GetTypescriptType(Value.Type);
-        public object ToLiquid()
-        {
-            return new
-            {
-                Name = Value.Name + (Value.IsNullable ? "?" : ""),
-                Type = this.Type + (Value.IsCollection ? "[]" : "")
+        public abstract string Type {get;}
+        public object ToLiquid() {
+            return new {
+                Name = this.Name,
+                Type = this.Type
             };
         }
     }
-    public class Entity : AngularRenderable, DotLiquid.ILiquidizable
+    public abstract class Entity : AngularRenderable, DotLiquid.ILiquidizable
     {
         public StructuredType EdmStructuredType { get; private set; }
         public Entity(StructuredType type)
@@ -105,15 +103,12 @@ namespace ODataApiGen.Angular
         public string EntityType => this.EdmStructuredType.Type;
         public override string NameSpace => this.EdmStructuredType.NameSpace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.SchemaName };
         public override IEnumerable<Import> Imports => GetImportRecords();
         public string SchemaName => this.EdmStructuredType.Name + "Schema";
 
-        public IEnumerable<Angular.EntityProperty> Properties => this.EdmStructuredType.Properties
-                .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => new Angular.EntityProperty(prop));
+        public abstract IEnumerable<Angular.EntityProperty> Properties {get;} 
 
         public IEnumerable<SchemaField> SchemaFields => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)

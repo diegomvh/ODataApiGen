@@ -66,22 +66,6 @@ namespace ODataApiGen
 
         }
 
-        private void ReadEntitySets(XDocument xdoc, List<ActionImport> actions, List<FunctionImport> functions)
-        {
-            Logger.LogDebug("Parsing entity sets...");
-            var entitySetList = new List<EntitySet>();
-            var elements = xdoc.Descendants().Where(a => a.Name.LocalName == "EntitySet");
-
-            foreach (var xElement in elements)
-            {
-                var tContainer = new EntitySet(xElement, actions, functions);
-                entitySetList.Add(tContainer);
-                Logger.LogInformation($"Entity set '{tContainer.Name}' parsed");
-            }
-
-            EntitySets = entitySetList;
-        }
-
         private void ReadActions(XDocument xDoc)
         {
             Logger.LogDebug("Parsing actions...");
@@ -110,20 +94,6 @@ namespace ODataApiGen
             Functions = customFunctionList;
         }
 
-        private void ReadSingletons(XDocument xDoc, List<ActionImport> actions, List<FunctionImport> functions)
-        {
-            Logger.LogDebug("Parsing singletons...");
-            List<Singleton> singletonList = new List<Singleton>();
-            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Singleton");
-            foreach (var xElement in elements)
-            {
-                var tSingleton = new Singleton(xElement, actions, functions);
-                singletonList.Add(tSingleton);
-                Logger.LogInformation($"Singleton '{tSingleton.Name}' parsed");
-            }
-            Singletons = singletonList;
-        }
-
         private void ReadFunctionImports(XDocument xDoc, List<Function> functions)
         {
             Logger.LogDebug("Parsing function imports...");
@@ -150,20 +120,59 @@ namespace ODataApiGen
             }
             ActionImports = actionImportList;
         }
-
-        public MetadataReader(XDocument xdoc)
+        private void ReadEntitySets(XDocument xDoc)
         {
-            ReadEntityTypes(xdoc);
-            ReadComplexTypes(xdoc);
-            ReadEnums(xdoc);
+            Logger.LogDebug("Parsing entity sets...");
+            var entitySetList = new List<EntitySet>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "EntitySet");
 
-            ReadActions(xdoc);
-            ReadFunctions(xdoc);
-            ReadActionImports(xdoc, Actions);
-            ReadFunctionImports(xdoc, Functions);
+            foreach (var xElement in elements)
+            {
+                var tContainer = new EntitySet(xElement);
+                entitySetList.Add(tContainer);
+                Logger.LogInformation($"Entity set '{tContainer.Name}' parsed");
+            }
 
-            ReadEntitySets(xdoc, ActionImports, FunctionImports);
-            ReadSingletons(xdoc, ActionImports, FunctionImports);
+            EntitySets = entitySetList;
+        }
+
+        private void ReadSingletons(XDocument xDoc)
+        {
+            Logger.LogDebug("Parsing singletons...");
+            List<Singleton> singletonList = new List<Singleton>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Singleton");
+            foreach (var xElement in elements)
+            {
+                var tSingleton = new Singleton(xElement);
+                singletonList.Add(tSingleton);
+                Logger.LogInformation($"Singleton '{tSingleton.Name}' parsed");
+            }
+            Singletons = singletonList;
+        }
+
+        public MetadataReader(XDocument xDoc)
+        {
+            ReadEntityTypes(xDoc);
+            ReadComplexTypes(xDoc);
+            ReadEnums(xDoc);
+
+            ReadActions(xDoc);
+            ReadFunctions(xDoc);
+            ReadActionImports(xDoc, Actions);
+            ReadFunctionImports(xDoc, Functions);
+
+            ReadEntitySets(xDoc);
+            ReadSingletons(xDoc);
+
+            foreach (var eset in EntitySets) {
+                eset.AddActions(ActionImports, Actions);
+                eset.AddFunctions(FunctionImports, Functions);
+            }
+
+            foreach (var single in Singletons) {
+                single.AddActions(ActionImports, Actions);
+                single.AddFunctions(FunctionImports, Functions);
+            }
         }
     }
 }
