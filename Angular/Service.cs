@@ -55,6 +55,11 @@ namespace ODataApiGen.Angular
                     ? $"collection{callable.Type}"
                     : $"{callable.Type.ToLower()}";
 
+                if (!callable.IsBound) {
+                    // Create function from odata client
+                    baseMethodName = $"client.{baseMethodName}";
+                }
+
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :
                     callable.ReturnsCollection ?
@@ -96,13 +101,13 @@ namespace ODataApiGen.Angular
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callable.NameSpace}.{callable.Name}'" +
                     $@", {(callable.Type != "Function" ? "" : "body, ")}'{returnType}')
-                    .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
-      headers: options && options.headers,
-      params: options && options.params,
-      responseType: '{responseType}',
-      reportProgress: options && options.reportProgress,
-      withCredentials: options && options.withCredentials
-    }});
+      .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
+        headers: options && options.headers,
+        params: options && options.params,
+        responseType: '{responseType}',
+        reportProgress: options && options.reportProgress,
+        withCredentials: options && options.withCredentials
+      }});
   }}";
             }
         }
