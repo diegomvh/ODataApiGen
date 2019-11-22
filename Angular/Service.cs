@@ -10,17 +10,12 @@ namespace ODataApiGen.Angular
     public abstract class Service : AngularRenderable, ILiquidizable
     {
         public Angular.Entity Entity { get; private set; }
-        public Angular.Model Model { get; private set; }
         public Angular.Collection Collection { get; private set; }
         public Service() { }
 
         public void SetEntity(Angular.Entity entity)
         {
             this.Entity = entity;
-        }
-        public void SetModel(Angular.Model model)
-        {
-            this.Model = model;
         }
         public void SetCollection(Angular.Collection collection)
         {
@@ -42,14 +37,8 @@ namespace ODataApiGen.Angular
                 var overload = callables.Count() > 1;
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
-                var returnType = AngularRenderable.GetType(callable.ReturnType);
-                var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
 
-                var callableReturnType = callable.IsEdmReturnType ?
-                        $"ODataValue<{typescriptType}>" :
-                    callable.ReturnsCollection ?
-                        $"ODataCollection<{typescriptType}>" :
-                        $"{typescriptType}";
+                var callableFullName = callable.IsBound ? $"{callable.NameSpace}.{callable.Name}" : callable.Name;
 
                 var baseMethodName = callable.IsCollection
                     ? $"collection{callable.Type}"
@@ -59,6 +48,15 @@ namespace ODataApiGen.Angular
                     // Create function from odata client
                     baseMethodName = $"client.{baseMethodName}";
                 }
+
+                var returnType = AngularRenderable.GetType(callable.ReturnType);
+
+                var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
+                var callableReturnType = callable.IsEdmReturnType ?
+                        $"ODataValue<{typescriptType}>" :
+                    callable.ReturnsCollection ?
+                        $"ODataCollection<{typescriptType}>" :
+                        $"{typescriptType}";
 
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :
@@ -99,16 +97,16 @@ namespace ODataApiGen.Angular
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
                     $"\n    return this.{baseMethodName}<{typescriptType}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
-                    $"'{callable.NameSpace}.{callable.Name}'" +
+                    $"'{callableFullName}'" +
                     $@", {(callable.Type != "Function" ? "" : "body, ")}'{returnType}')
       .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
         headers: options && options.headers,
-        params: options && options.params,
-        responseType: '{responseType}',
+        params: options && options.params," +
+        (!String.IsNullOrWhiteSpace(callable.ReturnType)? $"\n        responseType: '{responseType}'," : "") + @"
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
-      }});
-  }}";
+      });
+  }";
             }
         }
 

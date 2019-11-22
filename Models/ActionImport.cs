@@ -9,9 +9,8 @@ namespace ODataApiGen.Models
         public ActionImport(XElement xElement, List<Action> actions)
         {
             Name = xElement.Attribute("Name")?.Value;
+            NameSpace = xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
             EntitySet = xElement.Attribute("EntitySet")?.Value;
-            NameSpace =
-                xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
             var action = xElement.Attribute("Action").Value;
             this.Action = actions.Where(a => a.FullName == action).FirstOrDefault();
         }

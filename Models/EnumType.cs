@@ -7,16 +7,16 @@ namespace ODataApiGen.Models
     public class EnumType
     {
         public string Name { get; private set; }
-        public bool IsFlags { get; private set; }
         public string NameSpace { get; private set; }
         public string Type { get { return $"{this.NameSpace}.{this.Name}"; } }
+        public bool IsFlags { get; private set; }
         public IEnumerable<EnumMember> Members { get; private set; }
         
         public EnumType(XElement sourceElement)
         {
             Name = sourceElement.Attribute("Name")?.Value;
-            IsFlags = sourceElement.Attribute("IsFlags")?.Value == "true";
             NameSpace = sourceElement.Parent?.Attribute("Namespace")?.Value;
+            IsFlags = sourceElement.Attribute("IsFlags")?.Value == "true";
             Members = sourceElement.Descendants().Where(a => a.Name.LocalName == "Member")
                 .Select(propElement => new EnumMember()
                 {

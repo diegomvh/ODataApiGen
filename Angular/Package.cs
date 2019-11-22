@@ -32,6 +32,7 @@ namespace ODataApiGen.Angular
             this.AddEnums(reader.EnumTypes);
             this.AddEntities(reader.ComplexTypes);
             this.AddEntities(reader.EntityTypes);
+            this.AddApiService(reader.ActionImports, reader.FunctionImports);
             this.AddServices(reader.EntitySets);
             this.AddServices(reader.Singletons);
         }
@@ -76,6 +77,10 @@ namespace ODataApiGen.Angular
             }
         }
 
+        public void AddApiService(IEnumerable<Models.ActionImport> actions, IEnumerable<Models.FunctionImport> functions)
+        {
+            this.Services.Add(new Angular.ServiceApi(this.EndpointName, actions, functions));
+        }
         public void AddServices(IEnumerable<Models.EntitySet> sets)
         {
             foreach (var s in sets)
