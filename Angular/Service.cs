@@ -56,7 +56,7 @@ namespace ODataApiGen.Angular
                         $"ODataValue<{typescriptType}>" :
                     callable.ReturnsCollection ?
                         $"ODataCollection<{typescriptType}>" :
-                        $"{typescriptType}";
+                        $"ODataSingle<{typescriptType}>";
 
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :

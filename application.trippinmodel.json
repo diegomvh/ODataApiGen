@@ -4,6 +4,6 @@
     "Output": "../TripPinModel/src/app",
     "Purge": true,
     "WithCredentials": false,
-    "StringAsEnum": false,
+    "StringAsEnum": true,
     "Models": true
 }

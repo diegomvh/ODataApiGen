@@ -3,7 +3,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataCollection, ODataValue, ODataEntityResource } from 'angular-odata';
+import { ODataEntityService, ODataSingle, ODataCollection, ODataValue, ODataEntityResource } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
