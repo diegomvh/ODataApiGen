@@ -134,14 +134,14 @@ namespace ODataApiGen.Angular
       .{(nav.IsCollection ? "collection" : "single")}(options);
   }}";
                 // Link
-                yield return $@"public {methodCreateName}<{type}>(entity: {EntityName}, target: ODataEntityResource<{type}>): Observable<any> {{
+                yield return $@"public {methodCreateName}<{type}>(entity: {EntityName}, target: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
-      .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag: this.client.resolveEtag(entity)}")});
+      .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag}")});
   }}";
                 // Unlink
-                yield return $@"public {methodDeleteName}<{type}>(entity: {EntityName}, target?: ODataEntityResource<{type}>): Observable<any> {{
+                yield return $@"public {methodDeleteName}<{type}>(entity: {EntityName}, target?: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
-      .remove({{etag: this.client.resolveEtag(entity), target}});
+      .remove({{etag, target}});
   }}";
             }
         }
