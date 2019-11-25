@@ -52,11 +52,9 @@ namespace ODataApiGen.Angular
                 var returnType = AngularRenderable.GetType(callable.ReturnType);
 
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
-                var callableReturnType = callable.IsEdmReturnType ?
-                        $"ODataValue<{typescriptType}>" :
-                    callable.ReturnsCollection ?
-                        $"ODataCollection<{typescriptType}>" :
-                        $"ODataSingle<{typescriptType}>";
+                var callableReturnType = callable.ReturnsCollection ?
+                        $"[{typescriptType}[], ODataAnnotations]" :
+                        $"[{typescriptType}, ODataAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :
@@ -121,7 +119,7 @@ namespace ODataApiGen.Angular
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
-                var returnType = (nav.IsCollection) ? $"ODataCollection<{type}>" : $"ODataSingle<{type}>";
+                var returnType = (nav.IsCollection) ? $"[{type}[], ODataAnnotations]" : $"[{type}, ODataAnnotations]";
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EntityName}, options?: {{
