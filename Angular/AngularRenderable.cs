@@ -9,8 +9,6 @@ namespace ODataApiGen.Angular
     {
         public static string GetType(string type)
         {
-            if (String.IsNullOrWhiteSpace(type))
-                return "any";
             switch (type)
             {
                 case "Edm.String":
@@ -33,7 +31,8 @@ namespace ODataApiGen.Angular
                 case "Edm.GeographyPoint":
                 default:
                     {
-                        return type.Contains(".") && !type.StartsWith("Edm") ? type : "Object";
+                        return (String.IsNullOrEmpty(type) || (type.Contains(".") && !type.StartsWith("Edm"))) ? 
+                            type : "Object";
                     }
             }
         }

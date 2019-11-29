@@ -98,11 +98,11 @@ namespace ODataApiGen.Angular
                     $"\n    return this.{baseMethodName}<{typescriptType}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callableFullName}'" +
-                    $@", {(callable.Type != "Function" ? "" : "body, ")}'{returnType}')
+                    $@"{(callable.Type != "Function" ? "" : ", body")}{(!String.IsNullOrEmpty(returnType) ? $", '{returnType}')" : ")")}
       .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
         headers: options && options.headers,
-        params: options && options.params,
-        responseType: '{responseType}',
+        params: options && options.params," +
+        (!String.IsNullOrEmpty(returnType) ? $"\n        responseType: '{responseType}'," : "") + $@"
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
       }});
