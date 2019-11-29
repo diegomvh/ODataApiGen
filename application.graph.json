@@ -1,7 +1,7 @@
 {
     "Name": "MsGraph",
     "Metadata": "https://graph.microsoft.com/v1.0/$metadata",
-    "Output": "../../demo/MsGraph/src/app",
+    "Output": "./local",
     "Purge": true,
     "Secure": false,
     "StringAsEnum": false,

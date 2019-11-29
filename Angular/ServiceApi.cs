@@ -39,8 +39,14 @@ namespace ODataApiGen.Angular
         public override string ResourcePath => "";
         public override string EntityName => "";
         public override string Name => this.EndpointName + "Service";
-        public override string NameSpace => 
-            ActionImports.Select(a => a.Action.NameSpace).Union(FunctionImports.Select(f => f.Function.NameSpace)).FirstOrDefault();
+        public override string NameSpace {
+            get {
+                var ns = ActionImports.Select(a => a.Action.NameSpace).FirstOrDefault();
+                if (String.IsNullOrEmpty(ns))
+                    ns = FunctionImports.Select(f => f.Function.NameSpace).FirstOrDefault();
+                return !String.IsNullOrEmpty(ns) ? ns : ""; 
+            }
+        }
         public override string FileName => this.Name.ToLower() + ".service";
         public override string EntityType => "";
         public IEnumerable<string> Actions =>  this.RenderCallables(this.ActionImports.Select(ai => ai.Action));

@@ -19,7 +19,6 @@ namespace ODataApiGen.Angular
         public override string Name => this.EdmSingleton.Name[0].ToString().ToUpper() + this.EdmSingleton.Name.Substring(1) + "Service";
         public override string NameSpace => this.EdmSingleton.NameSpace;
         public override string FileName => this.EdmSingleton.Name.ToLower() + ".service";
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         // Imports
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override IEnumerable<string> ImportTypes
