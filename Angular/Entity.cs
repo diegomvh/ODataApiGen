@@ -14,23 +14,25 @@ namespace ODataApiGen.Angular
             this.Add("type", $"'{AngularRenderable.GetType(property.Type)}'");
             var key = keys.FirstOrDefault(k => k.Name == property.Name);
             if (key != null) {
-                this.Add("isKey", "true");
+                this.Add("key", "true");
                 this.Add("ref", $"'{key.Name}'");
                 if (!String.IsNullOrWhiteSpace(key.Alias)) {
                     this.Add("name", $"'{key.Alias}'");
                 }
             }
-            if (property.IsNullable)
-                this.Add("isNullable", "true");
+            if (!(property is NavigationProperty) && !property.Nullable)
+                this.Add("nullable", "false");
             if (!String.IsNullOrEmpty(property.MaxLength) && property.MaxLength.ToLower() != "max")
                 this.Add("maxLength", property.MaxLength);
-            if (property.IsCollection)
-                this.Add("isCollection", "true");
+            if (!String.IsNullOrEmpty(property.SRID))
+                this.Add("srid", property.SRID);
+            if (property.Collection)
+                this.Add("many", "true");
             if (type is Enum) {
-                this.Add("isFlags", (type as Enum).IsFlags.ToString().ToLower());
+                this.Add("flags", (type as Enum).Flags.ToString().ToLower());
             } else if (property is NavigationProperty) {
                 // Is Navigation
-                this.Add("isNavigation", "true");
+                this.Add("navigation", "true");
                 var nav = property as NavigationProperty;
                 if (!String.IsNullOrEmpty(nav.ReferentialConstraint))
                     this.Add("field", $"'{nav.ReferentialConstraint}'");

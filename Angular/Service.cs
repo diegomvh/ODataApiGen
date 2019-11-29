@@ -52,9 +52,11 @@ namespace ODataApiGen.Angular
                 var returnType = AngularRenderable.GetType(callable.ReturnType);
 
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
-                var callableReturnType = callable.ReturnsCollection ?
-                        $"[{typescriptType}[], ODataAnnotations]" :
-                        $"[{typescriptType}, ODataAnnotations]";
+                var callableReturnType = callable.IsEdmReturnType ?
+                        $"[{typescriptType}, ODataPropertyAnnotations]" :
+                    callable.ReturnsCollection ?
+                        $"[{typescriptType}[], ODataCollectionAnnotations]" :
+                        $"[{typescriptType}, ODataEntityAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :
@@ -99,12 +101,12 @@ namespace ODataApiGen.Angular
                     $@", {(callable.Type != "Function" ? "" : "body, ")}'{returnType}')
       .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
         headers: options && options.headers,
-        params: options && options.params," +
-        (!String.IsNullOrWhiteSpace(callable.ReturnType)? $"\n        responseType: '{responseType}'," : "") + @"
+        params: options && options.params,
+        responseType: '{responseType}',
         reportProgress: options && options.reportProgress,
         withCredentials: options && options.withCredentials
-      });
-  }";
+      }});
+  }}";
             }
         }
 
@@ -116,10 +118,12 @@ namespace ODataApiGen.Angular
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
 
-                var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
-                var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+                var methodCreateName = nav.Collection ? $"add{type}To{name}" : $"set{type}As{name}";
+                var methodDeleteName = nav.Collection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
-                var returnType = (nav.IsCollection) ? $"[{type}[], ODataAnnotations]" : $"[{type}, ODataAnnotations]";
+                var returnType = nav.Collection ? 
+                    $"[{type}[], ODataCollectionAnnotations]" : 
+                    $"[{type}, ODataEntityAnnotations]";
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EntityName}, options?: {{
@@ -129,12 +133,12 @@ namespace ODataApiGen.Angular
     withCredentials?: boolean
   }}): Observable<{returnType}> {{
     return this.navigationProperty<{type}>(entity, '{nav.Name}')
-      .{(nav.IsCollection ? "collection" : "single")}(options);
+      .{(nav.Collection ? "collection" : "single")}(options);
   }}";
                 // Link
                 yield return $@"public {methodCreateName}<{type}>(entity: {EntityName}, target: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
     return this.ref(entity, '{nav.Name}')
-      .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag}")});
+      .{(nav.Collection ? "add" : "set")}(target{(nav.Collection ? "" : ", {etag}")});
   }}";
                 // Unlink
                 yield return $@"public {methodDeleteName}<{type}>(entity: {EntityName}, target?: ODataEntityResource<{type}>, etag?: string): Observable<any> {{

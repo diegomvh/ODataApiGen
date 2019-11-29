@@ -11,9 +11,11 @@ namespace ODataApiGen.Angular
     {
         public InterfaceProperty(ODataApiGen.Models.Property prop) : base(prop)
         {
+            Navigation = prop is NavigationProperty;
         }
-        public override string Name => Value.Name + (Value.IsNullable ? "?" : "");
-        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
+        public bool Navigation {get;private set;}
+        public override string Name => Value.Name + ((Navigation || Value.Nullable) ? "?" : "");
+        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.Collection ? "[]" : "");
     }
     public class Interface : Entity 
     {

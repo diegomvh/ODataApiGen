@@ -30,6 +30,7 @@ namespace ODataApiGen.Angular
                     return "boolean";
                 case "Edm.DateTimeOffset":
                     return "Date";
+                case "Edm.GeographyPoint":
                 default:
                     {
                         return type.Contains(".") && !type.StartsWith("Edm") ? type : "Object";

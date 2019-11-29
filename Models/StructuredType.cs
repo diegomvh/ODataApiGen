@@ -12,6 +12,8 @@ namespace ODataApiGen.Models
             NameSpace = sourceElement.Parent?.Attribute("Namespace")?.Value;
             Name = sourceElement.Attribute("Name")?.Value;
             BaseType = sourceElement.Attribute("BaseType")?.Value;
+            OpenType = sourceElement.Attribute("OpenType")?.Value == "true";
+            HasStream = sourceElement.Attribute("HasStream")?.Value == "true";
 
             Keys = sourceElement.Descendants()
                     .Where(a => a.Name.LocalName == "Key")
@@ -25,11 +27,12 @@ namespace ODataApiGen.Models
             Properties = sourceElement.Descendants().Where(a => a.Name.LocalName == "Property")
                 .Select(element => new Property()
                     {
-                        IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
+                        Collection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                         Name = element.Attribute("Name")?.Value,
                         MaxLength = element.Attribute("MaxLength")?.Value,
-                        IsNullable = element.Attribute("Nullable")?.Value == "true",
+                        Nullable = !(element.Attribute("Nullable")?.Value == "false"),
                         Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
+                        SRID = element.Attribute("SRID")?.Value
                     }).ToList();
 
             NavigationProperties = sourceElement.Descendants().Where(a => a.Name.LocalName == "NavigationProperty")
@@ -38,8 +41,7 @@ namespace ODataApiGen.Models
                         Name = element.Attribute("Name")?.Value.Split(".").Last(),
                         FullName = element.Attribute("Name")?.Value,
                         MaxLength = null,
-                        IsNullable = true,
-                        IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
+                        Collection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
                         Partner = element.Attribute("Partner")?.Value,
                         Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
                         ReferentialConstraint = element.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value,
@@ -49,6 +51,8 @@ namespace ODataApiGen.Models
         public string NameSpace { get; private set; }
         public string Name { get; private set; }
         public string BaseType { get; private set; }
+        public bool OpenType { get; private set; }
+        public bool HasStream { get; private set; }
         public string Type { get { return $"{this.NameSpace}.{this.Name}"; } }
         public bool IsCompositeKey { get { return this.Keys.Count() > 1; } }
         public List<PropertyRef> Keys { get; private set; }

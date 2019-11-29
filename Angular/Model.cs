@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using ODataApiGen.Models;
+using System;
 
 namespace ODataApiGen.Angular
 {
@@ -9,10 +10,12 @@ namespace ODataApiGen.Angular
     {
         public ModelProperty(ODataApiGen.Models.Property prop) : base(prop)
         {
+            Navigation = prop is NavigationProperty;
         }
-        public override string Name => Value.Name + (Value.IsNullable ? "?" : "");
+        public bool Navigation {get;private set;}
+        public override string Name => Value.Name + ((Navigation || Value.Nullable) ? "?" : "");
         public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + 
-            (Value.IsCollection ? Value.IsEdmType ? "[]" : "Collection" : "");
+            (Value.Collection ? Value.IsEdmType ? "[]" : "Collection" : "");
     }
     public class Model : Entity 
     {
@@ -30,8 +33,8 @@ namespace ODataApiGen.Angular
             var type = AngularRenderable.GetTypescriptType(nav.Type);
             var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
             var methodRelationName = $"get{name}";
-            var baseMethodRelationName = nav.IsCollection ? $"relatedCollection" : $"relatedModel";
-            var returnType = (nav.IsCollection) ?
+            var baseMethodRelationName = nav.Collection ? $"relatedCollection" : $"relatedModel";
+            var returnType = (nav.Collection) ?
                 $"ODataCollection<{type}>" :
                 $"{type}";
             // Navigation
@@ -45,12 +48,12 @@ namespace ODataApiGen.Angular
             var type = AngularRenderable.GetTypescriptType(nav.Type);
             var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
             var methodRelationName = $"get{name}";
-            var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
-            var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
-            var baseMethodRelationName = nav.IsCollection ? $"relatedODataCollection" : $"relatedODataModel";
-            var baseMethodCreateName = nav.IsCollection ? $"createODataCollectionRef" : $"createODataModelRef";
-            var baseMethodDeleteName = nav.IsCollection ? $"deleteODataCollectionRef" : $"deleteODataModelRef";
-            var returnType = (nav.IsCollection) ?
+            var methodCreateName = nav.Collection ? $"add{type}To{name}" : $"set{type}As{name}";
+            var methodDeleteName = nav.Collection ? $"remove{type}From{name}" : $"unset{type}As{name}";
+            var baseMethodRelationName = nav.Collection ? $"relatedODataCollection" : $"relatedODataModel";
+            var baseMethodCreateName = nav.Collection ? $"createODataCollectionRef" : $"createODataModelRef";
+            var baseMethodDeleteName = nav.Collection ? $"deleteODataCollectionRef" : $"deleteODataModelRef";
+            var returnType = (nav.Collection) ?
                 $"ODataCollection<{type}>" :
                 $"{type}";
             // Navigation
