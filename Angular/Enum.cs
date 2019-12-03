@@ -16,7 +16,7 @@ namespace ODataApiGen.Angular {
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.EdmEnumType.Name;
         public string EnumType => this.EdmEnumType.Type;
-        public override string NameSpace => this.EdmEnumType.NameSpace;
+        public override string NameSpace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public IEnumerable<string> Members => this.EdmEnumType.Members.Select(m => $"{m.Name} = {m.Value}");

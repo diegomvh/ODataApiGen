@@ -22,7 +22,7 @@ namespace ODataApiGen.Abstracts
             this.Version = version;
         }
         public abstract IEnumerable<Renderable> Renderables { get; }
-        public abstract void LoadSchema(Schema schema);
+        public abstract void LoadMetadata(Metadata metadata);
 
     }
 }

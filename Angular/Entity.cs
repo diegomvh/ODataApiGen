@@ -103,7 +103,7 @@ namespace ODataApiGen.Angular
         }
         public override string Name => this.EdmStructuredType.Name;
         public string EntityType => this.EdmStructuredType.Type;
-        public override string NameSpace => this.EdmStructuredType.NameSpace;
+        public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.SchemaName };

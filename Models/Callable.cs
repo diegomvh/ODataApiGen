@@ -8,8 +8,10 @@ namespace ODataApiGen.Models
 {
     public abstract class Callable
     {
-        public Callable(XElement xElement)
+        public Schema Schema {get; private set;}
+        public Callable(XElement xElement, Schema schema)
         {
+            this.Schema = schema;
             Name = xElement.Attribute("Name")?.Value;
             IsBound = xElement.Attribute("IsBound")?.Value == "true";
             IsComposable = xElement.Attribute("IsComposable")?.Value == "true";
@@ -40,13 +42,10 @@ namespace ODataApiGen.Models
                 IsCollection = true;
                 BindingParameter = BindingParameter.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             }
-
-            NameSpace =
-                xElement.Ancestors().First(a => a.Attribute("Namespace") != null)?.Attribute("Namespace")?.Value;
         }
         public string Name { get; }
-        public string NameSpace { get; }
-        public string FullName => $"{this.NameSpace}.{this.Name}";
+        public string Namespace => this.Schema.Namespace; 
+        public string FullName => $"{this.Namespace}.{this.Name}";
         public string Type { get; protected set; }
         public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }
         public string ReturnType { get; }

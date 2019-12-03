@@ -9,7 +9,7 @@ namespace ODataApiGen.Models
     {
         public StructuredType(XElement sourceElement)
         {
-            NameSpace = sourceElement.Parent?.Attribute("Namespace")?.Value;
+            Namespace = sourceElement.Parent?.Attribute("Namespace")?.Value;
             Name = sourceElement.Attribute("Name")?.Value;
             BaseType = sourceElement.Attribute("BaseType")?.Value;
             OpenType = sourceElement.Attribute("OpenType")?.Value == "true";
@@ -48,12 +48,12 @@ namespace ODataApiGen.Models
                         ReferencedProperty = element.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value
                 }).ToList();
         }
-        public string NameSpace { get; private set; }
+        public string Namespace { get; private set; }
         public string Name { get; private set; }
         public string BaseType { get; private set; }
         public bool OpenType { get; private set; }
         public bool HasStream { get; private set; }
-        public string Type { get { return $"{this.NameSpace}.{this.Name}"; } }
+        public string Type { get { return $"{this.Namespace}.{this.Name}"; } }
         public bool IsCompositeKey { get { return this.Keys.Count() > 1; } }
         public List<PropertyRef> Keys { get; private set; }
         public List<Property> Properties { get; private set; }

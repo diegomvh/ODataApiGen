@@ -30,7 +30,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.siuweb.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -49,7 +49,7 @@ namespace ODataApiGen
             var renderer = new Renderer(Output);
 
             Metadata = Configuration.GetValue<string>("Metadata");
-            var schemas = Schema.ReadSchemas(System.Xml.Linq.XDocument.Load(Metadata).Descendants().FirstOrDefault());
+            var metadata = new Metadata(System.Xml.Linq.XDocument.Load(Metadata));
 
             Purge = Configuration.GetValue<bool>("Purge");
             directories.PrepareOutput(Purge);
@@ -58,8 +58,7 @@ namespace ODataApiGen
             StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
             var package = new Angular.Package(Name, Metadata, WithCredentials, StringAsEnum, Models, "4.0");
-            foreach (var schema in schemas)
-                package.LoadSchema(schema);
+            package.LoadMetadata(metadata);
             package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");

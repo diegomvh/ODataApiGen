@@ -38,7 +38,7 @@ namespace ODataApiGen.Angular
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
 
-                var callableFullName = callable.IsBound ? $"{callable.NameSpace}.{callable.Name}" : callable.Name;
+                var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
                 var baseMethodName = callable.IsCollection
                     ? $"collection{callable.Type}"

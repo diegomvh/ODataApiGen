@@ -24,13 +24,13 @@ namespace ODataApiGen.Models
         public void AddActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
             Actions = actionImports
                 .Where(a => a.EntitySet == Name)
-                .Select(ai => ai.Action)
+                .Select(ai => actions.FirstOrDefault(a => a.FullName == ai.Action))
                 .Union(actions.Where(a => a.IsBound && a.BindingParameter == EntityType));
         }
         public void AddFunctions(IEnumerable<FunctionImport> functionImports, IEnumerable<Function> functions) {
             Functions = functionImports
-                .Where(a => a.EntitySet == Name)
-                .Select(fi => fi.Function)
+                .Where(f => f.EntitySet == Name)
+                .Select(fi => functions.FirstOrDefault(f => f.FullName == fi.Function))
                 .Union(functions.Where(f => f.IsBound && f.BindingParameter == EntityType));
         }
         public string Name { get; private set; }

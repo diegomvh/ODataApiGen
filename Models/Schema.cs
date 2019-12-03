@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace ODataApiGen.Models
             {
                 var enT = new EnumType(xElement);
                 enumList.Add(enT);
-                Logger.LogInformation($"Enum Type  '{enT.NameSpace}.{enT.Name}' parsed");
+                Logger.LogInformation($"Enum Type  '{enT.Namespace}.{enT.Name}' parsed");
             }
             return enumList;
 
@@ -42,7 +43,7 @@ namespace ODataApiGen.Models
             {
                 var enT = new ComplexType(xElement);
                 typeList.Add(enT);
-                Logger.LogInformation($"Complex Type '{enT.NameSpace}.{enT.Name}' parsed");
+                Logger.LogInformation($"Complex Type '{enT.Namespace}.{enT.Name}' parsed");
             }
             return typeList;
         }
@@ -56,63 +57,74 @@ namespace ODataApiGen.Models
             {
                 var enT = new EntityType(xElement);
                 typeList.Add(enT);
-                Logger.LogInformation($"Entity Type '{enT.NameSpace}.{enT.Name}' parsed");
+                Logger.LogInformation($"Entity Type '{enT.Namespace}.{enT.Name}' parsed");
             }
             return typeList;
         }
 
-        private static List<Action> ReadActions(XElement xDoc)
+        private static List<Action> ReadActions(XElement xDoc, Schema schema)
         {
             Logger.LogDebug("Parsing actions...");
             List<Action> customActionList = new List<Action>();
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Action");
             foreach (var xElement in elements)
             {
-                var tCustomAction = new Action(xElement);
+                var tCustomAction = new Action(xElement, schema);
                 customActionList.Add(tCustomAction);
                 Logger.LogInformation($"Action '{tCustomAction.Name}' parsed");
             }
             return customActionList;
         }
 
-        private static List<Function> ReadFunctions(XElement xDoc)
+        private static List<Function> ReadFunctions(XElement xDoc, Schema schema)
         {
             Logger.LogDebug("Parsing functions...");
             List<Function> customFunctionList = new List<Function>();
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Function");
             foreach (var xElement in elements)
             {
-                var tCustomFunction = new Function(xElement);
+                var tCustomFunction = new Function(xElement, schema);
                 customFunctionList.Add(tCustomFunction);
                 Logger.LogInformation($"Function '{tCustomFunction.Name}' parsed");
             }
             return customFunctionList;
         }
-        public static List<Schema> ReadSchemas(XElement xdoc)
+        public static List<EntityContainer> ReadEntityContainer(XElement xDoc, Schema schema)
         {
-            Logger.LogDebug("Parsing entity types...");
-            var schemas = new List<Schema>();
-            var elements = xdoc.Descendants().Where(a => a.Name.LocalName == "Schema");
-
+            Logger.LogDebug("Parsing containers...");
+            List<EntityContainer> customFunctionList = new List<EntityContainer>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "EntityContainer");
             foreach (var xElement in elements)
             {
-                var enT = new Schema(xElement);
-                schemas.Add(enT);
-                Logger.LogInformation($"Schema Type '{enT.Namespace}' parsed");
+                var tCustomFunction = new EntityContainer(xElement, schema);
+                customFunctionList.Add(tCustomFunction);
+                Logger.LogInformation($"EntityContainer '{tCustomFunction.Name}' parsed");
             }
-            return schemas;
+            return customFunctionList;
         }
+
         #endregion
-        private Schema(XElement xElement) 
+        public Schema(XElement xElement) 
         {
             this.Namespace = xElement.Attribute("Namespace").Value;
             this.EnumTypes = Schema.ReadEnums(xElement);
             this.ComplexTypes = Schema.ReadComplexTypes(xElement);
             this.EntityTypes = Schema.ReadEntityTypes(xElement);
             this.EntityTypes = Schema.ReadEntityTypes(xElement);
-            this.Actions = Schema.ReadActions(xElement);
-            this.Functions = Schema.ReadFunctions(xElement);
-            this.EntityContainers = EntityContainer.ReadEntityContainer(xElement, this);
+            this.Actions = Schema.ReadActions(xElement, this);
+            this.Functions = Schema.ReadFunctions(xElement, this);
+            this.EntityContainers = Schema.ReadEntityContainer(xElement, this);
+        }
+
+        public void ResolveFunctionImports(IEnumerable<Function> functions) {
+            foreach (var container in EntityContainers) {
+                container.ResolveFunctionImports(functions);
+            }
+        }
+        public void ResolveActionImports(IEnumerable<Action> actions) {
+            foreach (var container in EntityContainers) {
+                container.ResolveActionImports(actions);
+            }
         }
     }
 }

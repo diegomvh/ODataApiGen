@@ -28,13 +28,16 @@ namespace ODataApiGen.Angular
             Services = new List<Angular.Service>();
         }
 
-        public override void LoadSchema(Schema schema)
+        public override void LoadMetadata(Metadata metadata)
         {
-            this.AddEnums(schema.EnumTypes);
-            this.AddEntities(schema.ComplexTypes);
-            this.AddEntities(schema.EntityTypes);
-            foreach (var container in schema.EntityContainers) {
-                this.AddServices(container);
+            this.Services.Add(new Angular.ServiceApi(this.EndpointName, metadata));
+            foreach (var schema in metadata.Schemas) {
+                this.AddEnums(schema.EnumTypes);
+                this.AddEntities(schema.ComplexTypes);
+                this.AddEntities(schema.EntityTypes);
+                foreach (var container in schema.EntityContainers) {
+                    this.AddServices(container);
+                }
             }
         }
 
@@ -80,7 +83,6 @@ namespace ODataApiGen.Angular
 
         public void AddServices(Models.EntityContainer container)
         {
-            this.Services.Add(new Angular.ServiceApi(this.EndpointName, container));
             foreach (var s in container.EntitySets)
             {
                 this.Services.Add(new Angular.ServiceEntity(s));

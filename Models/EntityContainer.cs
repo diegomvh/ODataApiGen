@@ -10,6 +10,7 @@ namespace ODataApiGen.Models
         private static ILogger Logger {get;} = Program.CreateLogger<EntityContainer>();
         public Schema Schema { get; private set; }
         public string Name { get; private set; }
+        public string Namespace => this.Schema.Namespace; 
         public List<EntitySet> EntitySets { get; private set; }
         public List<Singleton> Singletons { get; private set; }
         public List<FunctionImport> FunctionImports { get; private set; }
@@ -71,22 +72,8 @@ namespace ODataApiGen.Models
             }
             return actionImportList;
         }
-        public static List<EntityContainer> ReadEntityContainer(XElement xDoc, Schema schema)
-        {
-            Logger.LogDebug("Parsing containers...");
-            List<EntityContainer> customFunctionList = new List<EntityContainer>();
-            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "EntityContainer");
-            foreach (var xElement in elements)
-            {
-                var tCustomFunction = new EntityContainer(xElement, schema);
-                customFunctionList.Add(tCustomFunction);
-                Logger.LogInformation($"EntityContainer '{tCustomFunction.Name}' parsed");
-            }
-            return customFunctionList;
-        }
-
         #endregion
-        private EntityContainer(XElement xElement, Schema schema) 
+        public EntityContainer(XElement xElement, Schema schema) 
         {
             this.Schema = schema;
             this.Name = xElement.Attribute("Name").Value;
@@ -95,14 +82,23 @@ namespace ODataApiGen.Models
             this.ActionImports = EntityContainer.ReadActionImports(xElement, this);
             this.FunctionImports = EntityContainer.ReadFunctionImports(xElement, this);
 
-            foreach (var eset in EntitySets) {
-                eset.AddActions(ActionImports, schema.Actions);
-                eset.AddFunctions(FunctionImports, schema.Functions);
-            }
+        }
 
+        public void ResolveActionImports(IEnumerable<Action> actions) {
+            foreach (var eset in EntitySets) {
+                eset.AddActions(ActionImports, actions);
+            }
             foreach (var single in Singletons) {
-                single.AddActions(ActionImports, schema.Actions);
-                single.AddFunctions(FunctionImports, schema.Functions);
+                single.AddActions(ActionImports, actions);
+            }
+        }
+
+        public void ResolveFunctionImports(IEnumerable<Function> functions) {
+            foreach (var eset in EntitySets) {
+                eset.AddFunctions(FunctionImports, functions);
+            }
+            foreach (var single in Singletons) {
+                single.AddFunctions(FunctionImports, functions);
             }
         }
     }
