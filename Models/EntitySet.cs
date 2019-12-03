@@ -34,7 +34,7 @@ namespace ODataApiGen.Models
                 .Union(functions.Where(f => f.IsBound && f.BindingParameter == EntityType));
         }
         public string Name { get; private set; }
-        public string Namespace => this.EntityContainer.Schema.Namespace; 
+        public string Namespace => this.EntityContainer.Namespace; 
         public string FullName => $"{this.Namespace}.{this.Name}";
         public string EntityType { get; private set; }
         public IEnumerable<Action> Actions { get; set; }

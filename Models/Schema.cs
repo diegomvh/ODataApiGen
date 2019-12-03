@@ -18,7 +18,7 @@ namespace ODataApiGen.Models
         public List<EntityContainer> EntityContainers { get; private set; }
 
         #region Static Loaders
-        private static List<EnumType> ReadEnums(XElement xdoc)
+        private static List<EnumType> ReadEnums(XElement xdoc, Schema schema)
         {
             Logger.LogDebug("Parsing enums...");
             var enumList = new List<EnumType>();
@@ -26,14 +26,14 @@ namespace ODataApiGen.Models
 
             foreach (var xElement in elements)
             {
-                var enT = new EnumType(xElement);
+                var enT = new EnumType(xElement, schema);
                 enumList.Add(enT);
                 Logger.LogInformation($"Enum Type  '{enT.Namespace}.{enT.Name}' parsed");
             }
             return enumList;
 
         }
-        private static List<ComplexType> ReadComplexTypes(XElement xdoc)
+        private static List<ComplexType> ReadComplexTypes(XElement xdoc, Schema schema)
         {
             Logger.LogDebug("Parsing entity types...");
             var typeList = new List<ComplexType>();
@@ -41,13 +41,13 @@ namespace ODataApiGen.Models
 
             foreach (var xElement in elements)
             {
-                var enT = new ComplexType(xElement);
+                var enT = new ComplexType(xElement, schema);
                 typeList.Add(enT);
                 Logger.LogInformation($"Complex Type '{enT.Namespace}.{enT.Name}' parsed");
             }
             return typeList;
         }
-        private static List<EntityType> ReadEntityTypes(XElement xdoc)
+        private static List<EntityType> ReadEntityTypes(XElement xdoc, Schema schema)
         {
             Logger.LogDebug("Parsing entity types...");
             var typeList = new List<EntityType>();
@@ -55,7 +55,7 @@ namespace ODataApiGen.Models
 
             foreach (var xElement in elements)
             {
-                var enT = new EntityType(xElement);
+                var enT = new EntityType(xElement, schema);
                 typeList.Add(enT);
                 Logger.LogInformation($"Entity Type '{enT.Namespace}.{enT.Name}' parsed");
             }
@@ -107,10 +107,10 @@ namespace ODataApiGen.Models
         public Schema(XElement xElement) 
         {
             this.Namespace = xElement.Attribute("Namespace").Value;
-            this.EnumTypes = Schema.ReadEnums(xElement);
-            this.ComplexTypes = Schema.ReadComplexTypes(xElement);
-            this.EntityTypes = Schema.ReadEntityTypes(xElement);
-            this.EntityTypes = Schema.ReadEntityTypes(xElement);
+            this.EnumTypes = Schema.ReadEnums(xElement, this);
+            this.ComplexTypes = Schema.ReadComplexTypes(xElement, this);
+            this.EntityTypes = Schema.ReadEntityTypes(xElement, this);
+            this.EntityTypes = Schema.ReadEntityTypes(xElement, this);
             this.Actions = Schema.ReadActions(xElement, this);
             this.Functions = Schema.ReadFunctions(xElement, this);
             this.EntityContainers = Schema.ReadEntityContainer(xElement, this);

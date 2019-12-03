@@ -102,14 +102,14 @@ namespace ODataApiGen.Angular
             {
                 if (!String.IsNullOrEmpty(entity.EdmStructuredType.BaseType))
                 {
-                    var baseInter = this.Entities.FirstOrDefault(e => e.EdmStructuredType.Type == entity.EdmStructuredType.BaseType);
+                    var baseInter = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
                     entity.SetBase(baseInter);
                 }
                 var types = entity.ImportTypes;
                 entity.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.Type)));
+this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
                 entity.Dependencies.AddRange(
-this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.Type)));
+this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.FullName)));
             }
             foreach (var service in Services)
             {
@@ -127,11 +127,11 @@ this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.Type)
                 }
                 var types = service.ImportTypes;
                 service.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.Type)));
+this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
                 service.Dependencies.AddRange(
-this.Entities.Where(e => types.Contains(e.EdmStructuredType.Type)));
+this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
                 service.Dependencies.AddRange(
-this.Collections.Where(e => types.Contains(e.EdmStructuredType.Type)));
+this.Collections.Where(e => types.Contains(e.EdmStructuredType.FullName)));
             }
             this.Module.Dependencies.AddRange(this.Services);
             this.Config.Dependencies.AddRange(this.Enums);

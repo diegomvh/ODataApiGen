@@ -97,12 +97,12 @@ namespace ODataApiGen.Angular
                     .Where(a => !a.IsEdmType)
                     .Select(a => a.Type));
                 if (this.Base != null)
-                    types.Add(this.Base.EdmStructuredType.Type);
+                    types.Add(this.Base.EdmStructuredType.FullName);
                 return types.Distinct();
             }
         }
         public override string Name => this.EdmStructuredType.Name;
-        public string EntityType => this.EdmStructuredType.Type;
+        public string EntityType => this.EdmStructuredType.FullName;
         public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         // Exports

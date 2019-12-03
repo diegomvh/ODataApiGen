@@ -30,7 +30,7 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.EdmStructuredType.Name + "Collection";
-        public string EntityType => this.EdmStructuredType.Type;
+        public string EntityType => this.EdmStructuredType.FullName;
         public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public string ModelName => this.Model.Name;
