@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ODataApiGen.Models;
 
 namespace ODataApiGen.Abstracts
 {
@@ -21,7 +22,7 @@ namespace ODataApiGen.Abstracts
             this.Version = version;
         }
         public abstract IEnumerable<Renderable> Renderables { get; }
-        public abstract void LoadMetadata(MetadataReader reader);
+        public abstract void LoadSchema(Schema schema);
 
     }
 }

@@ -6,8 +6,10 @@ namespace ODataApiGen.Models
 {
     public class Singleton
     {
-        public Singleton(XElement xElement)
+        public EntityContainer EntityContainer {get; private set;}
+        public Singleton(XElement xElement, EntityContainer container)
         {
+            this.EntityContainer = container;
             Name = xElement.Attribute("Name")?.Value;
             Type = xElement.Attribute("Type")?.Value;
 
@@ -17,9 +19,6 @@ namespace ODataApiGen.Models
                     Path = navPropBind.Attribute("Path").Value,
                     Target = navPropBind.Attribute("Target").Value,
                 }).ToList();
-
-            NameSpace =
-                xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
         }
 
         public void AddActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
@@ -36,8 +35,8 @@ namespace ODataApiGen.Models
         }
         public string Name { get; private set; }
         public string Type { get; private set; }
-        public string NameSpace { get; private set; }
-        public string FullName => $"{this.NameSpace}.{this.Name}";
+        public string Namespace => this.EntityContainer.Schema.Namespace; 
+        public string FullName => $"{this.Namespace}.{this.Name}";
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
         public IEnumerable<NavigationPropertyBinding> NavigationPropertyBindings { get; set; }

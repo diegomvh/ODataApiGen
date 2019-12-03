@@ -49,8 +49,7 @@ namespace ODataApiGen
             var renderer = new Renderer(Output);
 
             Metadata = Configuration.GetValue<string>("Metadata");
-            var metadataReader = new MetadataReader(
-                System.Xml.Linq.XDocument.Load(Metadata));
+            var schemas = Schema.ReadSchemas(System.Xml.Linq.XDocument.Load(Metadata).Descendants().FirstOrDefault());
 
             Purge = Configuration.GetValue<bool>("Purge");
             directories.PrepareOutput(Purge);
@@ -59,7 +58,8 @@ namespace ODataApiGen
             StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
             var package = new Angular.Package(Name, Metadata, WithCredentials, StringAsEnum, Models, "4.0");
-            package.LoadMetadata(metadataReader);
+            foreach (var schema in schemas)
+                package.LoadSchema(schema);
             package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");

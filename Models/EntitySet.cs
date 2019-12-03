@@ -6,8 +6,10 @@ namespace ODataApiGen.Models
 {
     public class EntitySet
     {
-        public EntitySet(XElement xElement)
+        public EntityContainer EntityContainer {get; private set;}
+        public EntitySet(XElement xElement, EntityContainer container)
         {
+            this.EntityContainer = container;
             Name = xElement.Attribute("Name")?.Value;
             EntityType = xElement.Attribute("EntityType")?.Value;
 
@@ -17,9 +19,6 @@ namespace ODataApiGen.Models
                     Path = navPropBind.Attribute("Path").Value,
                     Target = navPropBind.Attribute("Target").Value,
                 }).ToList();
-                
-            NameSpace =
-                xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
         }
 
         public void AddActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
@@ -35,8 +34,8 @@ namespace ODataApiGen.Models
                 .Union(functions.Where(f => f.IsBound && f.BindingParameter == EntityType));
         }
         public string Name { get; private set; }
-        public string NameSpace { get; private set; }
-        public string FullName => $"{this.NameSpace}.{this.Name}";
+        public string Namespace => this.EntityContainer.Schema.Namespace; 
+        public string FullName => $"{this.Namespace}.{this.Name}";
         public string EntityType { get; private set; }
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }

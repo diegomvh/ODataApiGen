@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DotLiquid;
 using ODataApiGen.Abstracts;
+using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
@@ -27,14 +28,14 @@ namespace ODataApiGen.Angular
             Services = new List<Angular.Service>();
         }
 
-        public override void LoadMetadata(MetadataReader reader)
+        public override void LoadSchema(Schema schema)
         {
-            this.AddEnums(reader.EnumTypes);
-            this.AddEntities(reader.ComplexTypes);
-            this.AddEntities(reader.EntityTypes);
-            this.AddApiService(reader.ActionImports, reader.FunctionImports);
-            this.AddServices(reader.EntitySets);
-            this.AddServices(reader.Singletons);
+            this.AddEnums(schema.EnumTypes);
+            this.AddEntities(schema.ComplexTypes);
+            this.AddEntities(schema.EntityTypes);
+            foreach (var container in schema.EntityContainers) {
+                this.AddServices(container);
+            }
         }
 
         public void AddEnums(IEnumerable<Models.EnumType> enums)
@@ -77,20 +78,14 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public void AddApiService(IEnumerable<Models.ActionImport> actions, IEnumerable<Models.FunctionImport> functions)
+        public void AddServices(Models.EntityContainer container)
         {
-            this.Services.Add(new Angular.ServiceApi(this.EndpointName, actions, functions));
-        }
-        public void AddServices(IEnumerable<Models.EntitySet> sets)
-        {
-            foreach (var s in sets)
+            this.Services.Add(new Angular.ServiceApi(this.EndpointName, container));
+            foreach (var s in container.EntitySets)
             {
                 this.Services.Add(new Angular.ServiceEntity(s));
             }
-        }
-        public void AddServices(IEnumerable<Models.Singleton> singletons)
-        {
-            foreach (var s in singletons)
+            foreach (var s in container.Singletons)
             {
                 this.Services.Add(new Angular.ServiceSingleton(s));
             }

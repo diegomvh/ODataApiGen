@@ -6,20 +6,20 @@ namespace ODataApiGen.Models
 {
     public class FunctionImport
     {
-        public FunctionImport(XElement xElement, List<Function> functions)
+        public EntityContainer EntityContainer {get; private set;}
+        public FunctionImport(XElement xElement, EntityContainer container)
         {
+            this.EntityContainer = container;
             EntitySet = xElement.Attribute("EntitySet")?.Value;
             Name = xElement.Attribute("Name")?.Value;
             IncludeInServiceDocument = xElement.Attribute("IncludeInServiceDocument")?.Value == "true";
-            NameSpace =
-                xElement.Ancestors().FirstOrDefault(a => a.Attribute("Namespace") != null)?.Attribute("Namespace").Value;
             var function = xElement.Attribute("Function").Value;
-            this.Function = functions.Where(f => f.FullName == function).FirstOrDefault();
+            this.Function = container.Schema.Functions.Where(f => f.FullName == function).FirstOrDefault();
         }
 
         public string Name { get; private set; }
-        public string NameSpace { get; private set; }
-        public string FullName => $"{this.NameSpace}.{this.Name}";
+        public string Namespace => this.EntityContainer.Schema.Namespace; 
+        public string FullName => $"{this.Namespace}.{this.Name}";
         public Function Function { get; private set; }
         public string EntitySet { get; private set; }
         public bool IncludeInServiceDocument { get; private set; }
