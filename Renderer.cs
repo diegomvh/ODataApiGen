@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using DotLiquid;
 using DotLiquid.FileSystems;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace ODataApiGen
             var templateName = entity.GetType().Name;
             var template = Template.Parse(File.ReadAllText($"{TemplatesPath}{Path.DirectorySeparatorChar}Angular{Path.DirectorySeparatorChar}{templateName}.ts"));
             var text = template.Render(Hash.FromAnonymousObject(entity, true));
-
+            
             var fileName = entity.FileName;
             var directory = entity.Directory;
 
