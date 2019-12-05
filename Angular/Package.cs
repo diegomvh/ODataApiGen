@@ -65,9 +65,9 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public void AddEntities(IEnumerable<Models.ComplexType> complexs)
+        public void AddEntities(IEnumerable<Models.ComplexType> complexes)
         {
-            foreach (var t in complexs)
+            foreach (var t in complexes)
             {
                 if (this.CreateModels)
                 {
@@ -110,6 +110,8 @@ namespace ODataApiGen.Angular
 this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
                 entity.Dependencies.AddRange(
 this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.FullName)));
+                entity.Dependencies.AddRange(
+this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             }
             foreach (var service in Services)
             {
@@ -173,6 +175,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.FullName)));
                 var renderables = new List<Renderable>();
                 renderables.AddRange(this.Enums);
                 renderables.AddRange(this.Entities);
+                renderables.AddRange(this.Collections);
                 renderables.AddRange(this.Services);
                 renderables.Add(this.Module);
                 renderables.Add(this.Config);
