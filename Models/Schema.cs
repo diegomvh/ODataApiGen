@@ -110,18 +110,24 @@ namespace ODataApiGen.Models
             this.EnumTypes = Schema.ReadEnums(xElement, this);
             this.ComplexTypes = Schema.ReadComplexTypes(xElement, this);
             this.EntityTypes = Schema.ReadEntityTypes(xElement, this);
-            this.EntityTypes = Schema.ReadEntityTypes(xElement, this);
             this.Actions = Schema.ReadActions(xElement, this);
             this.Functions = Schema.ReadFunctions(xElement, this);
             this.EntityContainers = Schema.ReadEntityContainer(xElement, this);
+
         }
 
-        public void ResolveFunctionImports(IEnumerable<Function> functions) {
+        public void ResolveFunctions(IEnumerable<Function> functions) {
+            foreach (var entityType in EntityTypes) {
+                entityType.AddFunctions(functions);
+            }
             foreach (var container in EntityContainers) {
                 container.ResolveFunctionImports(functions);
             }
         }
-        public void ResolveActionImports(IEnumerable<Action> actions) {
+        public void ResolveActions(IEnumerable<Action> actions) {
+            foreach (var entityType in EntityTypes) {
+                entityType.AddActions(actions);
+            }
             foreach (var container in EntityContainers) {
                 container.ResolveActionImports(actions);
             }

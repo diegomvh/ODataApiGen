@@ -33,7 +33,7 @@ namespace ODataApiGen.Angular
             this.Services.Add(new Angular.ServiceApi(this.EndpointName, metadata));
             foreach (var schema in metadata.Schemas) {
                 this.AddEnums(schema.EnumTypes);
-                this.AddEntities(schema.ComplexTypes);
+                this.AddComplexes(schema.ComplexTypes);
                 this.AddEntities(schema.EntityTypes);
                 foreach (var container in schema.EntityContainers) {
                     this.AddServices(container);
@@ -65,7 +65,7 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public void AddEntities(IEnumerable<Models.ComplexType> complexes)
+        public void AddComplexes(IEnumerable<Models.ComplexType> complexes)
         {
             foreach (var t in complexes)
             {

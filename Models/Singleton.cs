@@ -21,13 +21,13 @@ namespace ODataApiGen.Models
                 }).ToList();
         }
 
-        public void AddActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
+        public void ImportActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
             Actions = actionImports
                 .Where(a => a.EntitySet == Name)
                 .Select(ai => actions.FirstOrDefault(a => a.FullName == ai.Action))
                 .Union(actions.Where(a => a.IsBound && a.BindingParameter == Type));
         }
-        public void AddFunctions(IEnumerable<FunctionImport> functionImports, IEnumerable<Function> functions) {
+        public void ImportFunctions(IEnumerable<FunctionImport> functionImports, IEnumerable<Function> functions) {
             Functions = functionImports
                 .Where(f => f.EntitySet == Name)
                 .Select(fi => functions.FirstOrDefault(f => f.FullName == fi.Function))

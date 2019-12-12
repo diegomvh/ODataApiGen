@@ -39,8 +39,8 @@ namespace ODataApiGen.Models
         {
             this.Schemas = Metadata.ReadSchemas(xDoc);
             foreach (var schema in this.Schemas) {
-                schema.ResolveFunctionImports(this.Functions);
-                schema.ResolveActionImports(this.Actions);
+                schema.ResolveFunctions(this.Functions);
+                schema.ResolveActions(this.Actions);
             }
         }
     }

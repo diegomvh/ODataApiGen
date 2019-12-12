@@ -27,7 +27,7 @@ namespace ODataApiGen.Angular
             if (!String.IsNullOrEmpty(property.SRID))
                 this.Add("srid", property.SRID);
             if (property.Collection)
-                this.Add("many", "true");
+                this.Add("collection", "true");
             if (type is Enum) {
                 this.Add("flags", (type as Enum).Flags.ToString().ToLower());
             } else if (property is NavigationProperty) {
@@ -96,6 +96,8 @@ namespace ODataApiGen.Angular
                 types.AddRange(this.EdmStructuredType.Properties
                     .Where(a => !a.IsEdmType)
                     .Select(a => a.Type));
+                types.AddRange(this.EdmStructuredType.Actions.Select(a => a.Type));
+                types.AddRange(this.EdmStructuredType.Functions.Select(a => a.Type));
                 if (this.Base != null)
                     types.Add(this.Base.EdmStructuredType.FullName);
                 return types.Distinct();

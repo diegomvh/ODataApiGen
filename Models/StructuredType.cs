@@ -59,5 +59,13 @@ namespace ODataApiGen.Models
         public List<PropertyRef> Keys { get; private set; }
         public List<Property> Properties { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
+        public void AddActions(IEnumerable<Action> actions) {
+            Actions = actions.Where(a => a.IsBound && a.BindingParameter == FullName);
+        }
+        public void AddFunctions(IEnumerable<Function> functions) {
+            Functions = functions.Where(f => f.IsBound && f.BindingParameter == FullName);
+        }
+        public IEnumerable<Action> Actions { get; set; } = Enumerable.Empty<Action>();
+        public IEnumerable<Function> Functions { get; set; } = Enumerable.Empty<Function>();
     }
 }

@@ -86,19 +86,19 @@ namespace ODataApiGen.Models
 
         public void ResolveActionImports(IEnumerable<Action> actions) {
             foreach (var eset in EntitySets) {
-                eset.AddActions(ActionImports, actions);
+                eset.ImportActions(ActionImports, actions);
             }
             foreach (var single in Singletons) {
-                single.AddActions(ActionImports, actions);
+                single.ImportActions(ActionImports, actions);
             }
         }
 
         public void ResolveFunctionImports(IEnumerable<Function> functions) {
             foreach (var eset in EntitySets) {
-                eset.AddFunctions(FunctionImports, functions);
+                eset.ImportFunctions(FunctionImports, functions);
             }
             foreach (var single in Singletons) {
-                single.AddFunctions(FunctionImports, functions);
+                single.ImportFunctions(FunctionImports, functions);
             }
         }
     }

@@ -147,7 +147,6 @@ namespace ODataApiGen.Angular
   }}";
             }
         }
-
         public object ToLiquid()
         {
             return new { Name = this.Name };
