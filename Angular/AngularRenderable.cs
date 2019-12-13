@@ -77,6 +77,10 @@ namespace ODataApiGen.Angular
             {
                 uriList.Add(callable.BindingParameter);
             }
+            foreach (var param in callable.Parameters)
+            {
+                uriList.Add(param.Type);
+            }
             return uriList;
         }
         public IEnumerable<string> RenderImports()
