@@ -59,7 +59,7 @@ namespace ODataApiGen.Angular
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :
                     callable.ReturnsCollection ?
-                        $"entityset" :
+                        $"entities" :
                         $"entity";
 
                 var parameters = new List<Models.Parameter>();

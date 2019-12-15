@@ -55,13 +55,13 @@ namespace ODataApiGen.Angular
                 var callableReturnType = callable.IsEdmReturnType ?
                         $"[{typescriptType}, ODataPropertyAnnotations]" :
                     callable.ReturnsCollection ?
-                        $"[{typescriptType}[], ODataCollectionAnnotations]" :
+                        $"[{typescriptType}[], ODataEntitiesAnnotations]" :
                         $"[{typescriptType}, ODataEntityAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
                         $"property" :
                     callable.ReturnsCollection ?
-                        $"entityset" :
+                        $"entities" :
                         $"entity";
 
                 var parameters = new List<Models.Parameter>();
@@ -122,7 +122,7 @@ namespace ODataApiGen.Angular
                 var methodDeleteName = nav.Collection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
                 var returnType = nav.Collection ? 
-                    $"[{type}[], ODataCollectionAnnotations]" : 
+                    $"[{type}[], ODataEntitiesAnnotations]" : 
                     $"[{type}, ODataEntityAnnotations]";
 
                 // Navigation

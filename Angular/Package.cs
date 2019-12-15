@@ -85,7 +85,12 @@ namespace ODataApiGen.Angular
         {
             foreach (var s in container.EntitySets)
             {
-                this.Services.Add(new Angular.ServiceEntity(s));
+                if (this.CreateModels)
+                {
+                    this.Services.Add(new Angular.ServiceModel(s));
+                } else {
+                    this.Services.Add(new Angular.ServiceEntity(s));
+                }
             }
             foreach (var s in container.Singletons)
             {
