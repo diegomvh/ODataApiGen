@@ -27,10 +27,10 @@ namespace ODataApiGen.Angular
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmEntitySet.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.Entity.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.Entity.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
-                list.AddRange(this.Entity.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                list.AddRange(this.Model.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.Model.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
+                list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
                 return list;
             }
         }
@@ -42,8 +42,8 @@ namespace ODataApiGen.Angular
         public override string NameSpace => this.EdmEntitySet.Namespace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
         public override string EntityType => this.EdmEntitySet.EntityType;
-        public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Entity.EdmStructuredType.Actions));
-        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Entity.EdmStructuredType.Functions));
-        public IEnumerable<string> Navigations => this.RenderReferences(this.Entity.EdmStructuredType.NavigationProperties);
+        public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Model.EdmStructuredType.Actions));
+        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Model.EdmStructuredType.Functions));
+        public IEnumerable<string> Navigations => this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties);
     }
 }

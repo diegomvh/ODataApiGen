@@ -9,13 +9,18 @@ namespace ODataApiGen.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
     {
-        public Angular.Entity Entity { get; private set; }
+        public Angular.Entity Interface { get; private set; }
+        public Angular.Model Model { get; private set; }
         public Angular.Collection Collection { get; private set; }
         public Service() { }
 
-        public void SetEntity(Angular.Entity entity)
+        public void SetInterface(Angular.Entity inter)
         {
-            this.Entity = entity;
+            this.Interface = inter;
+        }
+        public void SetModel(Angular.Model model)
+        {
+            this.Model = model;
         }
         public void SetCollection(Angular.Collection collection)
         {
@@ -55,7 +60,7 @@ namespace ODataApiGen.Angular
                 var callableReturnType = callable.IsEdmReturnType ?
                         $"[{typescriptType}, ODataPropertyAnnotations]" :
                     callable.ReturnsCollection ?
-                        $"[{typescriptType}[], ODataEntitiesAnnotations]" :
+                        $"[{typescriptType}[], ODataCollectionAnnotations]" :
                         $"[{typescriptType}, ODataEntityAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
@@ -122,7 +127,7 @@ namespace ODataApiGen.Angular
                 var methodDeleteName = nav.Collection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
                 var returnType = nav.Collection ? 
-                    $"[{type}[], ODataEntitiesAnnotations]" : 
+                    $"[{type}[], ODataCollectionAnnotations]" : 
                     $"[{type}, ODataEntityAnnotations]";
 
                 // Navigation

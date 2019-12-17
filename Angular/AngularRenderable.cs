@@ -100,7 +100,7 @@ namespace ODataApiGen.Angular
             var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i => i.Uri).Select(group =>
             {
                 var uri = this.Uri.MakeRelativeUri(group.First().Uri);
-                var names = group.SelectMany(d => d.ExportTypes);
+                var names = group.SelectMany(d => d.ExportTypes).Distinct();
                 return new Import(names, uri);
             });
             return records;

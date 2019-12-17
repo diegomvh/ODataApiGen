@@ -37,10 +37,15 @@ namespace ODataApiGen.Angular
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmSingleton.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmSingleton.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                if (this.Entity != null)
+                if (this.Interface != null)
                 {
-                    list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
-                    list.AddRange(this.Entity.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                    list.AddRange(this.Interface.EdmStructuredType.Properties.Select(a => a.Type));
+                    list.AddRange(this.Interface.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                }
+                if (this.Model != null)
+                {
+                    list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
+                    list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
                 }
                 return list;
             }

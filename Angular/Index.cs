@@ -18,6 +18,8 @@ namespace ODataApiGen.Angular
                 var ns = new List<String>();
                 ns.AddRange(Package.Enums.SelectMany(e => e.ImportTypes));
                 ns.AddRange(Package.Entities.SelectMany(m => m.ImportTypes));
+                ns.AddRange(Package.Models.SelectMany(m => m.ImportTypes));
+                ns.AddRange(Package.Schemas.SelectMany(m => m.ImportTypes));
                 ns.AddRange(Package.Services.Select(s => s.EntityType ));
                 ns.AddRange(Package.Module.ImportTypes);
                 ns.AddRange(Package.Config.ImportTypes);

@@ -25,7 +25,16 @@ namespace ODataApiGen.Angular
             this.Service = service;
         }
         // Imports
-        public override IEnumerable<string> ImportTypes => this.Model.ExportTypes.Distinct();
+        public override IEnumerable<string> ImportTypes
+        {
+            get
+            {
+                var list = new List<string> {
+                    this.Model.EntityType
+                };
+                return list;
+            }
+        }
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
