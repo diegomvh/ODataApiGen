@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using ODataApiGen.Models.Annotations;
 
 namespace ODataApiGen.Models
 {
@@ -14,11 +15,10 @@ namespace ODataApiGen.Models
             EntityType = xElement.Attribute("EntityType")?.Value;
 
             NavigationPropertyBindings = xElement.Descendants().Where(a => a.Name.LocalName == "NavigationPropertyBinding")
-                .Select(navPropBind => new NavigationPropertyBinding()
-                {
-                    Path = navPropBind.Attribute("Path").Value,
-                    Target = navPropBind.Attribute("Target").Value,
-                }).ToList();
+                .Select(navPropBind => new NavigationPropertyBinding(navPropBind, this)).ToList();
+
+            Annotations = xElement.Descendants().Where(a => a.Name.LocalName == "Annotation")
+                .Select(element => new Annotation(element)).ToList();
         }
 
         public void ImportActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
@@ -38,5 +38,6 @@ namespace ODataApiGen.Models
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
         public IEnumerable<NavigationPropertyBinding> NavigationPropertyBindings { get; set; }
+        public List<Annotation> Annotations {get; set;}
     }
 }

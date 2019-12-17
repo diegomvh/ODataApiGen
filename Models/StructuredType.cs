@@ -26,28 +26,11 @@ namespace ODataApiGen.Models
                     .ToList();
 
             Properties = sourceElement.Descendants().Where(a => a.Name.LocalName == "Property")
-                .Select(element => new Property()
-                    {
-                        Collection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
-                        Name = element.Attribute("Name")?.Value,
-                        MaxLength = element.Attribute("MaxLength")?.Value,
-                        Nullable = !(element.Attribute("Nullable")?.Value == "false"),
-                        Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
-                        SRID = element.Attribute("SRID")?.Value
-                    }).ToList();
+                .Select(element => new Property(element, this)).ToList();
 
             NavigationProperties = sourceElement.Descendants().Where(a => a.Name.LocalName == "NavigationProperty")
-                .Select(element => new NavigationProperty()
-                    {
-                        Name = element.Attribute("Name")?.Value.Split(".").Last(),
-                        FullName = element.Attribute("Name")?.Value,
-                        MaxLength = null,
-                        Collection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
-                        Partner = element.Attribute("Partner")?.Value,
-                        Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
-                        ReferentialConstraint = element.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value,
-                        ReferencedProperty = element.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value
-                }).ToList();
+                .Select(element => new NavigationProperty(element, this)).ToList();
+
         }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }

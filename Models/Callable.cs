@@ -22,13 +22,7 @@ namespace ODataApiGen.Models
                 .Attribute("Type")?.Value;
 
             Parameters = xElement.Descendants().Where(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value != "bindingParameter")
-                .Select(paramElement => new Parameter()
-                {
-                    Name = paramElement.Attribute("Name")?.Value,
-                    IsRequired = paramElement.Attribute("Nullable")?.Value == "false",
-                    Type = paramElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')'),
-                    IsCollection = paramElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false,
-                }).ToList();
+                .Select(paramElement => new Parameter(paramElement, this)).ToList();
 
             ReturnType = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReturnType")?.Attribute("Type")?.Value;
             if (!string.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Collection("))
@@ -55,7 +49,6 @@ namespace ODataApiGen.Models
         public bool IsCollection { get; }
         public bool IsBound { get; }
         public bool IsComposable { get; }
-
         public bool ReturnsCollection { get; }
     }
 }

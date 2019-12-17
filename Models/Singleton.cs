@@ -14,11 +14,7 @@ namespace ODataApiGen.Models
             Type = xElement.Attribute("Type")?.Value;
 
             NavigationPropertyBindings = xElement.Descendants().Where(a => a.Name.LocalName == "NavigationPropertyBinding")
-                .Select(navPropBind => new NavigationPropertyBinding()
-                {
-                    Path = navPropBind.Attribute("Path").Value,
-                    Target = navPropBind.Attribute("Target").Value,
-                }).ToList();
+                .Select(navPropBind => new NavigationPropertyBinding(navPropBind, this)).ToList();
         }
 
         public void ImportActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
