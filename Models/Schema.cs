@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
+using ODataApiGen.Models.Annotations;
 
 namespace ODataApiGen.Models
 {
@@ -16,6 +17,7 @@ namespace ODataApiGen.Models
         public List<Function> Functions { get; private set; }
         public List<Action> Actions { get; private set; }
         public List<EntityContainer> EntityContainers { get; private set; }
+        public List<AnnotationList> AnnotationLists { get; private set; }
 
         #region Static Loaders
         private static List<EnumType> ReadEnums(XElement xdoc, Schema schema)
@@ -113,6 +115,8 @@ namespace ODataApiGen.Models
             this.Actions = Schema.ReadActions(xElement, this);
             this.Functions = Schema.ReadFunctions(xElement, this);
             this.EntityContainers = Schema.ReadEntityContainer(xElement, this);
+            this.AnnotationLists = xElement.Descendants().Where(a => a.Name.LocalName == "Annotations")
+                .Select(element => new AnnotationList(element, this)).ToList();
 
         }
 

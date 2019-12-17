@@ -6,20 +6,33 @@ using System;
 
 namespace ODataApiGen.Angular
 {
-    public class ModelProperty : EntityProperty 
+    public class ModelProperty : StructuredProperty 
     {
-        public ModelProperty(ODataApiGen.Models.Property prop) : base(prop)
+        public AngularRenderable Renderable {get; private set;}
+        public ModelProperty(ODataApiGen.Models.Property prop, AngularRenderable type) : base(prop)
         {
-            Navigation = prop is NavigationProperty;
+            this.Renderable = type;
         }
-        public bool Navigation {get;private set;}
-        public override string Name => Value.Name + ((Navigation || Value.Nullable) ? "?" : "");
-        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + 
-            (Value.Collection ? Value.IsEdmType ? "[]" : "Collection" : "");
+        public override string Name => Value.Name + ((Value is NavigationProperty || Value.Nullable) ? "?" : "");
+        public override string Type { get {
+            var type = AngularRenderable.GetTypescriptType(Value.Type);
+            if (this.Renderable is Enum) {
+                return type;
+            }
+            if (Value.Collection)
+                return type + (Value.IsEdmType ? "[]" : "Collection");
+            else 
+                return type + (Value.IsEdmType ? "" : "Model");
+        }}
     }
-    public class Model : Entity 
+    public class Model : Structured 
     {
-        public Model(StructuredType type) : base(type) { }
+        public Angular.Entity Interface { get; private set; }
+
+        public Model(StructuredType type, Angular.Entity inter) : base(type) {
+            this.Interface = inter;
+            this.Dependencies.Add(inter);
+        }
         public Angular.Collection Collection {get; private set;}
 
         public void SetCollection(Collection collection)
@@ -27,6 +40,7 @@ namespace ODataApiGen.Angular
             this.Collection = collection;
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
+        public override string Name => this.EdmStructuredType.Name + "Model";
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
@@ -110,8 +124,23 @@ namespace ODataApiGen.Angular
                 return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions) : Enumerable.Empty<string>();
             }
         }
-        public override IEnumerable<Angular.EntityProperty> Properties => this.EdmStructuredType.Properties
+        public override IEnumerable<Angular.StructuredProperty> Properties => this.EdmStructuredType.Properties
                 .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => new Angular.ModelProperty(prop));
+                .Select(prop => {
+                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
+                    return new Angular.ModelProperty(prop, type as AngularRenderable); 
+                    });
+
+        public override object ToLiquid()
+        {
+            return new {
+                Name = this.Name,
+                Type = this.Type,
+                EntityType = this.EntityType,
+                Interface = new {
+                    Name = this.Interface.Name
+                }
+            };
+        }
     }
 }
