@@ -1,8 +1,8 @@
-import { ODataModelCollection } from 'angular-odata';
+import { ODataCollection } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
-export class {{Name}} extends {% if Base != null %}{{Base.Name}}{% else %}ODataModelCollection<{{ModelName}}>{% endif %} {
+export class {{Name}} extends ODataCollection<{{Model.Interface.Name}}, {{Model.Name}}> {
   // Actions
   {% for action in Actions %}{{action}}
   {% endfor %}
