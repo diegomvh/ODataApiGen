@@ -137,6 +137,8 @@ this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.FullN
                 }
                 var types = schema.ImportTypes;
                 schema.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
+                schema.Dependencies.AddRange(
 this.Schemas.Where(s => s != schema && types.Contains(s.EdmStructuredType.FullName)));
             }
             // Models
