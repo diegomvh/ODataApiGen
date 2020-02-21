@@ -49,6 +49,30 @@ namespace ODataApiGen.Angular
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
         public override string Name => this.EdmStructuredType.Name + "Model";
+        public override IEnumerable<string> ImportTypes
+        {
+            get
+            {
+                var parameters = new List<Models.Parameter>();
+                foreach (var cal in this.EdmStructuredType.Actions)
+                    parameters.AddRange(cal.Parameters);
+                foreach (var cal in this.EdmStructuredType.Functions)
+                    parameters.AddRange(cal.Parameters);
+
+                var list = new List<string> {
+                    this.EntityType
+                };
+                list.AddRange(parameters.Select(p => p.Type));
+                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
+                list.AddRange(this.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                return list;
+            }
+        }
+
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
@@ -68,6 +92,8 @@ namespace ODataApiGen.Angular
                         $"{typescriptType}" :
                     callable.ReturnsCollection ?
                         $"{typescriptType}Collection" :
+                    !String.IsNullOrEmpty(returnType) ?
+                        $"{typescriptType}Model" : 
                         $"{typescriptType}";
 
                 var responseType = callable.IsEdmReturnType ?
@@ -114,8 +140,8 @@ namespace ODataApiGen.Angular
       {(callable.IsEdmReturnType ?
         $"map(([entity,]) => entity)" :
             callable.ReturnsCollection ?
-        $"map(([entity, annots]) => this._client.collectionForType<{typescriptType}>(entity, annots, res, '{returnType}'))" :
-        $"map(([entity, annots]) => this._client.modelForType<{typescriptType}>(entity, annots, res, '{returnType}'))")}
+        $"map(([entity, annots]) => res.toCollection<{callableReturnType}>(entity, annots))" :
+        $"map(([entity, annots]) => res.toModel<{callableReturnType}>(entity, annots))")}
      );
   }}";
             }

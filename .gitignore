@@ -5,5 +5,5 @@ bin/
 *Output/
 application.siu.json
 application.siuweb.json
-application.siumodel.json
+application.siumodels.json
 demo/Siu
