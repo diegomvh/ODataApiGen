@@ -13,7 +13,15 @@ namespace ODataApiGen.Angular
         {
             this.Renderable = type;
         }
-        public override string Name => Value.Name + ((Value is NavigationProperty || Value.Nullable) ? "?" : "");
+        public override string Name {
+            get {
+                var required = !(Value is NavigationProperty || Value.Nullable);
+                var annot = Value.Annotation("Org.OData.Core.V1.Computed");
+                if (annot != null)
+                    required = annot.Bool.ToLower() != "true";
+                return Value.Name + (!required? "?" : "");
+            }
+        }
         public override string Type { get {
             var type = AngularRenderable.GetTypescriptType(Value.Type);
             if (this.Renderable is Enum) {

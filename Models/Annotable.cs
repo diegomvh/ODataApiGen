@@ -1,19 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 
-namespace ODataApiGen.Models.Annotations
-{
-    public class Annotation 
-    {
-        public Annotation(XElement element)
-        {
-            Term = element.Attribute("Term")?.Value;
-        }
-
-        public string Term { get; set; }
-    }
-}
 /*
+https://github.com/oasis-tcs/odata-vocabularies/tree/master/vocabularies
 Org.OData.Core.V1.Permissions
 Org.OData.Core.V1.Computed
 Org.OData.Core.V1.Immutable
@@ -35,3 +25,18 @@ Org.OData.Capabilities.V1.AsynchronousRequestsSupported
 Org.OData.Capabilities.V1.BatchContinueOnErrorSupported
 Org.OData.Capabilities.V1.FilterFunctions
 */
+namespace ODataApiGen.Models
+{
+    public class Annotable 
+    {
+        public Annotable(XElement element) {
+            Annotations = element.Descendants().Where(a => a.Name.LocalName == "Annotation")
+                .Select(annot => annot.ToDynamic()).ToList();
+        }
+        public List<dynamic> Annotations {get; set;}
+
+        public dynamic Annotation(string term) {
+            return this.Annotations.Where(a => a.Term == term).FirstOrDefault();
+        }
+    }
+}

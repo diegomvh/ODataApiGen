@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
-using ODataApiGen.Models.Annotations;
 
 namespace ODataApiGen.Models
 {
@@ -17,7 +16,7 @@ namespace ODataApiGen.Models
         public List<Function> Functions { get; private set; }
         public List<Action> Actions { get; private set; }
         public List<EntityContainer> EntityContainers { get; private set; }
-        public List<AnnotationList> AnnotationLists { get; private set; }
+        public IDictionary<string, IEnumerable<dynamic>> Annotations { get; private set; }
 
         #region Static Loaders
         private static List<EnumType> ReadEnums(XElement xdoc, Schema schema)
@@ -104,6 +103,19 @@ namespace ODataApiGen.Models
             }
             return customFunctionList;
         }
+        public static IDictionary<string, IEnumerable<dynamic>> ReadAnnotations(XElement xDoc, Schema schema)
+        {
+            Logger.LogDebug("Parsing annotations...");
+            Dictionary<string, IEnumerable<dynamic>> annotations = new Dictionary<string, IEnumerable<dynamic>>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Annotations");
+            foreach (var xElement in elements)
+            {
+                var target = xElement.Attribute("Target")?.Value;
+                annotations[target] = xElement.Descendants().Where(a => a.Name.LocalName == "Annotation").Select(element => element.ToDynamic()).ToList();
+                Logger.LogInformation($"Annotations '{target}' parsed");
+            }
+            return annotations;
+        }
 
         #endregion
         public Schema(XElement xElement) 
@@ -115,9 +127,7 @@ namespace ODataApiGen.Models
             this.Actions = Schema.ReadActions(xElement, this);
             this.Functions = Schema.ReadFunctions(xElement, this);
             this.EntityContainers = Schema.ReadEntityContainer(xElement, this);
-            this.AnnotationLists = xElement.Descendants().Where(a => a.Name.LocalName == "Annotations")
-                .Select(element => new AnnotationList(element, this)).ToList();
-
+            this.Annotations = Schema.ReadAnnotations(xElement, this);
         }
 
         public void ResolveFunctions(IEnumerable<Function> functions) {
@@ -134,6 +144,14 @@ namespace ODataApiGen.Models
             }
             foreach (var container in EntityContainers) {
                 container.ResolveActionImports(actions);
+            }
+        }
+        public void ResolveAnnotations(IEnumerable<KeyValuePair<string, IEnumerable<dynamic>>> annots) {
+            foreach (var annot in annots) {
+                var container = this.EntityContainers.Where(c => $"{c.Namespace}.{c.Name}" == annot.Key).FirstOrDefault();
+                if (container != null) {
+                    container.Annotations = annot.Value.ToList();
+                }
             }
         }
     }

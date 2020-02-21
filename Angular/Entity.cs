@@ -9,12 +9,16 @@ namespace ODataApiGen.Angular
 {
     public class EntityProperty : StructuredProperty
     {
-        public EntityProperty(ODataApiGen.Models.Property prop) : base(prop)
-        {
-            Navigation = prop is NavigationProperty;
+        public EntityProperty(ODataApiGen.Models.Property prop) : base(prop) { }
+        public override string Name {
+            get {
+                var required = !(Value is NavigationProperty || Value.Nullable);
+                var annot = Value.Annotation("Org.OData.Core.V1.Computed");
+                if (annot != null)
+                    required = annot.Bool.ToLower() != "true";
+                return Value.Name + (!required? "?" : "");
+            }
         }
-        public bool Navigation {get;private set;}
-        public override string Name => Value.Name + ((Navigation || Value.Nullable) ? "?" : "");
         public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.Collection ? "[]" : "");
     }
     public class Entity : Structured 

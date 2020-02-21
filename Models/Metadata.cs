@@ -15,6 +15,7 @@ namespace ODataApiGen.Models
 
         public IEnumerable<Function> Functions => this.Schemas.SelectMany(s => s.Functions);
         public IEnumerable<Action> Actions => this.Schemas.SelectMany(s => s.Actions);
+        public IEnumerable<KeyValuePair<string, IEnumerable<dynamic>>> Annotations => this.Schemas.SelectMany(s => s.Annotations);
 
         public IEnumerable<Function> UnboundFunctions => this.Schemas.SelectMany(s => s.Functions).Where(f => !f.IsBound);
         public IEnumerable<Action> UnboundActions => this.Schemas.SelectMany(s => s.Actions).Where(f => !f.IsBound);
@@ -41,6 +42,7 @@ namespace ODataApiGen.Models
             foreach (var schema in this.Schemas) {
                 schema.ResolveFunctions(this.Functions);
                 schema.ResolveActions(this.Actions);
+                schema.ResolveAnnotations(this.Annotations);
             }
         }
     }

@@ -15,6 +15,7 @@ namespace ODataApiGen.Models
         public List<Singleton> Singletons { get; private set; }
         public List<FunctionImport> FunctionImports { get; private set; }
         public List<ActionImport> ActionImports { get; private set; }
+        public List<dynamic> Annotations {get; set;}
 
         #region Static Loaders
         private static List<EntitySet> ReadEntitySets(XElement xDoc, EntityContainer container)

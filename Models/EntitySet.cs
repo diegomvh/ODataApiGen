@@ -1,24 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using ODataApiGen.Models.Annotations;
 
 namespace ODataApiGen.Models
 {
-    public class EntitySet
+    public class EntitySet : Annotable
     {
         public EntityContainer EntityContainer {get; private set;}
-        public EntitySet(XElement xElement, EntityContainer container)
+        public EntitySet(XElement element, EntityContainer container) : base(element)
         {
             this.EntityContainer = container;
-            Name = xElement.Attribute("Name")?.Value;
-            EntityType = xElement.Attribute("EntityType")?.Value;
+            Name = element.Attribute("Name")?.Value;
+            EntityType = element.Attribute("EntityType")?.Value;
 
-            NavigationPropertyBindings = xElement.Descendants().Where(a => a.Name.LocalName == "NavigationPropertyBinding")
+            NavigationPropertyBindings = element.Descendants().Where(a => a.Name.LocalName == "NavigationPropertyBinding")
                 .Select(navPropBind => new NavigationPropertyBinding(navPropBind, this)).ToList();
-
-            Annotations = xElement.Descendants().Where(a => a.Name.LocalName == "Annotation")
-                .Select(element => new Annotation(element)).ToList();
         }
 
         public void ImportActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
@@ -38,6 +35,6 @@ namespace ODataApiGen.Models
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
         public IEnumerable<NavigationPropertyBinding> NavigationPropertyBindings { get; set; }
-        public List<Annotation> Annotations {get; set;}
+        public List<dynamic> Annotations {get; set;}
     }
 }
