@@ -68,7 +68,8 @@ namespace ODataApiGen.Angular
                 list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
-                list.AddRange(this.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                if (this.EdmStructuredType is EntityType)
+                    list.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
                 return list;
             }
         }
@@ -158,12 +159,17 @@ namespace ODataApiGen.Angular
                 return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions) : Enumerable.Empty<string>();
             }
         }
-        public override IEnumerable<Angular.StructuredProperty> Properties => this.EdmStructuredType.Properties
-                .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => {
+        public override IEnumerable<Angular.StructuredProperty> Properties {
+            get {
+                var props = this.EdmStructuredType.Properties.ToList();
+                if (this.EdmStructuredType is EntityType) 
+                    props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
+                return props.Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
                     return new Angular.ModelProperty(prop, type as AngularRenderable); 
-                    });
+                });
+            }
+        } 
 
         public override object ToLiquid()
         {

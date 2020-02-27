@@ -49,9 +49,9 @@ namespace ODataApiGen.Angular
         {
             get
             {
-                var types = this.EdmStructuredType.NavigationProperties
-                    .Select(a => a.Type)
-                    .ToList();
+                var types = new List<string>();
+                if (this.EdmStructuredType is EntityType)
+                    types.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
                 /*For Not-EDM types (e.g. enums with namespaces, complex types*/
                 types.AddRange(this.EdmStructuredType.Properties
                     .Where(a => !a.IsEdmType)

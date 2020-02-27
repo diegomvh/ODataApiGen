@@ -5,43 +5,26 @@ using System.Xml.Linq;
 
 namespace ODataApiGen.Models
 {
-    public abstract class StructuredType 
+    public abstract class StructuredType : Annotable
     {
         public Schema Schema {get; private set;}
-        public StructuredType(XElement sourceElement, Schema schema)
+        public StructuredType(XElement element, Schema schema) : base(element)
         {
             this.Schema = schema;
-            Name = sourceElement.Attribute("Name")?.Value;
-            BaseType = sourceElement.Attribute("BaseType")?.Value;
-            OpenType = sourceElement.Attribute("OpenType")?.Value == "true";
-            HasStream = sourceElement.Attribute("HasStream")?.Value == "true";
+            Name = element.Attribute("Name")?.Value;
+            BaseType = element.Attribute("BaseType")?.Value;
+            OpenType = element.Attribute("OpenType")?.Value == "true";
 
-            Keys = sourceElement.Descendants()
-                    .Where(a => a.Name.LocalName == "Key")
-                    .Descendants()
-                    .Select(element => new PropertyRef() {
-                        Name = element.Attribute("Name")?.Value,
-                        Alias = element.Attribute("Alias")?.Value
-                    })
-                    .ToList();
-
-            Properties = sourceElement.Descendants().Where(a => a.Name.LocalName == "Property")
-                .Select(element => new Property(element, this)).ToList();
-
-            NavigationProperties = sourceElement.Descendants().Where(a => a.Name.LocalName == "NavigationProperty")
-                .Select(element => new NavigationProperty(element, this)).ToList();
+            Properties = element.Descendants().Where(a => a.Name.LocalName == "Property")
+                .Select(prop => new Property(prop, this)).ToList();
 
         }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }
         public string BaseType { get; private set; }
         public bool OpenType { get; private set; }
-        public bool HasStream { get; private set; }
         public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
-        public bool IsCompositeKey { get { return this.Keys.Count() > 1; } }
-        public List<PropertyRef> Keys { get; private set; }
         public List<Property> Properties { get; private set; }
-        public List<NavigationProperty> NavigationProperties { get; set; }
         public void AddActions(IEnumerable<Action> actions) {
             Actions = actions.Where(a => a.IsBound && a.BindingParameter == FullName);
         }

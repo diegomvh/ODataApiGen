@@ -33,9 +33,14 @@ namespace ODataApiGen.Angular
         public override string Name => this.EdmStructuredType.Name;
         // Exports
 
-        public override IEnumerable<Angular.StructuredProperty> Properties => this.EdmStructuredType.Properties
-                .Union(this.EdmStructuredType.NavigationProperties)
-                .Select(prop => new Angular.EntityProperty(prop));
+        public override IEnumerable<Angular.StructuredProperty> Properties {
+            get {
+                var props = this.EdmStructuredType.Properties.ToList();
+                if (this.EdmStructuredType is EntityType) 
+                    props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
+                return props.Select(prop => new Angular.EntityProperty(prop));
+            }
+        } 
         public override object ToLiquid()
         {
             return new {

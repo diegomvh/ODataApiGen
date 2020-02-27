@@ -30,7 +30,8 @@ namespace ODataApiGen.Angular
                 list.AddRange(this.Model.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Model.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
-                list.AddRange(this.Model.EdmStructuredType.NavigationProperties.Select(a => a.Type));
+                if (this.Model.EdmStructuredType is EntityType)
+                    list.AddRange((this.Model.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
                 return list;
             }
         }
@@ -44,6 +45,6 @@ namespace ODataApiGen.Angular
         public override string EntityType => this.EdmEntitySet.EntityType;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Model.EdmStructuredType.Actions));
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Model.EdmStructuredType.Functions));
-        public IEnumerable<string> Navigations => this.RenderReferences(this.Model.EdmStructuredType.NavigationProperties);
+        public IEnumerable<string> Navigations => (this.Model.EdmStructuredType is EntityType) ? this.RenderReferences((this.Model.EdmStructuredType as EntityType).NavigationProperties) : Enumerable.Empty<string>();
     }
 }
