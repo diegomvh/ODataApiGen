@@ -53,21 +53,12 @@ namespace ODataApiGen.Angular
         {
             get
             {
-                var parameters = new List<Models.Parameter>();
-                foreach (var cal in this.EdmStructuredType.Actions)
-                    parameters.AddRange(cal.Parameters);
-                foreach (var cal in this.EdmStructuredType.Functions)
-                    parameters.AddRange(cal.Parameters);
-
                 var list = new List<string> {
                     this.EntityType
                 };
-                list.AddRange(parameters.Select(p => p.Type));
-                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
+                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 if (this.EdmStructuredType is EntityType)
                     list.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
                 return list;
@@ -98,10 +89,10 @@ namespace ODataApiGen.Angular
                         $"{typescriptType}";
 
                 var responseType = callable.IsEdmReturnType ?
-                        $"property" :
+                        $"value" :
                     callable.ReturnsCollection ?
-                        $"entities" :
-                        $"entity";
+                        $"collection" :
+                        $"model";
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
@@ -124,43 +115,33 @@ namespace ODataApiGen.Angular
     withCredentials?: boolean
   }");
 
-                var body = "let body = null;";
+                var args = "let args = null;";
                 if (parameters.Count() > 0) {
-                    body = $"\n    let body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                    args = $"\n    let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
                 }
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    {body}" +
-                    $"\n    let res = this.{callable.Type.ToLower()}<{typescriptType}>(" +
-                    $"'{callableFullName}'" +
-                    $@"{(callable.Type != "Function" ? "" : ", body")}{(!String.IsNullOrEmpty(returnType) ? $", '{returnType}')" : ")")};
-    return res.{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
-        headers: options && options.headers,
-        params: options && options.params," +
-        (!String.IsNullOrEmpty(returnType) ? $"\n        responseType: '{responseType}'," : "") + $@"
-        reportProgress: options && options.reportProgress,
-        withCredentials: options && options.withCredentials
-      }}).pipe(
-      {(callable.IsEdmReturnType ?
-        $"map(([entity,]) => entity)" :
-            callable.ReturnsCollection ?
-        $"map(([entity, annots]) => res.toCollection<{callableReturnType}>(entity, annots))" :
-        $"map(([entity, annots]) => res.toModel<{callableReturnType}>(entity, annots))")}
-     );
+                    $"\n    {args}" +
+                    $"\n    return this.call{callable.Type}<{typescriptType}>(" +
+                    $"'{callableFullName}', args, '{responseType}', '{returnType}', options);" +
+                    "\n    }";
+            }
+        }
+        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
+        {
+            foreach (var nav in navigations)
+            {
+                var type = AngularRenderable.GetTypescriptType(nav.Type);
+                var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
+
+                var methodCreateName = $"set{name}";
+
+                var returnType = $"[{type}, ODataEntityAnnotations]";
+
+                yield return $@"public {methodCreateName}(model: {type}Model | null): Observable<this> {{
+    return this.setNavigationProperty<{type}, {type}Model>('{nav.Name}', model);
   }}";
-            }
-        }
-        public IEnumerable<string> Actions {
-            get {
-                var modelActions = this.EdmStructuredType.Actions.Where(a => !a.IsCollection);
-                return modelActions.Count() > 0 ? this.RenderCallables(modelActions) : Enumerable.Empty<string>();
-            }
-        }
-        public IEnumerable<string> Functions {
-            get {
-                var modelFunctions = this.EdmStructuredType.Functions.Where(a => !a.IsCollection);
-                return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions) : Enumerable.Empty<string>();
             }
         }
         public override IEnumerable<Angular.StructuredProperty> Properties {
@@ -174,7 +155,27 @@ namespace ODataApiGen.Angular
                 });
             }
         } 
-
+        public IEnumerable<string> Actions {
+            get {
+                var modelActions = this.EdmStructuredType.Actions.Where(a => !a.IsCollection);
+                return modelActions.Count() > 0 ? this.RenderCallables(modelActions) : Enumerable.Empty<string>();
+            }
+        }
+        public IEnumerable<string> Functions {
+            get {
+                var modelFunctions = this.EdmStructuredType.Functions.Where(a => !a.IsCollection);
+                return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions) : Enumerable.Empty<string>();
+            }
+        }
+        public IEnumerable<string> Navigations {
+            get {
+                if (this.EdmStructuredType is EntityType) {
+                    var modelNavigations = (this.EdmStructuredType as EntityType).NavigationProperties.Where(nav => !nav.Collection);
+                    return modelNavigations.Count() > 0 ? this.RenderReferences(modelNavigations) : Enumerable.Empty<string>();
+                }
+                return Enumerable.Empty<string>();
+            }
+        }
         public override object ToLiquid()
         {
             return new {

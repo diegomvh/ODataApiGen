@@ -148,6 +148,8 @@ this.Schemas.Where(s => s != schema && types.Contains(s.EdmStructuredType.FullNa
                 model.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
                 model.Dependencies.AddRange(
+this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
+                model.Dependencies.AddRange(
 this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.FullName)));
                 model.Dependencies.AddRange(
 this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));

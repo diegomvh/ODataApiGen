@@ -16,4 +16,7 @@ export class {{Name}} extends ODataModel<{{Interface.Name}}> {
   // Functions
   {% for func in Functions %}{{func}}
   {% endfor %}
+  // Navigations
+  {% for nav in Navigations %}{{nav}}
+  {% endfor %}
 }
