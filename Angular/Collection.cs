@@ -41,8 +41,6 @@ namespace ODataApiGen.Angular
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 if (this.EdmStructuredType is EntityType)
                     list.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
@@ -105,30 +103,21 @@ namespace ODataApiGen.Angular
     headers?: HttpHeaders | {[header: string]: string | string[]},
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
-    withCredentials?: boolean
+    withCredentials?: boolean,
+    withCount?: boolean
   }");
 
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    let body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                var args = "let args = null;";
+                if (parameters.Count() > 0) {
+                    args = $"\n    let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
-                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
-                    $"\n    let res = this.{callable.Type.ToLower()}<{typescriptType}>(" +
-                    $"'{callableFullName}'" +
-                    $@"{(callable.Type != "Function" ? "" : ", body")}{(!String.IsNullOrEmpty(returnType) ? $", '{returnType}')" : ")")};
-    return res.{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
-        headers: options && options.headers,
-        params: options && options.params," +
-        (!String.IsNullOrEmpty(returnType) ? $"\n        responseType: '{responseType}'," : "") + $@"
-        reportProgress: options && options.reportProgress,
-        withCredentials: options && options.withCredentials
-      }}).pipe(
-      {(callable.IsEdmReturnType ?
-        $"map(([entity,]) => entity)" :
-            callable.ReturnsCollection ?
-        $"map(([entity, annots]) => res.toCollection<{callableReturnType}>(entity, annots))" :
-        $"map(([entity, annots]) => res.toModel<{callableReturnType}>(entity, annots))")}
-     );
-  }}";
+                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
+                }
+                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
+                    $"\n    {args}" +
+                    $"\n    return this.call{callable.Type}<{typescriptType}>(" +
+                    $"'{callableFullName}', args, '{responseType}', '{returnType}', options);" +
+                    "\n    }";
             }
         }
         public IEnumerable<string> Actions {

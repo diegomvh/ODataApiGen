@@ -112,7 +112,8 @@ namespace ODataApiGen.Angular
     headers?: HttpHeaders | {[header: string]: string | string[]},
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
-    withCredentials?: boolean
+    withCredentials?: boolean,
+    withCount?: boolean
   }");
 
                 var args = "let args = null;";
