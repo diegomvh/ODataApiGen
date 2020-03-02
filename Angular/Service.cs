@@ -96,10 +96,14 @@ namespace ODataApiGen.Angular
     withCredentials?: boolean
   }");
 
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    var body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                var body = "let body = null;";
+                if (parameters.Count() > 0) {
+                    body = $"\n    let body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
-                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});" +
+                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
+                }
+                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
+                    $"\n    {body}" +
                     $"\n    return this.{baseMethodName}<{typescriptType}>(" +
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callableFullName}'" +
@@ -142,12 +146,12 @@ namespace ODataApiGen.Angular
   }}";
                 // Link
                 yield return $@"public {methodCreateName}<{type}>(entity: {EntityName}, target: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
-    return this.ref(entity, '{nav.Name}')
+    return this.navigationProperty<{type}>(entity, '{nav.Name}').reference()
       .{(nav.Collection ? "add" : "set")}(target{(nav.Collection ? "" : ", {etag}")});
   }}";
                 // Unlink
                 yield return $@"public {methodDeleteName}<{type}>(entity: {EntityName}, target?: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
-    return this.ref(entity, '{nav.Name}')
+    return this.navigationProperty<{type}>(entity, '{nav.Name}').reference()
       .remove({{etag, target}});
   }}";
             }
