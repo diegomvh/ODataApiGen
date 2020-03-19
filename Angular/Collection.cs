@@ -80,10 +80,10 @@ namespace ODataApiGen.Angular
                         $"{typescriptType}";
 
                 var responseType = callable.IsEdmReturnType ?
-                        $"property" :
+                        $"value" :
                     callable.ReturnsCollection ?
-                        $"entities" :
-                        $"entity";
+                        $"collection" :
+                        $"model";
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
