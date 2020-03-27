@@ -9,19 +9,19 @@ namespace ODataApiGen.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
     {
-        public Angular.Entity Interface { get; private set; }
-        public Angular.Model Model { get; private set; }
-        public Angular.Collection Collection { get; private set; }
         public Service() { }
 
+        public Angular.Entity Interface { get; private set; }
         public void SetInterface(Angular.Entity inter)
         {
             this.Interface = inter;
         }
+        public Angular.Model Model { get; private set; }
         public void SetModel(Angular.Model model)
         {
             this.Model = model;
         }
+        public Angular.Collection Collection { get; private set; }
         public void SetCollection(Angular.Collection collection)
         {
             this.Collection = collection;
@@ -89,12 +89,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
-                argumentWithType.Add(@"options?: {
-    headers?: HttpHeaders | {[header: string]: string | string[]},
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    withCredentials?: boolean
-  }");
+                argumentWithType.Add(@"options?: HttpOptions");
 
                 var body = "let body = null;";
                 if (parameters.Count() > 0) {
@@ -135,12 +130,7 @@ namespace ODataApiGen.Angular
                     $"[{type}, ODataEntityAnnotations]";
 
                 // Navigation
-                yield return $@"public {methodRelationName}(entity: {EntityName}, options?: {{
-    headers?: HttpHeaders | {{[header: string]: string | string[]}},
-    params?: HttpParams|{{[param: string]: string | string[]}},
-    reportProgress?: boolean,
-    withCredentials?: boolean
-  }}): Observable<{returnType}> {{
+                yield return $@"public {methodRelationName}(entity: {EntityName}, options?: HttpOptions): Observable<{returnType}> {{
     return this.navigationProperty<{type}>(entity, '{nav.Name}')
       .{(nav.Collection ? "collection" : "single")}(options);
   }}";

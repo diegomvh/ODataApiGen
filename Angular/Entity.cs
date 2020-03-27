@@ -23,8 +23,8 @@ namespace ODataApiGen.Angular
     }
     public class Entity : Structured 
     {
-        public Angular.Schema Schema { get; private set; }
-        public Entity(StructuredType type, Angular.Schema schema) : base(type) {
+        public Angular.Meta Schema { get; private set; }
+        public Entity(StructuredType type, Angular.Meta schema) : base(type) {
             this.Schema = schema;
             this.Dependencies.Add(schema);
         }

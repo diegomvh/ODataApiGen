@@ -4,6 +4,7 @@ bin/
 .vscode/
 *Output/
 application.siu.json
-application.siuweb.json
+application.mele.json
+application.siuelements.json
 application.siumodels.json
 demo/Siu

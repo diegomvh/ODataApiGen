@@ -46,9 +46,11 @@ namespace ODataApiGen.Angular
         public void SetCollection(Collection collection)
         {
             this.Collection = collection;
+            this.Dependencies.Add(collection);
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
         public override string Name => this.EdmStructuredType.Name + "Model";
+        public string BaseName => this.EdmStructuredType.Name + "BaseModel";
         public override IEnumerable<string> ImportTypes
         {
             get
@@ -64,6 +66,7 @@ namespace ODataApiGen.Angular
                 return list;
             }
         }
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.BaseName };
 
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
@@ -108,17 +111,11 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
-                argumentWithType.Add(@"options?: {
-    headers?: HttpHeaders | {[header: string]: string | string[]},
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    withCredentials?: boolean,
-    withCount?: boolean
-  }");
+                argumentWithType.Add(@"options?: HttpOptions");
 
                 var args = "let args = null;";
                 if (parameters.Count() > 0) {
-                    args = $"\n    let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                    args = $"let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
                 }
@@ -126,7 +123,7 @@ namespace ODataApiGen.Angular
                     $"\n    {args}" +
                     $"\n    return this.call{callable.Type}<{typescriptType}>(" +
                     $"'{callableFullName}', args, '{responseType}', '{returnType}', options);" +
-                    "\n    }";
+                    "\n  }";
             }
         }
         protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
@@ -182,6 +179,7 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
+                BaseName = this.BaseName,
                 EntityType = this.EntityType,
                 Interface = new {
                     Name = this.Interface.Name

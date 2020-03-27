@@ -99,17 +99,11 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
-                argumentWithType.Add(@"options?: {
-    headers?: HttpHeaders | {[header: string]: string | string[]},
-    params?: HttpParams|{[param: string]: string | string[]},
-    reportProgress?: boolean,
-    withCredentials?: boolean,
-    withCount?: boolean
-  }");
+                argumentWithType.Add(@"options?: HttpOptions");
 
                 var args = "let args = null;";
                 if (parameters.Count() > 0) {
-                    args = $"\n    let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                    args = $"let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
                 }
@@ -117,7 +111,7 @@ namespace ODataApiGen.Angular
                     $"\n    {args}" +
                     $"\n    return this.call{callable.Type}<{typescriptType}>(" +
                     $"'{callableFullName}', args, '{responseType}', '{returnType}', options);" +
-                    "\n    }";
+                    "\n  }";
             }
         }
         public IEnumerable<string> Actions {

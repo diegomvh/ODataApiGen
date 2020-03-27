@@ -31,17 +31,18 @@ namespace ODataApiGen.Angular
         {
             EdmStructuredType = type;
         }
-        public Angular.Service Service {get; private set;}
 
-        public Structured Base { get; private set; }
+        public Angular.Structured Base { get; private set; }
         public void SetBase(Structured b)
         {
             this.Base = b;
+            this.Dependencies.Add(b);
         }
-
+        public Angular.Service Service {get; private set;}
         public void SetService(Service service)
         {
             this.Service = service;
+            this.Dependencies.Add(service);
         }
 
         // Imports

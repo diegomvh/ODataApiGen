@@ -25,7 +25,7 @@ namespace ODataApiGen.Angular {
               .Select(model => $"'{model.EntityType}': {model.Name}");
         public IEnumerable<string> Collections => this.Package.Collections
               .Select(col => $"'{col.EntityType}': {col.Name}");
-        public IEnumerable<string> Schemas => this.Package.Schemas
+        public IEnumerable<string> Schemas => this.Package.Metas
               .Select(entity => $"'{entity.EntityType}': {entity.Name}");
     }
 }

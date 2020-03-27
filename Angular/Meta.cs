@@ -7,10 +7,10 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class SchemaProperty : StructuredProperty {
+    public class MetaField : StructuredProperty {
         protected IEnumerable<PropertyRef> Keys { get; set; }
         protected AngularRenderable Renderable { get; set; }
-        public SchemaProperty(Models.Property property, IEnumerable<PropertyRef> keys, AngularRenderable type) : base(property) {
+        public MetaField(Models.Property property, IEnumerable<PropertyRef> keys, AngularRenderable type) : base(property) {
             this.Keys = keys;
             this.Renderable = type;
         }
@@ -50,11 +50,12 @@ namespace ODataApiGen.Angular
             }
         } 
     }
-    public class Schema : Structured 
+    public class Meta : Structured 
     {
-        public Schema(StructuredType type) : base(type) { }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".schema";
-        public override string Name => this.EdmStructuredType.Name + "Schema";
+        public Meta(StructuredType type) : base(type) { }
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".meta";
+        public override string Name => this.EdmStructuredType.Name + "Meta";
+        public string ResourcePath => this.Service?.ResourcePath;
         // Exports
 
         public override IEnumerable<Angular.StructuredProperty> Properties {
@@ -65,7 +66,7 @@ namespace ODataApiGen.Angular
                 var keys = (this.EdmStructuredType is EntityType) ? (this.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
                 return props.Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new SchemaProperty(prop, keys, type as AngularRenderable); 
+                    return new MetaField(prop, keys, type as AngularRenderable); 
                 });
             }
         } 

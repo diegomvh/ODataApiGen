@@ -35,6 +35,5 @@ namespace ODataApiGen.Models
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
         public IEnumerable<NavigationPropertyBinding> NavigationPropertyBindings { get; set; }
-        public List<dynamic> Annotations {get; set;}
     }
 }

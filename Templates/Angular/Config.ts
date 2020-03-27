@@ -18,7 +18,7 @@ export const {{Name}}: ODataConfig = {
   collections: {
     {% for col in Collections %}{{col}}{% unless forloop.last %},
     {% endunless %}{% endfor %}},
-  schemas: {
+  metas: {
     {% for schema in Schemas %}{{schema}}{% unless forloop.last %},
     {% endunless %}{% endfor %}}
 }
