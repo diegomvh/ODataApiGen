@@ -68,64 +68,6 @@ namespace ODataApiGen.Angular
         }
         public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.BaseName };
 
-        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
-        {
-            var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
-            foreach (var name in names)
-            {
-                var callables = allCallables.Where(c => c.Name == name);
-                var overload = callables.Count() > 1;
-                var callable = callables.FirstOrDefault();
-                var methodName = name[0].ToString().ToLower() + name.Substring(1);
-
-                var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
-
-                var returnType = AngularRenderable.GetType(callable.ReturnType);
-
-                var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
-                var callableReturnType = callable.IsEdmReturnType ?
-                        $"{typescriptType}" :
-                    callable.ReturnsCollection ?
-                        $"{typescriptType}Collection" :
-                    !String.IsNullOrEmpty(returnType) ?
-                        $"{typescriptType}Model" : 
-                        $"{typescriptType}";
-
-                var responseType = callable.IsEdmReturnType ?
-                        $"value" :
-                    callable.ReturnsCollection ?
-                        $"collection" :
-                        $"model";
-
-                var parameters = new List<Models.Parameter>();
-                foreach (var cal in callables)
-                    parameters.AddRange(cal.Parameters);
-                var optionals = parameters.Where(p =>
-                    !callables.All(c => c.Parameters.Contains(p))).ToList();
-                parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
-
-                var argumentWithType = new List<string>();
-
-                argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {AngularRenderable.GetTypescriptType(p.Type)}" +
-                    (p.IsCollection ? "[]" : "") +
-                    (optionals.Contains(p) ? " = null" : "")
-                ));
-                argumentWithType.Add(@"options?: HttpOptions");
-
-                var args = "let args = null;";
-                if (parameters.Count() > 0) {
-                    args = $"let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
-                    $"\n      .filter(pair => pair[1] !== null)" +
-                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
-                }
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    {args}" +
-                    $"\n    return this.call{callable.Type}<{typescriptType}>(" +
-                    $"'{callableFullName}', args, '{responseType}', '{returnType}', options);" +
-                    "\n  }";
-            }
-        }
         protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
         {
             foreach (var nav in navigations)

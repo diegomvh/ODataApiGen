@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using System.IO;
-using DotLiquid;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -55,9 +53,8 @@ namespace ODataApiGen.Angular
         public Meta(StructuredType type) : base(type) { }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".meta";
         public override string Name => this.EdmStructuredType.Name + "Meta";
-        public string ResourcePath => this.Service?.ResourcePath;
-        // Exports
 
+        // Exports
         public override IEnumerable<Angular.StructuredProperty> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();

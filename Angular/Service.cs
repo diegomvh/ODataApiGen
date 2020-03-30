@@ -60,7 +60,7 @@ namespace ODataApiGen.Angular
                 var callableReturnType = callable.IsEdmReturnType ?
                         $"[{typescriptType}, ODataPropertyAnnotations]" :
                     callable.ReturnsCollection ?
-                        $"[{typescriptType}[], ODataCollectionAnnotations]" :
+                        $"[{typescriptType}[], ODataEntitiesAnnotations]" :
                         $"[{typescriptType}, ODataEntityAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
@@ -91,26 +91,18 @@ namespace ODataApiGen.Angular
                 ));
                 argumentWithType.Add(@"options?: HttpOptions");
 
-                var body = "let body = null;";
+                var args = "let args = null;";
                 if (parameters.Count() > 0) {
-                    body = $"\n    let body = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
+                    args = $"let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
                 }
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    {body}" +
-                    $"\n    return this.{baseMethodName}<{typescriptType}>(" +
+                    $"\n    {args}" +
+                    $"\n    var res = this.{baseMethodName}<{typescriptType}>(" + 
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
-                    $"'{callableFullName}'" +
-                    $@"{(callable.Type != "Function" ? "" : ", body")}{(!String.IsNullOrEmpty(returnType) ? $", '{returnType}')" : ")")}
-      .{(callable.Type == "Function" ? "get(" : "post(body, ")}{{
-        headers: options && options.headers,
-        params: options && options.params," +
-        (!String.IsNullOrEmpty(returnType) ? $"\n        responseType: '{responseType}'," : "") + $@"
-        reportProgress: options && options.reportProgress,
-        withCredentials: options && options.withCredentials
-      }});
-  }}";
+                    $"'{callableFullName}', '{returnType}');" +
+                    $"\n    return res.call(args, '{responseType}', options);\n  }}";
             }
         }
 
@@ -126,7 +118,7 @@ namespace ODataApiGen.Angular
                 var methodDeleteName = nav.Collection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
                 var returnType = nav.Collection ? 
-                    $"[{type}[], ODataCollectionAnnotations]" : 
+                    $"[{type}[], ODataEntitiesAnnotations]" : 
                     $"[{type}, ODataEntityAnnotations]";
 
                 // Navigation

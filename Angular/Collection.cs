@@ -6,24 +6,16 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class Collection : AngularRenderable
+    public class Collection : Structured
     {
-        public StructuredType EdmStructuredType { get; private set; }
         public Angular.Model Model { get; private set; }
-        public Angular.Service Service {get; private set;}
-
-        public Collection(StructuredType type, Angular.Model model)
+        public Collection(StructuredType type, Angular.Model model) : base(type)
         {
-            EdmStructuredType = type;
             this.Model = model;
             this.Dependencies.Add(model);
             model.SetCollection(this);
         }
         
-        public void SetService(Service service)
-        {
-            this.Service = service;
-        }
         // Imports
         public override IEnumerable<string> ImportTypes
         {
@@ -48,14 +40,12 @@ namespace ODataApiGen.Angular
             }
         }
         // Exports
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
+        public override string Name => this.EdmStructuredType.Name + "Collection";
+        public string BaseName => this.EdmStructuredType.Name + "BaseCollection";
+        public string ModelName => this.Model.Name;
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string Name => this.EdmStructuredType.Name + "Collection";
-        public string EntityType => this.EdmStructuredType.FullName;
-        public override string NameSpace => this.EdmStructuredType.Namespace;
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public string ModelName => this.Model.Name;
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
@@ -71,19 +61,11 @@ namespace ODataApiGen.Angular
                 var returnType = AngularRenderable.GetType(callable.ReturnType);
 
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
-                var callableReturnType = callable.IsEdmReturnType ?
+                var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
                         $"{typescriptType}" :
                     callable.ReturnsCollection ?
                         $"{typescriptType}Collection" :
-                    !String.IsNullOrEmpty(returnType) ?
-                        $"{typescriptType}Model" : 
-                        $"{typescriptType}";
-
-                var responseType = callable.IsEdmReturnType ?
-                        $"value" :
-                    callable.ReturnsCollection ?
-                        $"collection" :
-                        $"model";
+                        $"{typescriptType}Model" ;
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
@@ -107,13 +89,24 @@ namespace ODataApiGen.Angular
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
                 }
+                var call = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
+                        $"this.call<{typescriptType}>(res, args, 'value', options)" :
+                    callable.ReturnsCollection ?
+                        $"this.call<{typescriptType}, {typescriptType}Model, {typescriptType}Collection>(res, args, 'collection', options)" :
+                        $"this.call<{typescriptType}, {typescriptType}Model>(res, args, 'model', options)";
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
-                    $"\n    return this.call{callable.Type}<{typescriptType}>(" +
-                    $"'{callableFullName}', args, '{responseType}', '{returnType}', options);" +
+                    $"\n    var res = this.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}', '{returnType}');" +
+                    $"\n    return {call};" +
                     "\n  }";
             }
         }
+
+        public override object ToLiquid()
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<string> Actions {
             get {
                 var collectionActions = this.EdmStructuredType.Actions.Where(a => a.IsCollection);
@@ -126,5 +119,7 @@ namespace ODataApiGen.Angular
                 return collectionFunctions.Count() > 0 ? this.RenderCallables(collectionFunctions) : Enumerable.Empty<string>();
             }
         }
+
+        public override IEnumerable<StructuredProperty> Properties => throw new NotImplementedException();
     }
 }
