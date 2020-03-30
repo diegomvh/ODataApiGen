@@ -183,6 +183,11 @@ this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             // Collections
             foreach (var collection in Collections)
             {
+                var service = this.Services.FirstOrDefault(s => s.EntityName == collection.EdmStructuredType.Name);
+                if (service != null)
+                {
+                    collection.SetService(service);
+                }
                 var types = collection.ImportTypes;
                 collection.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));

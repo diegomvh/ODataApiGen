@@ -68,22 +68,6 @@ namespace ODataApiGen.Angular
         }
         public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.BaseName };
 
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
-        {
-            foreach (var nav in navigations)
-            {
-                var type = AngularRenderable.GetTypescriptType(nav.Type);
-                var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
-
-                var methodCreateName = $"set{name}";
-
-                var returnType = $"[{type}, ODataEntityAnnotations]";
-
-                yield return $@"public {methodCreateName}(model: {type}Model | null): Observable<this> {{
-    return this.setNavigationProperty<{type}, {type}Model>('{nav.Name}', model);
-  }}";
-            }
-        }
         public override IEnumerable<Angular.StructuredProperty> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();

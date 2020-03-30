@@ -124,7 +124,7 @@ namespace ODataApiGen.Angular
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
                     $"\n    var res = this.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}', '{returnType}');" +
-                    $"\n    res.entitSet({this.ResourcePath});" +
+                    $"\n    res.entitySet('{this.ResourcePath}');" +
                     $"\n    return {call};" +
                     "\n  }";
             }
