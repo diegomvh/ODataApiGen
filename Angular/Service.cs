@@ -58,13 +58,13 @@ namespace ODataApiGen.Angular
 
                 var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
                 var callableReturnType = callable.IsEdmReturnType ?
-                        $"[{typescriptType}, ODataPropertyAnnotations]" :
+                        $"[{typescriptType}, ODataValueAnnotations]" :
                     callable.ReturnsCollection ?
                         $"[{typescriptType}[], ODataEntitiesAnnotations]" :
                         $"[{typescriptType}, ODataEntityAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
-                        $"property" :
+                        $"value" :
                     callable.ReturnsCollection ?
                         $"entities" :
                         $"entity";
