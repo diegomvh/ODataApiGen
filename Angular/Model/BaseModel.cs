@@ -6,10 +6,10 @@ using System;
 
 namespace ODataApiGen.Angular
 {
-    public class ModelProperty : StructuredProperty 
+    public class BaseProperty : StructuredProperty 
     {
         public AngularRenderable Renderable {get; private set;}
-        public ModelProperty(ODataApiGen.Models.Property prop, AngularRenderable type) : base(prop)
+        public BaseProperty(ODataApiGen.Models.Property prop, AngularRenderable type) : base(prop)
         {
             this.Renderable = type;
         }
@@ -33,11 +33,11 @@ namespace ODataApiGen.Angular
                 return type + (Value.IsEdmType ? "" : "Model");
         }}
     }
-    public class Model : Structured 
+    public class BaseModel : Structured 
     {
         public Angular.Entity Interface { get; private set; }
 
-        public Model(StructuredType type, Angular.Entity inter) : base(type) {
+        public BaseModel(StructuredType type, Angular.Entity inter) : base(type) {
             this.Interface = inter;
             this.Dependencies.Add(inter);
         }
@@ -48,9 +48,8 @@ namespace ODataApiGen.Angular
             this.Collection = collection;
             this.Dependencies.Add(collection);
         }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
-        public override string Name => this.EdmStructuredType.Name + "Model";
-        public string BaseName => this.EdmStructuredType.Name + "BaseModel";
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".base";
+        public override string Name => this.EdmStructuredType.Name + "BaseModel";
         public override IEnumerable<string> ImportTypes
         {
             get
@@ -66,7 +65,7 @@ namespace ODataApiGen.Angular
                 return list;
             }
         }
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name, this.BaseName };
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
 
         public override IEnumerable<Angular.StructuredProperty> Properties {
             get {
@@ -75,7 +74,7 @@ namespace ODataApiGen.Angular
                     props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
                 return props.Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new Angular.ModelProperty(prop, type as AngularRenderable); 
+                    return new Angular.BaseProperty(prop, type as AngularRenderable); 
                 });
             }
         } 
@@ -105,7 +104,6 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                BaseName = this.BaseName,
                 EntityType = this.EntityType,
                 Interface = new {
                     Name = this.Interface.Name

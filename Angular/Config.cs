@@ -15,11 +15,13 @@ namespace ODataApiGen.Angular {
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.Package.EndpointName + "Config";
         public override string NameSpace => "";
+        // About File
         public override string FileName => this.Package.EndpointName.ToLower() + ".config";
+        public override string Directory => this.NameSpace;
+        public override bool Overwrite => true;
 
         public IEnumerable<string> Enums => this.Package.Enums
               .Select(e => $"'{e.EnumType}': {e.Name}");
-        public override string Directory => this.NameSpace;
         public IEnumerable<string> Models => this.Package.Models
               .Where(m => m is Model)
               .Select(model => $"'{model.EntityType}': {model.Name}");

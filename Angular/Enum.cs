@@ -19,6 +19,7 @@ namespace ODataApiGen.Angular {
         public override string NameSpace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override bool Overwrite => true;
         public IEnumerable<string> Members => this.EdmEnumType.Members.Select(m => $"{m.Name} = {m.Value}");
         public bool Flags => this.EdmEnumType.Flags;
     }

@@ -14,6 +14,7 @@ namespace ODataApiGen.Angular
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Enum> Enums { get; private set; }
         public ICollection<Angular.Entity> Entities { get; private set; }
+        public ICollection<Angular.BaseModel> BaseModels { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
         public ICollection<Angular.Meta> Metas { get; private set; }
         public ICollection<Angular.Collection> Collections { get; private set; }
@@ -26,6 +27,7 @@ namespace ODataApiGen.Angular
             Index = new Angular.Index(this);
             Enums = new List<Angular.Enum>();
             Entities = new List<Angular.Entity>();
+            BaseModels = new List<Angular.BaseModel>();
             Models = new List<Angular.Model>();
             Metas = new List<Angular.Meta>();
             Collections = new List<Angular.Collection>();
@@ -63,7 +65,9 @@ namespace ODataApiGen.Angular
                 this.Entities.Add(inter);
                 if (this.CreateModels)
                 {
-                    var model = new Angular.Model(t, inter);
+                    var baseModel = new Angular.BaseModel(t, inter);
+                    this.BaseModels.Add(baseModel);
+                    var model = new Angular.Model(t, inter, baseModel);
                     this.Models.Add(model);
                     this.Collections.Add(new Angular.Collection(t, model));
                 }
@@ -80,7 +84,9 @@ namespace ODataApiGen.Angular
                 this.Entities.Add(inter);
                 if (this.CreateModels)
                 {
-                    var model = new Angular.Model(t, inter);
+                    var baseModel = new Angular.BaseModel(t, inter);
+                    this.BaseModels.Add(baseModel);
+                    var model = new Angular.Model(t, inter, baseModel);
                     this.Models.Add(model);
                     this.Collections.Add(new Angular.Collection(t, model));
                 }
@@ -120,6 +126,7 @@ this.Enums.Where(e => e != enumm && types.Contains(e.EdmEnumType.FullName)));
                 {
                     var baseInter = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
                     entity.SetBase(baseInter);
+                    entity.Dependencies.Add(baseInter);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == entity.EdmStructuredType.Name);
                 if (service != null)
@@ -152,6 +159,28 @@ this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
                 meta.Dependencies.AddRange(
 this.Metas.Where(s => s != meta && types.Contains(s.EdmStructuredType.FullName)));
             }
+            // Base Models
+            foreach (var baseModel in BaseModels)
+            {
+                if (!String.IsNullOrEmpty(baseModel.EdmStructuredType.BaseType))
+                {
+                    var baseInter = this.BaseModels.FirstOrDefault(e => e.EdmStructuredType.FullName == baseModel.EdmStructuredType.BaseType);
+                    baseModel.SetBase(baseInter);
+                    baseModel.Dependencies.Add(baseInter);
+                }
+                var types = baseModel.ImportTypes;
+                baseModel.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
+                baseModel.Dependencies.AddRange(
+this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
+                baseModel.Dependencies.AddRange(
+this.BaseModels.Where(e => e != baseModel && types.Contains(e.EdmStructuredType.FullName)));
+                baseModel.Dependencies.AddRange(
+this.Models.Where(e => types.Contains(e.EdmStructuredType.FullName)));
+                baseModel.Dependencies.AddRange(
+this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
+            }
+
             // Models
             foreach (var model in Models)
             {
@@ -159,6 +188,7 @@ this.Metas.Where(s => s != meta && types.Contains(s.EdmStructuredType.FullName))
                 {
                     var baseInter = this.Models.FirstOrDefault(e => e.EdmStructuredType.FullName == model.EdmStructuredType.BaseType);
                     model.SetBase(baseInter);
+                    model.Dependencies.Add(baseInter);
                 }
                 var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == model.EdmStructuredType.Name);
                 if (collection != null)
@@ -272,6 +302,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.FullName)));
                 var renderables = new List<Renderable>();
                 renderables.AddRange(this.Enums);
                 renderables.AddRange(this.Entities);
+                renderables.AddRange(this.BaseModels);
                 renderables.AddRange(this.Models);
                 renderables.AddRange(this.Metas);
                 renderables.AddRange(this.Collections);

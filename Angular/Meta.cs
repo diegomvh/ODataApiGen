@@ -54,6 +54,9 @@ namespace ODataApiGen.Angular
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".meta";
         public override string Name => this.EdmStructuredType.Name + "Meta";
 
+        // Imports
+        public override IEnumerable<string> ImportTypes => Enumerable.Empty<string>();
+
         // Exports
         public override IEnumerable<Angular.StructuredProperty> Properties {
             get {

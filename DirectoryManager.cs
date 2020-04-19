@@ -20,32 +20,22 @@ namespace ODataApiGen
                 Logger.LogInformation("Folder doesn't exists, creating...");
                 Directory.CreateDirectory(Output);
             }
-            else
+            else if (purgeOutput)
             {
                 var files = DirectoryInfo.GetFiles();
                 var dirs = DirectoryInfo.GetDirectories();
-                if (files.Any() || dirs.Any())
+                Logger.LogInformation("Purging output directory...");
+
+                foreach (var directoryInfo in dirs)
                 {
-                    if (purgeOutput)
-                    {
-                        Logger.LogInformation("Purging output directory...");
+                    Logger.LogDebug($"Removing directory '{directoryInfo.Name}'");
+                    directoryInfo.Delete(true);
+                }
 
-                        foreach (var directoryInfo in dirs)
-                        {
-                            Logger.LogDebug($"Removing directory '{directoryInfo.Name}'");
-                            directoryInfo.Delete(true);
-                        }
-
-                        foreach (var fileInfo in files)
-                        {
-                            Logger.LogDebug($"Removing file '{fileInfo.Name}'");
-                            fileInfo.Delete();
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("The output folder is not empty and output  purging is disabled. Please enable purging or delete your output folder manually.");
-                    }
+                foreach (var fileInfo in files)
+                {
+                    Logger.LogDebug($"Removing file '{fileInfo.Name}'");
+                    fileInfo.Delete();
                 }
             }
         }
@@ -94,7 +84,7 @@ namespace ODataApiGen
             foreach (FileInfo file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(temppath, false);
+                file.CopyTo(temppath, true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.

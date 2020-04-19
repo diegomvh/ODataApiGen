@@ -36,13 +36,11 @@ namespace ODataApiGen.Angular
         public void SetBase(Structured b)
         {
             this.Base = b;
-            this.Dependencies.Add(b);
         }
         public Angular.Service Service {get; private set;}
         public void SetService(Service service)
         {
             this.Service = service;
-            this.Dependencies.Add(service);
         }
 
         // Imports
@@ -67,6 +65,7 @@ namespace ODataApiGen.Angular
         public string EntityType => this.EdmStructuredType.FullName;
         public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override bool Overwrite => true;
         public string ResourcePath => this.Service?.ResourcePath;
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

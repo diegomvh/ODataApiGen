@@ -25,10 +25,18 @@ namespace ODataApiGen
             var template = Template.Parse(File.ReadAllText($"{TemplatesPath}{Path.DirectorySeparatorChar}Angular{Path.DirectorySeparatorChar}{templateName}.ts"));
             var text = template.Render(Hash.FromAnonymousObject(entity, true));
 
-            var fileName = entity.FileName;
-            var directory = entity.Directory;
+            var path = $"{Output}{Path.DirectorySeparatorChar}";
+            if (!String.IsNullOrWhiteSpace(entity.Directory))
+                path += $"{entity.Directory}{Path.DirectorySeparatorChar}";
+            path += $"{entity.FileName}.ts";
+            path = Path.GetFullPath(path);
 
-            File.WriteAllText($"{Output}{Path.DirectorySeparatorChar}{directory}{Path.DirectorySeparatorChar}{fileName}.ts", text);
+            if (!File.Exists(path) || entity.Overwrite) {
+                System.Console.WriteLine($"Writing: {path}");
+                File.WriteAllText(path, text);
+            } else {
+                System.Console.WriteLine($"Skip: {path}");
+            }
         }
 
         public void Render(Package package) {
