@@ -15,6 +15,7 @@ namespace ODataApiGen.Angular
             this.Model = model;
             this.BaseCollection = baseCollection;
             this.Dependencies.Add(model);
+            this.Dependencies.Add(baseCollection);
             model.SetCollection(this);
         }
         

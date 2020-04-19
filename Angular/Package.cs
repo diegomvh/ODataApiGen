@@ -218,6 +218,21 @@ this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.FullName
                 model.Dependencies.AddRange(
 this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             }
+            // Base Collections
+            foreach (var baseCollection in BaseCollections)
+            {
+                var types = baseCollection.ImportTypes;
+                baseCollection.Dependencies.AddRange(
+this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
+                baseCollection.Dependencies.AddRange(
+this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
+                baseCollection.Dependencies.AddRange(
+this.BaseCollections.Where(e => e != baseCollection && types.Contains(e.EdmStructuredType.FullName)));
+                baseCollection.Dependencies.AddRange(
+this.Models.Where(e => types.Contains(e.EdmStructuredType.FullName)));
+                baseCollection.Dependencies.AddRange(
+this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
+            }
             // Collections
             foreach (var collection in Collections)
             {
