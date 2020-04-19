@@ -17,6 +17,7 @@ namespace ODataApiGen.Angular
         public ICollection<Angular.BaseModel> BaseModels { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
         public ICollection<Angular.Meta> Metas { get; private set; }
+        public ICollection<Angular.BaseCollection> BaseCollections { get; private set; }
         public ICollection<Angular.Collection> Collections { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
 
@@ -30,6 +31,7 @@ namespace ODataApiGen.Angular
             BaseModels = new List<Angular.BaseModel>();
             Models = new List<Angular.Model>();
             Metas = new List<Angular.Meta>();
+            BaseCollections = new List<Angular.BaseCollection>();
             Collections = new List<Angular.Collection>();
             Services = new List<Angular.Service>();
         }
@@ -69,7 +71,10 @@ namespace ODataApiGen.Angular
                     this.BaseModels.Add(baseModel);
                     var model = new Angular.Model(t, inter, baseModel);
                     this.Models.Add(model);
-                    this.Collections.Add(new Angular.Collection(t, model));
+                    var baseCollection = new Angular.BaseCollection(t, baseModel);
+                    this.BaseCollections.Add(baseCollection);
+                    var collection = new Angular.Collection(t, model, baseCollection);
+                    this.Collections.Add(collection);
                 }
             }
         }
@@ -88,7 +93,10 @@ namespace ODataApiGen.Angular
                     this.BaseModels.Add(baseModel);
                     var model = new Angular.Model(t, inter, baseModel);
                     this.Models.Add(model);
-                    this.Collections.Add(new Angular.Collection(t, model));
+                    var baseCollection = new Angular.BaseCollection(t, baseModel);
+                    this.BaseCollections.Add(baseCollection);
+                    var collection = new Angular.Collection(t, model, baseCollection);
+                    this.Collections.Add(collection);
                 }
             }
         }
@@ -305,6 +313,7 @@ this.Collections.Where(e => types.Contains(e.EdmStructuredType.FullName)));
                 renderables.AddRange(this.BaseModels);
                 renderables.AddRange(this.Models);
                 renderables.AddRange(this.Metas);
+                renderables.AddRange(this.BaseCollections);
                 renderables.AddRange(this.Collections);
                 renderables.AddRange(this.Services);
                 renderables.Add(this.Module);

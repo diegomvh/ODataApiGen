@@ -41,14 +41,14 @@ namespace ODataApiGen.Angular
             this.Interface = inter;
             this.Dependencies.Add(inter);
         }
-        public Angular.Collection Collection {get; private set;}
+        public Angular.BaseCollection BaseCollection {get; private set;}
 
-        public void SetCollection(Collection collection)
+        public void SetCollection(BaseCollection collection)
         {
-            this.Collection = collection;
+            this.BaseCollection = collection;
             this.Dependencies.Add(collection);
         }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".base";
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".basemodel";
         public override string Name => this.EdmStructuredType.Name + "BaseModel";
         public override IEnumerable<string> ImportTypes
         {
