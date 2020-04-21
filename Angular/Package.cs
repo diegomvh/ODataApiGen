@@ -176,6 +176,16 @@ this.Metas.Where(s => s != meta && types.Contains(s.EdmStructuredType.FullName))
                     baseModel.SetBase(baseInter);
                     baseModel.Dependencies.Add(baseInter);
                 }
+                var baseCollection = this.BaseCollections.FirstOrDefault(m => m.EdmStructuredType.Name == baseModel.EdmStructuredType.Name);
+                if (baseCollection != null)
+                {
+                    baseModel.SetCollection(baseCollection);
+                }
+                var service = this.Services.FirstOrDefault(s => s.EntityName == baseModel.EdmStructuredType.Name);
+                if (service != null)
+                {
+                    baseModel.SetService(service);
+                }
                 var types = baseModel.ImportTypes;
                 baseModel.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
@@ -221,6 +231,11 @@ this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             // Base Collections
             foreach (var baseCollection in BaseCollections)
             {
+                var service = this.Services.FirstOrDefault(s => s.EntityName == baseCollection.EdmStructuredType.Name);
+                if (service != null)
+                {
+                    baseCollection.SetService(service);
+                }
                 var types = baseCollection.ImportTypes;
                 baseCollection.Dependencies.AddRange(
 this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));

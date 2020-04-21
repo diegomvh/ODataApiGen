@@ -115,16 +115,16 @@ namespace ODataApiGen.Angular
                     $"\n      .filter(pair => pair[1] !== null)" +
                     $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
                 }
-                var call = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
-                        $"this.call<{typescriptType}>(res, args, 'value', options)" :
+                var mapTo = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
+                        $"toValue(body)[0] as {callableReturnType}" :
                     callable.ReturnsCollection ?
-                        $"this.call<{typescriptType}, {typescriptType}Model, {typescriptType}Collection>(res, args, 'collection', options)" :
-                        $"this.call<{typescriptType}, {typescriptType}Model>(res, args, 'model', options)";
+                        $"toCollection<{callableReturnType}>(body)" :
+                        $"toModel<{callableReturnType}>(body)";
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
-                    $"\n    var res = this.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}', '{returnType}');" +
+                    $"\n    var res = this._segments.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}', '{returnType}');" +
                     $"\n    res.entitySet('{this.ResourcePath}');" +
-                    $"\n    return {call};" +
+                    $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +
                     "\n  }";
             }
         }
