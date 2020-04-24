@@ -7,7 +7,7 @@ namespace ODataApiGen.Models
 {
     public class EntityContainer 
     {
-        private static ILogger Logger {get;} = Program.CreateLogger<EntityContainer>();
+        private static ILogger Logger {get;} = Program.LoggerFactory.CreateLogger<EntityContainer>();
         public Schema Schema { get; private set; }
         public string Name { get; private set; }
         public string Namespace => this.Schema.Namespace; 

@@ -8,36 +8,20 @@ namespace ODataApiGen
 {
     public class DirectoryManager
     {
-        private ILogger Logger {get; } = Program.CreateLogger<DirectoryManager>();
+        private ILogger Logger {get; } = Program.LoggerFactory.CreateLogger<DirectoryManager>();
         public string Output {get; private set;}
         public DirectoryInfo DirectoryInfo {get; private set;}
 
         public void PrepareOutput(bool purgeOutput)
         {
             Logger.LogDebug($"Preparing output path '{Output}'...");
-            if (!Directory.Exists(Output))
+            if (Directory.Exists(Output) && purgeOutput)
             {
-                Logger.LogInformation("Folder doesn't exists, creating...");
-                Directory.CreateDirectory(Output);
-            }
-            else if (purgeOutput)
-            {
-                var files = DirectoryInfo.GetFiles();
-                var dirs = DirectoryInfo.GetDirectories();
                 Logger.LogInformation("Purging output directory...");
-
-                foreach (var directoryInfo in dirs)
-                {
-                    Logger.LogDebug($"Removing directory '{directoryInfo.Name}'");
-                    directoryInfo.Delete(true);
-                }
-
-                foreach (var fileInfo in files)
-                {
-                    Logger.LogDebug($"Removing file '{fileInfo.Name}'");
-                    fileInfo.Delete();
-                }
+                Directory.Delete(Output, true);
             }
+            Logger.LogInformation("Folder doesn't exists, creating...");
+            Directory.CreateDirectory(Output);
         }
 
         public void PrepareFolders(IEnumerable<string> directories)

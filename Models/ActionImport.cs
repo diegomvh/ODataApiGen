@@ -13,7 +13,6 @@ namespace ODataApiGen.Models
             this.Name = xElement.Attribute("Name")?.Value;
             this.EntitySet = xElement.Attribute("EntitySet")?.Value;
             this.Action = xElement.Attribute("Action").Value;
-            //this.Action = container.Schema.Actions.Where(a => a.FullName == action).FirstOrDefault();
         }
 
         public string Name { get; private set; }

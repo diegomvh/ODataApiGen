@@ -14,9 +14,9 @@ namespace ODataApiGen.Angular
         public override string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
-                var annot = Value.Annotation("Org.OData.Core.V1.Computed");
+                var annot = Value.FindAnnotation<CoreComputedAnnotation>("Org.OData.Core.V1.Computed");
                 if (annot != null)
-                    required = annot.Bool.ToLower() != "true";
+                    required = annot.Bool;
                 return Value.Name + (!required? "?" : "");
             }
         }

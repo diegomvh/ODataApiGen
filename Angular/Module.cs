@@ -6,7 +6,7 @@ namespace ODataApiGen.Angular
 {
     public class Module : AngularRenderable
     {
-        public static ILogger Logger { get; } = Program.CreateLogger<Module>();
+        public static ILogger Logger { get; } = Program.LoggerFactory.CreateLogger<Module>();
         public Angular.Package Package {get; private set;}
         public Module(Package package)
         {

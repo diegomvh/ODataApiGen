@@ -8,7 +8,7 @@ namespace ODataApiGen.Models
 {
     public class Schema 
     {
-        private static ILogger Logger {get;} = Program.CreateLogger<Schema>();
+        private static ILogger Logger {get;} = Program.LoggerFactory.CreateLogger<Schema>();
         public string Namespace { get; private set; }
         public List<EnumType> EnumTypes { get; private set; }
         public List<ComplexType> ComplexTypes { get; private set; }

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using DotLiquid;
 using ODataApiGen.Models;
+using Newtonsoft.Json;
 
 namespace ODataApiGen.Angular
 {

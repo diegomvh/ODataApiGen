@@ -15,7 +15,6 @@ namespace ODataApiGen.Models
             this.Name = xElement.Attribute("Name")?.Value;
             this.IncludeInServiceDocument = xElement.Attribute("IncludeInServiceDocument")?.Value == "true";
             this.Function = xElement.Attribute("Function").Value;
-            //this.Function = container.Schema.Functions.Where(f => f.FullName == function).FirstOrDefault();
         }
 
         public string Name { get; private set; }

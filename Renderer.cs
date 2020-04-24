@@ -9,7 +9,7 @@ namespace ODataApiGen
 {
     public class Renderer
     {
-        private ILogger Logger { get; } = Program.CreateLogger<Renderer>();
+        private ILogger Logger { get; } = Program.LoggerFactory.CreateLogger<Renderer>();
         public string StaticPath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}Static";
         public string TemplatesPath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}Templates";
         public string Output { get; private set; }
@@ -32,10 +32,10 @@ namespace ODataApiGen
             path = Path.GetFullPath(path);
 
             if (!File.Exists(path) || entity.Overwrite) {
-                System.Console.WriteLine($"Writing: {path}");
+                Logger.LogDebug($"Writing: {path}");
                 File.WriteAllText(path, text);
             } else {
-                System.Console.WriteLine($"Skip: {path}");
+                Logger.LogDebug($"Skip: {path}");
             }
         }
 

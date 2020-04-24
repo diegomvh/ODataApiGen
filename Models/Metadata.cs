@@ -8,7 +8,7 @@ namespace ODataApiGen.Models
 {
     public class Metadata 
     {
-        private static ILogger Logger {get;} = Program.CreateLogger<Metadata>();
+        private static ILogger Logger {get;} = Program.LoggerFactory.CreateLogger<Metadata>();
         public List<Schema> Schemas { get; private set; }
         public string Namespace => 
             this.Schemas.Select(s => s.Namespace).OrderBy(n => n.Length).FirstOrDefault();
