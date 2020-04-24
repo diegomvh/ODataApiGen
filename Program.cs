@@ -9,9 +9,8 @@ namespace ODataApiGen
 {
     class Program
     {
-        public static ILoggerFactory LoggerFactory { get; } = new LoggerFactory();
-        public static ILogger CreateLogger<T>() => LoggerFactory.CreateLogger<T>();
-        public static ILogger Logger { get; } = Program.CreateLogger<Program>();
+        public static ILoggerFactory LoggerFactory { get; private set; }
+        public static ILogger Logger { get; private set; }
         public static IConfiguration Configuration { get; set; }
         public static string Metadata { get; set; }
         public static string Name { get; set; }
@@ -23,9 +22,14 @@ namespace ODataApiGen
 
         static void Main(string[] args)
         {
-            LoggerFactory
-                .AddConsole()
-                .AddDebug();
+            LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("ODataApiGen.Program", LogLevel.Debug)
+                    .AddConsole()
+                );
+            Logger = LoggerFactory.CreateLogger<Program>();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
