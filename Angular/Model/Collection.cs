@@ -56,6 +56,9 @@ namespace ODataApiGen.Angular
                 Name = this.Name,
                 Type = this.Type,
                 EntityType = this.EntityType,
+                Model = new {
+                    Name = this.Model.Name
+                } 
             };
         }
 

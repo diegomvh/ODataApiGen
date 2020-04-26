@@ -28,9 +28,9 @@ namespace ODataApiGen.Angular
                 return type;
             }
             if (Value.Collection)
-                return type + (Value.IsEdmType ? "[]" : "Collection");
+                return type + (Value.IsEdmType ? "[]" : $"Collection<{type}, {type}Model<{type}>>");
             else 
-                return type + (Value.IsEdmType ? "" : "Model");
+                return type + (Value.IsEdmType ? "" : $"Model<{type}>");
         }}
     }
     public class BaseModel : Structured 
@@ -40,6 +40,13 @@ namespace ODataApiGen.Angular
         public BaseModel(StructuredType type, Angular.Entity inter) : base(type) {
             this.Interface = inter;
             this.Dependencies.Add(inter);
+        }
+        public Angular.Model Model {get; private set;}
+
+        public void SetModel(Model model)
+        {
+            this.Model = model;
+            this.Dependencies.Add(model);
         }
         public Angular.BaseCollection BaseCollection {get; private set;}
 
@@ -62,6 +69,9 @@ namespace ODataApiGen.Angular
                 list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 if (this.EdmStructuredType is EntityType)
                     list.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
+                if (this.Model.Base != null) {
+                    list.Add(this.Model.Base.EdmStructuredType.FullName);
+                }
                 return list;
             }
         }
@@ -105,6 +115,9 @@ namespace ODataApiGen.Angular
                 Name = this.Name,
                 Type = this.Type,
                 EntityType = this.EntityType,
+                Model = new {
+                    Name = this.Model.Name
+                },
                 Interface = new {
                     Name = this.Interface.Name
                 }

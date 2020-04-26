@@ -1,4 +1,4 @@
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 
-export class {{Name}} extends {{BaseModel.Name}}<{{Interface.Name}}> {}
+export class {{Name}}<E extends {{Interface.Name}}> extends {{BaseModel.Name}}<E> {}

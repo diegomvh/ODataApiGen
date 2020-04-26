@@ -4,33 +4,6 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class ModelProperty : StructuredProperty 
-    {
-        public AngularRenderable Renderable {get; private set;}
-        public ModelProperty(ODataApiGen.Models.Property prop, AngularRenderable type) : base(prop)
-        {
-            this.Renderable = type;
-        }
-        public override string Name {
-            get {
-                var required = !(Value is NavigationProperty || Value.Nullable);
-                var annot = Value.FindAnnotation<CoreComputedAnnotation>("Org.OData.Core.V1.Computed");
-                if (annot != null)
-                    required = annot.Bool;
-                return Value.Name + (!required? "?" : "");
-            }
-        }
-        public override string Type { get {
-            var type = AngularRenderable.GetTypescriptType(Value.Type);
-            if (this.Renderable is Enum) {
-                return type;
-            }
-            if (Value.Collection)
-                return type + (Value.IsEdmType ? "[]" : "Collection");
-            else 
-                return type + (Value.IsEdmType ? "" : "Model");
-        }}
-    }
     public class Model : Structured 
     {
         public Angular.Entity Interface { get; private set; }
@@ -69,38 +42,10 @@ namespace ODataApiGen.Angular
         }
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
 
-        public override IEnumerable<Angular.StructuredProperty> Properties {
-            get {
-                var props = this.EdmStructuredType.Properties.ToList();
-                if (this.EdmStructuredType is EntityType) 
-                    props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
-                return props.Select(prop => {
-                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new Angular.ModelProperty(prop, type as AngularRenderable); 
-                });
-            }
-        } 
-        public IEnumerable<string> Actions {
-            get {
-                var modelActions = this.EdmStructuredType.Actions.Where(a => !a.IsCollection);
-                return modelActions.Count() > 0 ? this.RenderCallables(modelActions) : Enumerable.Empty<string>();
-            }
-        }
-        public IEnumerable<string> Functions {
-            get {
-                var modelFunctions = this.EdmStructuredType.Functions.Where(a => !a.IsCollection);
-                return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions) : Enumerable.Empty<string>();
-            }
-        }
-        public IEnumerable<string> Navigations {
-            get {
-                if (this.EdmStructuredType is EntityType) {
-                    var modelNavigations = (this.EdmStructuredType as EntityType).NavigationProperties.Where(nav => !nav.Collection);
-                    return modelNavigations.Count() > 0 ? this.RenderReferences(modelNavigations) : Enumerable.Empty<string>();
-                }
-                return Enumerable.Empty<string>();
-            }
-        }
+        public override IEnumerable<Angular.StructuredProperty> Properties => Enumerable.Empty<Angular.StructuredProperty>();
+        public IEnumerable<string> Actions => Enumerable.Empty<string>();
+        public IEnumerable<string> Functions => Enumerable.Empty<string>();
+        public IEnumerable<string> Navigations => Enumerable.Empty<string>();
         public override object ToLiquid()
         {
             return new {

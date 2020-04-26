@@ -16,6 +16,13 @@ namespace ODataApiGen.Angular
             model.SetCollection(this);
         }
         
+        public Angular.Collection Collection {get; private set;}
+
+        public void SetCollection(Collection collection)
+        {
+            this.Collection = collection;
+            this.Dependencies.Add(collection);
+        }
         // Imports
         public override IEnumerable<string> ImportTypes
         {
@@ -36,6 +43,8 @@ namespace ODataApiGen.Angular
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 if (this.EdmStructuredType is EntityType)
                     list.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
+                if (this.Collection.Base != null)
+                    list.Add(this.Collection.Base.EdmStructuredType.FullName);
                 return list;
             }
         }
@@ -52,6 +61,9 @@ namespace ODataApiGen.Angular
                 Name = this.Name,
                 Type = this.Type,
                 EntityType = this.EntityType,
+                Collection = new {
+                    Name = this.Collection.Name
+                }
             };
         }
 

@@ -91,8 +91,8 @@ namespace ODataApiGen.Angular
                 var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
                         $"{typescriptType}" :
                     callable.ReturnsCollection ?
-                        $"{typescriptType}Collection" :
-                        $"{typescriptType}Model" ;
+                        $"{typescriptType}Collection<{typescriptType}, {typescriptType}Model<{typescriptType}>>" :
+                        $"{typescriptType}Model<{typescriptType}>" ;
 
                 var parameters = new List<Models.Parameter>();
                 foreach (var cal in callables)
@@ -140,8 +140,8 @@ namespace ODataApiGen.Angular
 
                 var returnType = $"[{type}, ODataEntityAnnotations]";
 
-                yield return $@"public {methodCreateName}(model: {type}Model | null): Observable<this> {{
-    return this.setNavigationProperty<{type}, {type}Model>('{nav.Name}', model);
+                yield return $@"public {methodCreateName}(model: {type}Model<{type}> | null): Observable<this> {{
+    return this.setNavigationProperty<{type}, {type}Model<{type}>>('{nav.Name}', model);
   }}";
             }
         }

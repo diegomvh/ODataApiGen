@@ -9,7 +9,7 @@ import { ODataModelService, ODataEntityAnnotations, ODataEntitiesAnnotations, OD
 {% endfor %}
 
 @Injectable()
-export class {{Name}} extends ODataModelService<{{EntityName}}, {{EntityName}}Model, {{EntityName}}Collection> {
+export class {{Name}} extends ODataModelService<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>, {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>> {
   static path: string = '{{ResourcePath}}';
   static type: string = '{{EntityType}}';
 }

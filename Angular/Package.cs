@@ -70,10 +70,12 @@ namespace ODataApiGen.Angular
                     var baseModel = new Angular.BaseModel(t, inter);
                     this.BaseModels.Add(baseModel);
                     var model = new Angular.Model(t, inter, baseModel);
+                    baseModel.SetModel(model);
                     this.Models.Add(model);
                     var baseCollection = new Angular.BaseCollection(t, baseModel);
                     this.BaseCollections.Add(baseCollection);
                     var collection = new Angular.Collection(t, model, baseCollection);
+                    baseCollection.SetCollection(collection);
                     this.Collections.Add(collection);
                 }
             }
@@ -92,10 +94,12 @@ namespace ODataApiGen.Angular
                     var baseModel = new Angular.BaseModel(t, inter);
                     this.BaseModels.Add(baseModel);
                     var model = new Angular.Model(t, inter, baseModel);
+                    baseModel.SetModel(model);
                     this.Models.Add(model);
                     var baseCollection = new Angular.BaseCollection(t, baseModel);
                     this.BaseCollections.Add(baseCollection);
                     var collection = new Angular.Collection(t, model, baseCollection);
+                    baseCollection.SetCollection(collection);
                     this.Collections.Add(collection);
                 }
             }
@@ -123,9 +127,6 @@ namespace ODataApiGen.Angular
             // Enums
             foreach (var enumm in Enums)
             {
-                var types = enumm.ImportTypes;
-                enumm.Dependencies.AddRange(
-this.Enums.Where(e => e != enumm && types.Contains(e.EdmEnumType.FullName)));
             }
             // Entities
             foreach (var entity in Entities)
@@ -141,11 +142,6 @@ this.Enums.Where(e => e != enumm && types.Contains(e.EdmEnumType.FullName)));
                 {
                     entity.SetService(service);
                 }
-                var types = entity.ImportTypes;
-                entity.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                entity.Dependencies.AddRange(
-this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.FullName)));
             }
             // Metas
             // root casma
@@ -161,11 +157,6 @@ this.Entities.Where(e => e != entity && types.Contains(e.EdmStructuredType.FullN
                 {
                     meta.SetService(service);
                 }
-                var types = meta.ImportTypes;
-                meta.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                meta.Dependencies.AddRange(
-this.Metas.Where(s => s != meta && types.Contains(s.EdmStructuredType.FullName)));
             }
             // Base Models
             foreach (var baseModel in BaseModels)
@@ -186,17 +177,6 @@ this.Metas.Where(s => s != meta && types.Contains(s.EdmStructuredType.FullName))
                 {
                     baseModel.SetService(service);
                 }
-                var types = baseModel.ImportTypes;
-                baseModel.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                baseModel.Dependencies.AddRange(
-this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                baseModel.Dependencies.AddRange(
-this.BaseModels.Where(e => e != baseModel && types.Contains(e.EdmStructuredType.FullName)));
-                baseModel.Dependencies.AddRange(
-this.Models.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                baseModel.Dependencies.AddRange(
-this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             }
 
             // Models
@@ -218,53 +198,36 @@ this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
                 {
                     model.SetService(service);
                 }
-                var types = model.ImportTypes;
-                model.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                model.Dependencies.AddRange(
-this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                model.Dependencies.AddRange(
-this.Models.Where(e => e != model && types.Contains(e.EdmStructuredType.FullName)));
-                model.Dependencies.AddRange(
-this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             }
             // Base Collections
             foreach (var baseCollection in BaseCollections)
             {
+                if (!String.IsNullOrEmpty(baseCollection.EdmStructuredType.BaseType))
+                {
+                    var baseInter = this.BaseCollections.FirstOrDefault(e => e.EdmStructuredType.FullName == baseCollection.EdmStructuredType.BaseType);
+                    baseCollection.SetBase(baseInter);
+                    baseCollection.Dependencies.Add(baseInter);
+                }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == baseCollection.EdmStructuredType.Name);
                 if (service != null)
                 {
                     baseCollection.SetService(service);
                 }
-                var types = baseCollection.ImportTypes;
-                baseCollection.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                baseCollection.Dependencies.AddRange(
-this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                baseCollection.Dependencies.AddRange(
-this.BaseCollections.Where(e => e != baseCollection && types.Contains(e.EdmStructuredType.FullName)));
-                baseCollection.Dependencies.AddRange(
-this.Models.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                baseCollection.Dependencies.AddRange(
-this.Collections.Where(c => types.Contains(c.EdmStructuredType.FullName)));
             }
             // Collections
             foreach (var collection in Collections)
             {
+                if (!String.IsNullOrEmpty(collection.EdmStructuredType.BaseType))
+                {
+                    var baseInter = this.BaseCollections.FirstOrDefault(e => e.EdmStructuredType.FullName == collection.EdmStructuredType.BaseType);
+                    collection.SetBase(baseInter);
+                    collection.Dependencies.Add(baseInter);
+                }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == collection.EdmStructuredType.Name);
                 if (service != null)
                 {
                     collection.SetService(service);
                 }
-                var types = collection.ImportTypes;
-                collection.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                collection.Dependencies.AddRange(
-this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                collection.Dependencies.AddRange(
-this.Models.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                collection.Dependencies.AddRange(
-this.Collections.Where(c => c != collection && types.Contains(c.EdmStructuredType.FullName)));
             }
             // Services
             foreach (var service in Services)
@@ -284,15 +247,35 @@ this.Collections.Where(c => c != collection && types.Contains(c.EdmStructuredTyp
                 {
                     service.SetCollection(collection);
                 }
-                var types = service.ImportTypes;
-                service.Dependencies.AddRange(
-this.Enums.Where(e => types.Contains(e.EdmEnumType.FullName)));
-                service.Dependencies.AddRange(
-this.Entities.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                service.Dependencies.AddRange(
-this.Models.Where(e => types.Contains(e.EdmStructuredType.FullName)));
-                service.Dependencies.AddRange(
-this.Collections.Where(e => types.Contains(e.EdmStructuredType.FullName)));
+            }
+            // Resolve Renderables
+            var renderables = new List<Renderable>();
+            renderables.AddRange(this.Enums);
+            renderables.AddRange(this.Metas);
+            renderables.AddRange(this.Entities);
+            renderables.AddRange(this.BaseModels);
+            renderables.AddRange(this.Models);
+            renderables.AddRange(this.BaseCollections);
+            renderables.AddRange(this.Collections);
+            renderables.AddRange(this.Services);
+            foreach (var renderable in renderables) {
+                var types = renderable.ImportTypes;
+                renderable.Dependencies.AddRange(
+this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
+                renderable.Dependencies.AddRange(
+this.Metas.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                renderable.Dependencies.AddRange(
+this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                renderable.Dependencies.AddRange(
+this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                renderable.Dependencies.AddRange(
+this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                renderable.Dependencies.AddRange(
+this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                renderable.Dependencies.AddRange(
+this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                renderable.Dependencies.AddRange(
+this.Services.Where(e => e != renderable && e.Interface != null && types.Contains(e.Interface.EdmStructuredType.FullName)));
             }
             this.Module.Dependencies.AddRange(this.Services);
             this.Config.Dependencies.AddRange(this.Enums);
