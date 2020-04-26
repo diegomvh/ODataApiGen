@@ -33,7 +33,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.mele.json")
+                .AddJsonFile("application.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -66,7 +66,7 @@ namespace ODataApiGen
 
             Logger.LogInformation("Preparing namespace structure");
             directories.PrepareFolders(package.GetAllDirectories());
-            
+
             Logger.LogInformation("Copy static content");
             directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}Angular", Output, true);
 
