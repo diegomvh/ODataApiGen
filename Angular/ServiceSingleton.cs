@@ -55,7 +55,7 @@ namespace ODataApiGen.Angular
 
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-        public override string ResourcePath => this.EdmSingleton.Name;
+        public override string EntitySetName => this.EdmSingleton.Name;
         public override string EntityName => this.EdmSingleton.Type.Split('.').Last();
         public override string EntityType => this.EdmSingleton.Type;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmSingleton.Actions);

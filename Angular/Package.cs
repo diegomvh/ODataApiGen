@@ -39,11 +39,13 @@ namespace ODataApiGen.Angular
         public override void LoadMetadata(Metadata metadata)
         {
             this.Services.Add(new Angular.ServiceApi(this.EndpointName, metadata));
-            foreach (var schema in metadata.Schemas) {
+            foreach (var schema in metadata.Schemas)
+            {
                 this.AddEnums(schema.EnumTypes);
                 this.AddComplexes(schema.ComplexTypes);
                 this.AddEntities(schema.EntityTypes);
-                foreach (var container in schema.EntityContainers) {
+                foreach (var container in schema.EntityContainers)
+                {
                     this.AddServices(container);
                 }
             }
@@ -61,9 +63,9 @@ namespace ODataApiGen.Angular
         {
             foreach (var t in entities)
             {
-                var schema = new Angular.Meta(t);
-                this.Metas.Add(schema);
-                var inter = new Angular.Entity(t, schema);
+                var meta = new Angular.Meta(t);
+                this.Metas.Add(meta);
+                var inter = new Angular.Entity(t, meta);
                 this.Entities.Add(inter);
                 if (this.CreateModels)
                 {
@@ -85,9 +87,9 @@ namespace ODataApiGen.Angular
         {
             foreach (var t in complexes)
             {
-                var schema = new Angular.Meta(t);
-                this.Metas.Add(schema);
-                var inter = new Angular.Entity(t, schema);
+                var meta = new Angular.Meta(t);
+                this.Metas.Add(meta);
+                var inter = new Angular.Entity(t, meta);
                 this.Entities.Add(inter);
                 if (this.CreateModels)
                 {
@@ -112,7 +114,9 @@ namespace ODataApiGen.Angular
                 if (this.CreateModels)
                 {
                     this.Services.Add(new Angular.ServiceModel(s));
-                } else {
+                }
+                else
+                {
                     this.Services.Add(new Angular.ServiceEntity(s));
                 }
             }
@@ -251,31 +255,33 @@ namespace ODataApiGen.Angular
             // Resolve Renderables
             var renderables = new List<Renderable>();
             renderables.AddRange(this.Enums);
-            renderables.AddRange(this.Metas);
             renderables.AddRange(this.Entities);
             renderables.AddRange(this.BaseModels);
             renderables.AddRange(this.Models);
             renderables.AddRange(this.BaseCollections);
             renderables.AddRange(this.Collections);
             renderables.AddRange(this.Services);
-            foreach (var renderable in renderables) {
+            foreach (var renderable in renderables)
+            {
                 var types = renderable.ImportTypes;
-                renderable.Dependencies.AddRange(
-this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
-                renderable.Dependencies.AddRange(
-this.Metas.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                renderable.Dependencies.AddRange(
-this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                renderable.Dependencies.AddRange(
-this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                renderable.Dependencies.AddRange(
-this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                renderable.Dependencies.AddRange(
-this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                renderable.Dependencies.AddRange(
-this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                renderable.Dependencies.AddRange(
-this.Services.Where(e => e != renderable && e.Interface != null && types.Contains(e.Interface.EdmStructuredType.FullName)));
+                if (renderable is Enum || renderable is Structured || renderable is Service)
+                {
+                    renderable.Dependencies.AddRange(
+    this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
+                    if (renderable is Structured || renderable is Service)
+                    {
+                        renderable.Dependencies.AddRange(
+        this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        renderable.Dependencies.AddRange(
+        this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        renderable.Dependencies.AddRange(
+        this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        renderable.Dependencies.AddRange(
+        this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        renderable.Dependencies.AddRange(
+        this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                    }
+                }
             }
             this.Module.Dependencies.AddRange(this.Services);
             this.Config.Dependencies.AddRange(this.Enums);

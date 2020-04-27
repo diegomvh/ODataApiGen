@@ -34,7 +34,7 @@ namespace ODataApiGen.Angular
 
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        public override string ResourcePath => "";
+        public override string EntitySetName => "";
         public override string EntityName => "";
         public override string Name => this.EndpointName + "Service";
         public override string NameSpace => "";

@@ -26,7 +26,6 @@ namespace ODataApiGen.Angular
         public Angular.Meta Schema { get; private set; }
         public Entity(StructuredType type, Angular.Meta schema) : base(type) {
             this.Schema = schema;
-            this.Dependencies.Add(schema);
         }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";

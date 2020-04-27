@@ -26,7 +26,7 @@ namespace ODataApiGen.Angular
         {
             this.Collection = collection;
         }
-        public abstract string ResourcePath {get;}
+        public abstract string EntitySetName {get;}
         public abstract string EntityType {get;}
         public abstract string EntityName {get;}
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);

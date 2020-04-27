@@ -67,7 +67,7 @@ namespace ODataApiGen.Angular
         public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
         public override bool Overwrite => true;
-        public string ResourcePath => this.Service?.ResourcePath;
+        public string EntitySetName => this.Service?.EntitySetName;
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
@@ -124,7 +124,7 @@ namespace ODataApiGen.Angular
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
                     $"\n    var res = this._segments.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}', '{returnType}');" +
-                    $"\n    res.entitySet('{this.ResourcePath}');" +
+                    $"\n    res.entitySet('{this.EntitySetName}');" +
                     $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +
                     "\n  }";
             }

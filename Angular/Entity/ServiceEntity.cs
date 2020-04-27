@@ -37,7 +37,7 @@ namespace ODataApiGen.Angular
         }
 
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string ResourcePath => this.EdmEntitySet.Name;
+        public override string EntitySetName => this.EdmEntitySet.Name;
         public override string EntityName => EdmEntitySet.EntityType.Split('.').Last();
         public override string Name => this.EdmEntitySet.Name[0].ToString().ToUpper() + this.EdmEntitySet.Name.Substring(1) + "Service";
         public override string NameSpace => this.EdmEntitySet.Namespace;
