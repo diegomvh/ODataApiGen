@@ -66,7 +66,7 @@ namespace ODataApiGen.Angular
                     return JsonConvert.SerializeObject((this.Service as ServiceEntity).EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
                 else if (this.Service is ServiceModel)
                     return JsonConvert.SerializeObject((this.Service as ServiceModel).EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
-                return "";
+                return "[]";
             }
         }
         public string EntityAnnotations {
