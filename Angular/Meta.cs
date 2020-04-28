@@ -60,6 +60,21 @@ namespace ODataApiGen.Angular
         public override string Name => this.EdmStructuredType.Name + "Meta";
         public string EntityName => this.EdmStructuredType.Name;
 
+        public string EntitySetAnnotations {
+            get {
+                if (this.Service is ServiceEntity) 
+                    return JsonConvert.SerializeObject((this.Service as ServiceEntity).EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
+                else if (this.Service is ServiceModel)
+                    return JsonConvert.SerializeObject((this.Service as ServiceModel).EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
+                return "";
+            }
+        }
+        public string EntityAnnotations {
+            get {
+                return JsonConvert.SerializeObject(this.EdmStructuredType.Annotations.Select(annot => annot.ToDictionary()));
+            }
+        }
+
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
 
