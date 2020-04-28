@@ -53,7 +53,6 @@ namespace ODataApiGen.Angular
         public void SetCollection(BaseCollection collection)
         {
             this.BaseCollection = collection;
-            this.Dependencies.Add(collection);
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".basemodel";
         public override string Name => this.EdmStructuredType.Name + "BaseModel";

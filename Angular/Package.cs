@@ -273,16 +273,22 @@ namespace ODataApiGen.Angular
                     {
                         renderable.Dependencies.AddRange(
         this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        if (renderable is Model || renderable is Entity || renderable is Service)
+                        if (!(renderable is Meta))
                         {
-                            renderable.Dependencies.AddRange(
-            this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                            renderable.Dependencies.AddRange(
-            this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                            renderable.Dependencies.AddRange(
-            this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                            renderable.Dependencies.AddRange(
-            this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            if (renderable is Model || renderable is Collection)
+                            {
+                                renderable.Dependencies.AddRange(
+                this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                                renderable.Dependencies.AddRange(
+                this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            }
+                            else
+                            {
+                                renderable.Dependencies.AddRange(
+                this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                                renderable.Dependencies.AddRange(
+                this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            }
                         }
                     }
                 }

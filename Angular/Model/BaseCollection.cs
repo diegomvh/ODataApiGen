@@ -21,7 +21,6 @@ namespace ODataApiGen.Angular
         public void SetCollection(Collection collection)
         {
             this.Collection = collection;
-            this.Dependencies.Add(collection);
         }
         // Imports
         public override IEnumerable<string> ImportTypes
