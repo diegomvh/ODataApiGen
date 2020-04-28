@@ -27,7 +27,7 @@ namespace ODataApiGen.Angular
             if (this.Renderable is Enum) {
                 return type;
             }
-            if (Value.Collection)
+            if (Value.IsCollection)
                 return type + (Value.IsEdmType ? "[]" : $"Collection<{type}, {type}Model<{type}>>");
             else 
                 return type + (Value.IsEdmType ? "" : $"Model<{type}>");
@@ -103,7 +103,7 @@ namespace ODataApiGen.Angular
         public IEnumerable<string> Navigations {
             get {
                 if (this.EdmStructuredType is EntityType) {
-                    var modelNavigations = (this.EdmStructuredType as EntityType).NavigationProperties.Where(nav => !nav.Collection);
+                    var modelNavigations = (this.EdmStructuredType as EntityType).NavigationProperties.Where(nav => !nav.IsCollection);
                     return modelNavigations.Count() > 0 ? this.RenderReferences(modelNavigations) : Enumerable.Empty<string>();
                 }
                 return Enumerable.Empty<string>();

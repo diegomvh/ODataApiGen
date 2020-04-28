@@ -17,7 +17,6 @@ namespace ODataApiGen.Models
 
             Properties = element.Descendants().Where(a => a.Name.LocalName == "Property")
                 .Select(prop => new Property(prop, this)).ToList();
-
         }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }

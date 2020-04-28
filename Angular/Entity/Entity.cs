@@ -19,7 +19,7 @@ namespace ODataApiGen.Angular
                 return Value.Name + (!required? "?" : "");
             }
         }
-        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.Collection ? "[]" : "");
+        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
     }
     public class Entity : Structured 
     {

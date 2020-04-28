@@ -7,9 +7,11 @@ namespace ODataApiGen.Models
 {
     public class Property : Annotable
     {
+        public StructuredType StructuredType {get; private set;}
         public Property(XElement element, StructuredType structured) : base(element)
         {
-            Collection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
+            this.StructuredType = structured;
+            IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
             Name = element.Attribute("Name")?.Value;
             MaxLength = element.Attribute("MaxLength")?.Value;
             Nullable = !(element.Attribute("Nullable")?.Value == "false");
@@ -18,12 +20,25 @@ namespace ODataApiGen.Models
         }
         public string Name { get; set; }
         public string Type { get; set; }
-        public bool IsEdmType { get { return !System.String.IsNullOrWhiteSpace(Type) && Type.StartsWith("Edm."); } }
-        public bool Collection { get; set; }
+        public bool IsEdmType => !System.String.IsNullOrWhiteSpace(Type) && Type.StartsWith("Edm.");
+        public bool IsEnumType => this.StructuredType.Schema.EnumTypes.FirstOrDefault(e => e.FullName == this.Type) != null;
+        public bool IsComplexType => this.StructuredType.Schema.ComplexTypes.FirstOrDefault(e => e.FullName == this.Type) != null;
+        public bool IsEntityType => this.StructuredType.Schema.EntityTypes.FirstOrDefault(e => e.FullName == this.Type) != null;
+        public bool IsCollection { get; set; }
         public bool Nullable { get; set; }
         public string MaxLength { get; set; }
         public string DisplayName { get; set; }
         public string SRID { get; set; }
+
+        public object ResolveType() {
+            object type = this.StructuredType.Schema.EnumTypes.FirstOrDefault(e => e.FullName == this.Type);
+            if (type != null)
+                return type;
+            type = this.StructuredType.Schema.ComplexTypes.FirstOrDefault(e => e.FullName == this.Type);
+            if (type != null)
+                return type;
+            return this.StructuredType.Schema.EntityTypes.FirstOrDefault(e => e.FullName == this.Type);
+        }
     }
     public class PropertyRef
     {

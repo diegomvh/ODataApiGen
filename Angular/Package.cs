@@ -255,6 +255,7 @@ namespace ODataApiGen.Angular
             // Resolve Renderables
             var renderables = new List<Renderable>();
             renderables.AddRange(this.Enums);
+            renderables.AddRange(this.Metas);
             renderables.AddRange(this.Entities);
             renderables.AddRange(this.BaseModels);
             renderables.AddRange(this.Models);
@@ -272,14 +273,17 @@ namespace ODataApiGen.Angular
                     {
                         renderable.Dependencies.AddRange(
         this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        renderable.Dependencies.AddRange(
-        this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        renderable.Dependencies.AddRange(
-        this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        renderable.Dependencies.AddRange(
-        this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        renderable.Dependencies.AddRange(
-        this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        if (renderable is Model || renderable is Entity || renderable is Service)
+                        {
+                            renderable.Dependencies.AddRange(
+            this.BaseModels.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            renderable.Dependencies.AddRange(
+            this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            renderable.Dependencies.AddRange(
+            this.BaseCollections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            renderable.Dependencies.AddRange(
+            this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        }
                     }
                 }
             }

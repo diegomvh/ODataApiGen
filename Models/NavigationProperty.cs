@@ -10,7 +10,7 @@ namespace ODataApiGen.Models
             Name = xElement.Attribute("Name")?.Value.Split(".").Last();
             FullName = xElement.Attribute("Name")?.Value;
             MaxLength = null;
-            Collection = xElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
+            IsCollection = xElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
             Partner = xElement.Attribute("Partner")?.Value;
             Type = xElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             ReferentialConstraint = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value;
