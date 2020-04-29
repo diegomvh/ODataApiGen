@@ -13,6 +13,7 @@ namespace ODataApiGen.Models
             IsCollection = xElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
         }
         public string Name { get; set; }
+        public bool IsEdmType => !System.String.IsNullOrWhiteSpace(Type) && Type.StartsWith("Edm.");
         public string Type { get; set; }
         public bool IsRequired { get; set; }
         public bool IsCollection { get; set; }

@@ -29,16 +29,6 @@ namespace ODataApiGen.Models
         public string MaxLength { get; set; }
         public string DisplayName { get; set; }
         public string SRID { get; set; }
-
-        public object ResolveType() {
-            object type = this.StructuredType.Schema.EnumTypes.FirstOrDefault(e => e.FullName == this.Type);
-            if (type != null)
-                return type;
-            type = this.StructuredType.Schema.ComplexTypes.FirstOrDefault(e => e.FullName == this.Type);
-            if (type != null)
-                return type;
-            return this.StructuredType.Schema.EntityTypes.FirstOrDefault(e => e.FullName == this.Type);
-        }
     }
     public class PropertyRef
     {
