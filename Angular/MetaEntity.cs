@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 namespace ODataApiGen.Angular
 {
-    public class MetaField : StructuredProperty {
+    public class MetaEntityField : StructuredProperty {
         protected IEnumerable<PropertyRef> Keys { get; set; }
-        public MetaField(Models.Property property, IEnumerable<PropertyRef> keys) : base(property) {
+        public MetaEntityField(Models.Property property, IEnumerable<PropertyRef> keys) : base(property) {
             this.Keys = keys;
         }
         public override string Name => Value.Name;
@@ -32,10 +32,7 @@ namespace ODataApiGen.Angular
                     values.Add("srid", this.Value.SRID);
                 if (this.Value.IsCollection)
                     values.Add("collection", "true");
-                if (this.Value.IsEnumType) {
-                    var enu = this.Value.ResolveType() as EnumType;
-                    values.Add("flags", enu.Flags.ToString().ToLower());
-                } else if (this.Value is NavigationProperty) {
+                if (this.Value is NavigationProperty) {
                     // Is Navigation
                     values.Add("navigation", "true");
                     var nav = this.Value as NavigationProperty;
@@ -53,11 +50,11 @@ namespace ODataApiGen.Angular
             }
         } 
     }
-    public class Meta : Structured 
+    public class MetaEntity : Structured 
     {
-        public Meta(StructuredType type) : base(type) { }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".meta";
-        public override string Name => this.EdmStructuredType.Name + "Meta";
+        public MetaEntity(StructuredType type) : base(type) { }
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity.meta";
+        public override string Name => this.EdmStructuredType.Name + "MetaEntity";
         public string EntityName => this.EdmStructuredType.Name;
 
         public string EntitySetAnnotations {
@@ -78,7 +75,6 @@ namespace ODataApiGen.Angular
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
 
-        // Exports
         public override IEnumerable<Angular.StructuredProperty> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
@@ -87,7 +83,7 @@ namespace ODataApiGen.Angular
                 var keys = (this.EdmStructuredType is EntityType) ? (this.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
                 return props.Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new MetaField(prop, keys); 
+                    return new MetaEntityField(prop, keys); 
                 });
             }
         } 

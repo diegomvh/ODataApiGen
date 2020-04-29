@@ -10,7 +10,7 @@ import { ODataEntityService, ODataEntityAnnotations, ODataEntitiesAnnotations, O
 
 @Injectable()
 export class {{Name}} extends ODataEntityService<{{EntityName}}> {
-  static path: string = '{{ResourcePath}}';
+  static path: string = '{{EntitySetName}}';
   static type: string = '{{EntityType}}';
   
   // Actions

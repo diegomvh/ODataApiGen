@@ -1,4 +1,4 @@
-import { Meta } from 'angular-odata';
+import { MetaEntity } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
@@ -14,4 +14,4 @@ export const {{Name}} = {
     {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as Meta<{{EntityName}}>;
+} as MetaEntity<{{EntityName}}>;

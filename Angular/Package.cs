@@ -16,7 +16,8 @@ namespace ODataApiGen.Angular
         public ICollection<Angular.Entity> Entities { get; private set; }
         public ICollection<Angular.BaseModel> BaseModels { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
-        public ICollection<Angular.Meta> Metas { get; private set; }
+        public ICollection<Angular.MetaEntity> MetasEntities { get; private set; }
+        public ICollection<Angular.MetaEnum> MetasEnums { get; private set; }
         public ICollection<Angular.BaseCollection> BaseCollections { get; private set; }
         public ICollection<Angular.Collection> Collections { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
@@ -30,7 +31,8 @@ namespace ODataApiGen.Angular
             Entities = new List<Angular.Entity>();
             BaseModels = new List<Angular.BaseModel>();
             Models = new List<Angular.Model>();
-            Metas = new List<Angular.Meta>();
+            MetasEntities = new List<Angular.MetaEntity>();
+            MetasEnums = new List<Angular.MetaEnum>();
             BaseCollections = new List<Angular.BaseCollection>();
             Collections = new List<Angular.Collection>();
             Services = new List<Angular.Service>();
@@ -55,7 +57,10 @@ namespace ODataApiGen.Angular
         {
             foreach (var e in enums)
             {
-                this.Enums.Add(new Angular.Enum(e));
+                var meta = new Angular.MetaEnum(e);
+                this.MetasEnums.Add(meta);
+                var enu = new Angular.Enum(e);
+                this.Enums.Add(enu);
             }
         }
 
@@ -63,8 +68,8 @@ namespace ODataApiGen.Angular
         {
             foreach (var t in entities)
             {
-                var meta = new Angular.Meta(t);
-                this.Metas.Add(meta);
+                var meta = new Angular.MetaEntity(t);
+                this.MetasEntities.Add(meta);
                 var inter = new Angular.Entity(t, meta);
                 this.Entities.Add(inter);
                 if (this.CreateModels)
@@ -87,8 +92,8 @@ namespace ODataApiGen.Angular
         {
             foreach (var t in complexes)
             {
-                var meta = new Angular.Meta(t);
-                this.Metas.Add(meta);
+                var meta = new Angular.MetaEntity(t);
+                this.MetasEntities.Add(meta);
                 var inter = new Angular.Entity(t, meta);
                 this.Entities.Add(inter);
                 if (this.CreateModels)
@@ -149,11 +154,11 @@ namespace ODataApiGen.Angular
             }
             // Metas
             // root casma
-            foreach (var meta in Metas)
+            foreach (var meta in MetasEntities)
             {
                 if (!String.IsNullOrEmpty(meta.EdmStructuredType.BaseType))
                 {
-                    var baseInter = this.Metas.FirstOrDefault(e => e.EdmStructuredType.FullName == meta.EdmStructuredType.BaseType);
+                    var baseInter = this.MetasEntities.FirstOrDefault(e => e.EdmStructuredType.FullName == meta.EdmStructuredType.BaseType);
                     meta.SetBase(baseInter);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == meta.EdmStructuredType.Name);
@@ -255,7 +260,8 @@ namespace ODataApiGen.Angular
             // Resolve Renderables
             var renderables = new List<Renderable>();
             renderables.AddRange(this.Enums);
-            renderables.AddRange(this.Metas);
+            renderables.AddRange(this.MetasEntities);
+            renderables.AddRange(this.MetasEnums);
             renderables.AddRange(this.Entities);
             renderables.AddRange(this.BaseModels);
             renderables.AddRange(this.Models);
@@ -265,7 +271,7 @@ namespace ODataApiGen.Angular
             foreach (var renderable in renderables)
             {
                 var types = renderable.ImportTypes;
-                if (renderable is Enum || renderable is Structured || renderable is Service)
+                if (renderable is Enum || renderable is MetaEnum || renderable is Structured || renderable is Service)
                 {
                     renderable.Dependencies.AddRange(
     this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
@@ -273,7 +279,7 @@ namespace ODataApiGen.Angular
                     {
                         renderable.Dependencies.AddRange(
         this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        if (!(renderable is Meta))
+                        if (!(renderable is MetaEntity || renderable is MetaEnum))
                         {
                             if (renderable is Model || renderable is Collection)
                             {
@@ -297,12 +303,13 @@ namespace ODataApiGen.Angular
             this.Config.Dependencies.AddRange(this.Enums);
             this.Config.Dependencies.AddRange(this.Entities);
             this.Config.Dependencies.AddRange(this.Models);
-            this.Config.Dependencies.AddRange(this.Metas);
+            this.Config.Dependencies.AddRange(this.MetasEntities);
+            this.Config.Dependencies.AddRange(this.MetasEnums);
             this.Config.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Enums);
             this.Index.Dependencies.AddRange(this.Entities);
             this.Index.Dependencies.AddRange(this.Models);
-            this.Index.Dependencies.AddRange(this.Metas);
+            this.Index.Dependencies.AddRange(this.MetasEntities);
             this.Index.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Services);
         }
@@ -312,7 +319,7 @@ namespace ODataApiGen.Angular
             return this.Enums.Select(e => e.Directory)
                 .Union(this.Entities.Select(m => m.Directory))
                 .Union(this.Models.Select(m => m.Directory))
-                .Union(this.Metas.Select(m => m.Directory))
+                .Union(this.MetasEntities.Select(m => m.Directory))
                 .Union(this.Collections.Select(m => m.Directory))
                 .Union(this.Services.Select(s => s.Directory))
                 .Distinct();
@@ -341,7 +348,8 @@ namespace ODataApiGen.Angular
                 renderables.AddRange(this.Entities);
                 renderables.AddRange(this.BaseModels);
                 renderables.AddRange(this.Models);
-                renderables.AddRange(this.Metas);
+                renderables.AddRange(this.MetasEntities);
+                renderables.AddRange(this.MetasEnums);
                 renderables.AddRange(this.BaseCollections);
                 renderables.AddRange(this.Collections);
                 renderables.AddRange(this.Services);

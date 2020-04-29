@@ -48,7 +48,7 @@ namespace ODataApiGen.Angular
             }
         }
         // Exports
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".basecollection";
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection.base";
         public override string Name => this.EdmStructuredType.Name + "BaseCollection";
         public string ModelName => this.BaseModel.Name;
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

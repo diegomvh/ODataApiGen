@@ -27,7 +27,10 @@ namespace ODataApiGen.Angular {
               .Select(model => $"'{model.EntityType}': {model.Name}");
         public IEnumerable<string> Collections => this.Package.Collections
               .Select(col => $"'{col.EntityType}': {col.Name}");
-        public IEnumerable<string> Schemas => this.Package.Metas
-              .Select(entity => $"'{entity.EntityType}': {entity.Name}");
+        public IEnumerable<string> Metas => 
+            this.Package.MetasEnums
+              .Select(entity => $"'{entity.EnumType}': {entity.Name}").Union(
+        this.Package.MetasEntities
+              .Select(entity => $"'{entity.EntityType}': {entity.Name}"));
     }
 }

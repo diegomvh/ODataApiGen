@@ -94,9 +94,13 @@ namespace ODataApiGen.Angular
 
                 var args = "let args = null;";
                 if (parameters.Count() > 0) {
-                    args = $"let args = Object.entries({{ {String.Join(", ", parameters.Select(p => p.Name))} }})" +
-                    $"\n      .filter(pair => pair[1] !== null)" +
-                    $"\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {{}});";
+                    args = "let args = Object.entries({" +
+                        String.Join(", ", parameters.Select(p => p.IsEdmType ? 
+                            $"\n        {p.Name}: {p.Name}":
+                            $"\n        {p.Name}: this.client.parserForType('{p.Type}').toJSON({p.Name})")) +
+                    "\n      })" +
+                    "\n      .filter(pair => pair[1] !== null)" +
+                    "\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {});";
                 }
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
