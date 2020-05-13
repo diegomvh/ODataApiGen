@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -30,21 +31,25 @@ namespace ODataApiGen.Angular
                 list.AddRange(this.Interface.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Interface.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Interface.EdmStructuredType.Properties.Select(a => a.Type));
-                if (this.Interface.EdmStructuredType is EntityType)
-                    list.AddRange((this.Interface.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
+                list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.EntityType.FullName));
                 return list;
             }
         }
 
+        public string EntitySetAnnotations {
+            get {
+                return JsonConvert.SerializeObject(this.EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
+            }
+        }
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string EntitySetName => this.EdmEntitySet.Name;
         public override string EntityName => EdmEntitySet.EntityType.Split('.').Last();
+        public override string EntityType => this.EdmEntitySet.EntityType;
         public override string Name => this.EdmEntitySet.Name[0].ToString().ToUpper() + this.EdmEntitySet.Name.Substring(1) + "Service";
         public override string NameSpace => this.EdmEntitySet.Namespace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
-        public override string EntityType => this.EdmEntitySet.EntityType;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Interface.EdmStructuredType.Actions));
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Interface.EdmStructuredType.Functions));
-        public IEnumerable<string> Navigations => (this.Interface.EdmStructuredType is EntityType) ? this.RenderReferences((this.Interface.EdmStructuredType as EntityType).NavigationProperties) : Enumerable.Empty<string>();
+        public IEnumerable<string> Navigations => this.RenderReferences(this.EdmEntitySet.NavigationPropertyBindings);
     }
 }

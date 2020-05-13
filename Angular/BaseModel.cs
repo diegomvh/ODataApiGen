@@ -37,9 +37,9 @@ namespace ODataApiGen.Angular
     {
         public Angular.Entity Interface { get; private set; }
 
-        public BaseModel(StructuredType type, Angular.Entity inter) : base(type) {
-            this.Interface = inter;
-            this.Dependencies.Add(inter);
+        public BaseModel(StructuredType type, Angular.Entity entity) : base(type) {
+            this.Interface = entity;
+            this.Dependencies.Add(entity);
         }
         public Angular.Model Model {get; private set;}
 

@@ -7,14 +7,14 @@ using System.IO;
 
 namespace ODataApiGen.Angular
 {
-    public class MetaEnum: AngularRenderable, DotLiquid.ILiquidizable 
+    public class EnumConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Models.EnumType EdmEnumType {get; private set;}
-        public MetaEnum(EnumType type) {
+        public EnumConfig(EnumType type) {
             this.EdmEnumType = type;
         }
-        public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum.meta";
-        public override string Name => this.EdmEnumType.Name + "MetaEnum";
+        public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum.config";
+        public override string Name => this.EdmEnumType.Name + "EnumConfig";
         public string EnumType => this.EdmEnumType.FullName;
         public string EnumName => this.EdmEnumType.Name;
 

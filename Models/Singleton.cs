@@ -4,10 +4,10 @@ using System.Xml.Linq;
 
 namespace ODataApiGen.Models
 {
-    public class Singleton
+    public class Singleton : Annotable
     {
         public EntityContainer EntityContainer {get; private set;}
-        public Singleton(XElement xElement, EntityContainer container)
+        public Singleton(XElement xElement, EntityContainer container) : base(xElement)
         {
             this.EntityContainer = container;
             Name = xElement.Attribute("Name")?.Value;

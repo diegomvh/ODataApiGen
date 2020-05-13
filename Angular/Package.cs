@@ -12,30 +12,34 @@ namespace ODataApiGen.Angular
         public Angular.Module Module { get; private set; }
         public Angular.Config Config { get; private set; }
         public Angular.Index Index { get; private set; }
+        public ICollection<Angular.ApiConfig> ApiConfigs { get; private set; }
         public ICollection<Angular.Enum> Enums { get; private set; }
+        public ICollection<Angular.EnumConfig> EnumConfigs { get; private set; }
         public ICollection<Angular.Entity> Entities { get; private set; }
         public ICollection<Angular.BaseModel> BaseModels { get; private set; }
         public ICollection<Angular.Model> Models { get; private set; }
-        public ICollection<Angular.MetaEntity> MetasEntities { get; private set; }
-        public ICollection<Angular.MetaEnum> MetasEnums { get; private set; }
         public ICollection<Angular.BaseCollection> BaseCollections { get; private set; }
         public ICollection<Angular.Collection> Collections { get; private set; }
+        public ICollection<Angular.EntityConfig> EntityConfigs { get; private set; }
         public ICollection<Angular.Service> Services { get; private set; }
+        public ICollection<Angular.ServiceConfig> ServiceConfigs { get; private set; }
 
         public Package(string endpointName, string metadataPath, bool secure, bool stringAsEnums, bool models, string version) : base(endpointName, metadataPath, secure, stringAsEnums, models, version)
         {
             this.Module = new Module(this);
             Config = new Angular.Config(this);
             Index = new Angular.Index(this);
+            ApiConfigs = new List<Angular.ApiConfig>();
             Enums = new List<Angular.Enum>();
+            EnumConfigs = new List<Angular.EnumConfig>();
             Entities = new List<Angular.Entity>();
             BaseModels = new List<Angular.BaseModel>();
             Models = new List<Angular.Model>();
-            MetasEntities = new List<Angular.MetaEntity>();
-            MetasEnums = new List<Angular.MetaEnum>();
             BaseCollections = new List<Angular.BaseCollection>();
             Collections = new List<Angular.Collection>();
+            EntityConfigs = new List<Angular.EntityConfig>();
             Services = new List<Angular.Service>();
+            ServiceConfigs = new List<Angular.ServiceConfig>();
         }
 
         public override void LoadMetadata(Metadata metadata)
@@ -57,8 +61,8 @@ namespace ODataApiGen.Angular
         {
             foreach (var e in enums)
             {
-                var meta = new Angular.MetaEnum(e);
-                this.MetasEnums.Add(meta);
+                var config = new Angular.EnumConfig(e);
+                this.EnumConfigs.Add(config);
                 var enu = new Angular.Enum(e);
                 this.Enums.Add(enu);
             }
@@ -66,68 +70,79 @@ namespace ODataApiGen.Angular
 
         public void AddEntities(IEnumerable<Models.EntityType> entities)
         {
-            foreach (var t in entities)
+            foreach (var enty in entities)
             {
-                var meta = new Angular.MetaEntity(t);
-                this.MetasEntities.Add(meta);
-                var inter = new Angular.Entity(t, meta);
-                this.Entities.Add(inter);
+                var config = new Angular.EntityConfig(enty);
+                this.EntityConfigs.Add(config);
+                var entity = new Angular.Entity(enty);
+                this.Entities.Add(entity);
+                config.SetEntity(entity);
                 if (this.CreateModels)
                 {
-                    var baseModel = new Angular.BaseModel(t, inter);
+                    var baseModel = new Angular.BaseModel(enty, entity);
                     this.BaseModels.Add(baseModel);
-                    var model = new Angular.Model(t, inter, baseModel);
+                    var model = new Angular.Model(enty, entity, baseModel);
                     baseModel.SetModel(model);
                     this.Models.Add(model);
-                    var baseCollection = new Angular.BaseCollection(t, baseModel);
+                    config.SetModel(model);
+                    var baseCollection = new Angular.BaseCollection(enty, baseModel);
                     this.BaseCollections.Add(baseCollection);
-                    var collection = new Angular.Collection(t, model, baseCollection);
+                    var collection = new Angular.Collection(enty, model, baseCollection);
                     baseCollection.SetCollection(collection);
                     this.Collections.Add(collection);
+                    config.SetCollection(collection);
                 }
             }
         }
 
         public void AddComplexes(IEnumerable<Models.ComplexType> complexes)
         {
-            foreach (var t in complexes)
+            foreach (var cmplx in complexes)
             {
-                var meta = new Angular.MetaEntity(t);
-                this.MetasEntities.Add(meta);
-                var inter = new Angular.Entity(t, meta);
-                this.Entities.Add(inter);
+                var config = new Angular.EntityConfig(cmplx);
+                this.EntityConfigs.Add(config);
+                var entity = new Angular.Entity(cmplx);
+                this.Entities.Add(entity);
+                config.SetEntity(entity);
                 if (this.CreateModels)
                 {
-                    var baseModel = new Angular.BaseModel(t, inter);
+                    var baseModel = new Angular.BaseModel(cmplx, entity);
                     this.BaseModels.Add(baseModel);
-                    var model = new Angular.Model(t, inter, baseModel);
+                    var model = new Angular.Model(cmplx, entity, baseModel);
                     baseModel.SetModel(model);
                     this.Models.Add(model);
-                    var baseCollection = new Angular.BaseCollection(t, baseModel);
+                    config.SetModel(model);
+                    var baseCollection = new Angular.BaseCollection(cmplx, baseModel);
                     this.BaseCollections.Add(baseCollection);
-                    var collection = new Angular.Collection(t, model, baseCollection);
+                    var collection = new Angular.Collection(cmplx, model, baseCollection);
                     baseCollection.SetCollection(collection);
                     this.Collections.Add(collection);
+                    config.SetCollection(collection);
                 }
             }
         }
 
         public void AddServices(Models.EntityContainer container)
         {
-            foreach (var s in container.EntitySets)
+            this.ApiConfigs.Add(new Angular.ApiConfig(container));
+            foreach (var eset in container.EntitySets)
             {
+                var config = new Angular.ServiceConfig(eset);
                 if (this.CreateModels)
                 {
-                    this.Services.Add(new Angular.ServiceModel(s));
+                    this.Services.Add(new Angular.ServiceModel(eset));
                 }
                 else
                 {
-                    this.Services.Add(new Angular.ServiceEntity(s));
+                    this.Services.Add(new Angular.ServiceEntity(eset));
                 }
+                this.ServiceConfigs.Add(config);
             }
             foreach (var s in container.Singletons)
             {
+                var config = new Angular.ServiceConfig(s);
                 this.Services.Add(new Angular.ServiceSingleton(s));
+                this.ServiceConfigs.Add(config);
             }
         }
 
@@ -144,27 +159,11 @@ namespace ODataApiGen.Angular
                 {
                     var baseInter = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
                     entity.SetBase(baseInter);
-                    entity.Dependencies.Add(baseInter);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == entity.EdmStructuredType.Name);
                 if (service != null)
                 {
                     entity.SetService(service);
-                }
-            }
-            // Metas
-            // root casma
-            foreach (var meta in MetasEntities)
-            {
-                if (!String.IsNullOrEmpty(meta.EdmStructuredType.BaseType))
-                {
-                    var baseInter = this.MetasEntities.FirstOrDefault(e => e.EdmStructuredType.FullName == meta.EdmStructuredType.BaseType);
-                    meta.SetBase(baseInter);
-                }
-                var service = this.Services.FirstOrDefault(s => s.EntityName == meta.EdmStructuredType.Name);
-                if (service != null)
-                {
-                    meta.SetService(service);
                 }
             }
             // Base Models
@@ -174,7 +173,6 @@ namespace ODataApiGen.Angular
                 {
                     var baseInter = this.BaseModels.FirstOrDefault(e => e.EdmStructuredType.FullName == baseModel.EdmStructuredType.BaseType);
                     baseModel.SetBase(baseInter);
-                    baseModel.Dependencies.Add(baseInter);
                 }
                 var baseCollection = this.BaseCollections.FirstOrDefault(m => m.EdmStructuredType.Name == baseModel.EdmStructuredType.Name);
                 if (baseCollection != null)
@@ -195,7 +193,6 @@ namespace ODataApiGen.Angular
                 {
                     var baseInter = this.Models.FirstOrDefault(e => e.EdmStructuredType.FullName == model.EdmStructuredType.BaseType);
                     model.SetBase(baseInter);
-                    model.Dependencies.Add(baseInter);
                 }
                 var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == model.EdmStructuredType.Name);
                 if (collection != null)
@@ -215,7 +212,6 @@ namespace ODataApiGen.Angular
                 {
                     var baseInter = this.BaseCollections.FirstOrDefault(e => e.EdmStructuredType.FullName == baseCollection.EdmStructuredType.BaseType);
                     baseCollection.SetBase(baseInter);
-                    baseCollection.Dependencies.Add(baseInter);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == baseCollection.EdmStructuredType.Name);
                 if (service != null)
@@ -230,7 +226,6 @@ namespace ODataApiGen.Angular
                 {
                     var baseInter = this.BaseCollections.FirstOrDefault(e => e.EdmStructuredType.FullName == collection.EdmStructuredType.BaseType);
                     collection.SetBase(baseInter);
-                    collection.Dependencies.Add(baseInter);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == collection.EdmStructuredType.Name);
                 if (service != null)
@@ -238,6 +233,21 @@ namespace ODataApiGen.Angular
                     collection.SetService(service);
                 }
             }
+            // Entity Config
+            foreach (var config in EntityConfigs)
+            {
+                if (!String.IsNullOrEmpty(config.EdmStructuredType.BaseType))
+                {
+                    var baseInter = this.EntityConfigs.FirstOrDefault(e => e.EdmStructuredType.FullName == config.EdmStructuredType.BaseType);
+                    config.SetBase(baseInter);
+                }
+                var service = this.Services.FirstOrDefault(s => s.EntityName == config.EdmStructuredType.Name);
+                if (service != null)
+                {
+                    config.SetService(service);
+                }
+            }
+
             // Services
             foreach (var service in Services)
             {
@@ -257,21 +267,24 @@ namespace ODataApiGen.Angular
                     service.SetCollection(collection);
                 }
             }
-            // Resolve Renderables
+
+            // Resolve Renderable Dependencies
             var renderables = new List<Renderable>();
+            renderables.AddRange(this.ApiConfigs);
             renderables.AddRange(this.Enums);
-            renderables.AddRange(this.MetasEntities);
-            renderables.AddRange(this.MetasEnums);
+            renderables.AddRange(this.EnumConfigs);
             renderables.AddRange(this.Entities);
             renderables.AddRange(this.BaseModels);
             renderables.AddRange(this.Models);
             renderables.AddRange(this.BaseCollections);
             renderables.AddRange(this.Collections);
+            renderables.AddRange(this.EntityConfigs);
             renderables.AddRange(this.Services);
+            renderables.AddRange(this.ServiceConfigs);
             foreach (var renderable in renderables)
             {
                 var types = renderable.ImportTypes;
-                if (renderable is Enum || renderable is MetaEnum || renderable is Structured || renderable is Service)
+                if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
                 {
                     renderable.Dependencies.AddRange(
     this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
@@ -279,7 +292,7 @@ namespace ODataApiGen.Angular
                     {
                         renderable.Dependencies.AddRange(
         this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        if (!(renderable is MetaEntity || renderable is MetaEnum))
+                        if (!(renderable is EnumConfig))
                         {
                             if (renderable is Model || renderable is Collection)
                             {
@@ -300,16 +313,13 @@ namespace ODataApiGen.Angular
                 }
             }
             this.Module.Dependencies.AddRange(this.Services);
-            this.Config.Dependencies.AddRange(this.Enums);
-            this.Config.Dependencies.AddRange(this.Entities);
-            this.Config.Dependencies.AddRange(this.Models);
-            this.Config.Dependencies.AddRange(this.MetasEntities);
-            this.Config.Dependencies.AddRange(this.MetasEnums);
-            this.Config.Dependencies.AddRange(this.Collections);
+            this.Config.Dependencies.AddRange(this.ApiConfigs);
+            this.Config.Dependencies.AddRange(this.EnumConfigs);
+            this.Config.Dependencies.AddRange(this.EntityConfigs);
+            this.Config.Dependencies.AddRange(this.ServiceConfigs);
             this.Index.Dependencies.AddRange(this.Enums);
             this.Index.Dependencies.AddRange(this.Entities);
             this.Index.Dependencies.AddRange(this.Models);
-            this.Index.Dependencies.AddRange(this.MetasEntities);
             this.Index.Dependencies.AddRange(this.Collections);
             this.Index.Dependencies.AddRange(this.Services);
         }
@@ -319,7 +329,9 @@ namespace ODataApiGen.Angular
             return this.Enums.Select(e => e.Directory)
                 .Union(this.Entities.Select(m => m.Directory))
                 .Union(this.Models.Select(m => m.Directory))
-                .Union(this.MetasEntities.Select(m => m.Directory))
+                .Union(this.ApiConfigs.Select(m => m.Directory))
+                .Union(this.EntityConfigs.Select(m => m.Directory))
+                .Union(this.EnumConfigs.Select(m => m.Directory))
                 .Union(this.Collections.Select(m => m.Directory))
                 .Union(this.Services.Select(s => s.Directory))
                 .Distinct();
@@ -344,15 +356,17 @@ namespace ODataApiGen.Angular
             get
             {
                 var renderables = new List<Renderable>();
+                renderables.AddRange(this.ApiConfigs);
                 renderables.AddRange(this.Enums);
+                renderables.AddRange(this.EnumConfigs);
                 renderables.AddRange(this.Entities);
                 renderables.AddRange(this.BaseModels);
                 renderables.AddRange(this.Models);
-                renderables.AddRange(this.MetasEntities);
-                renderables.AddRange(this.MetasEnums);
                 renderables.AddRange(this.BaseCollections);
                 renderables.AddRange(this.Collections);
+                renderables.AddRange(this.EntityConfigs);
                 renderables.AddRange(this.Services);
+                renderables.AddRange(this.ServiceConfigs);
                 renderables.Add(this.Module);
                 renderables.Add(this.Config);
                 renderables.Add(this.Index);

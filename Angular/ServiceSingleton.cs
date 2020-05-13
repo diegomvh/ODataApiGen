@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotLiquid;
+using Newtonsoft.Json;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -60,5 +61,10 @@ namespace ODataApiGen.Angular
         public override string EntityType => this.EdmSingleton.Type;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmSingleton.Actions);
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmSingleton.Functions);
+        public string EntitySetAnnotations {
+            get {
+                return JsonConvert.SerializeObject(this.EdmSingleton.Annotations.Select(annot => annot.ToDictionary()));
+            }
+        }
     }
 }

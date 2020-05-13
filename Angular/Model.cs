@@ -6,13 +6,13 @@ namespace ODataApiGen.Angular
 {
     public class Model : Structured 
     {
-        public Angular.Entity Interface { get; private set; }
+        public Angular.Entity Entity { get; private set; }
         public Angular.BaseModel BaseModel { get; private set; }
 
-        public Model(StructuredType type, Angular.Entity inter, Angular.BaseModel baseModel) : base(type) {
-            this.Interface = inter;
+        public Model(StructuredType type, Angular.Entity entity, Angular.BaseModel baseModel) : base(type) {
+            this.Entity = entity;
+            this.Dependencies.Add(entity);
             this.BaseModel = baseModel;
-            this.Dependencies.Add(inter);
             this.Dependencies.Add(baseModel);
         }
         public Angular.Collection Collection {get; private set;}
@@ -20,7 +20,6 @@ namespace ODataApiGen.Angular
         public void SetCollection(Collection collection)
         {
             this.Collection = collection;
-            this.Dependencies.Add(collection);
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
         public override string Name => this.EdmStructuredType.Name + "Model";
@@ -53,7 +52,7 @@ namespace ODataApiGen.Angular
                 Type = this.Type,
                 EntityType = this.EntityType,
                 Interface = new {
-                    Name = this.Interface.Name
+                    Name = this.Entity.Name
                 }
             };
         }

@@ -111,11 +111,14 @@ namespace ODataApiGen.Angular
             }
         }
 
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
+        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationPropertyBinding> bindings)
         {
-            foreach (var nav in navigations)
+            foreach (var binding in bindings)
             {
-                var type = AngularRenderable.GetTypescriptType(nav.Type);
+                var entity = binding.EntityType;
+                var nav = binding.NavigationProperty;
+                Console.WriteLine(nav.Name);
+                var type = entity.Name;
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
 
@@ -128,17 +131,17 @@ namespace ODataApiGen.Angular
 
                 // Navigation
                 yield return $@"public {methodRelationName}(entity: {EntityName}, options?: HttpOptions): Observable<{returnType}> {{
-    return this.navigationProperty<{type}>(entity, '{nav.Name}')
+    return this.navigationProperty<{type}>(entity, '{binding.Path}')
       .{(nav.IsCollection ? "collection" : "single")}(options);
   }}";
                 // Link
                 yield return $@"public {methodCreateName}<{type}>(entity: {EntityName}, target: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
-    return this.navigationProperty<{type}>(entity, '{nav.Name}').reference()
+    return this.navigationProperty<{type}>(entity, '{binding.Path}').reference()
       .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag}")});
   }}";
                 // Unlink
                 yield return $@"public {methodDeleteName}<{type}>(entity: {EntityName}, target?: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
-    return this.navigationProperty<{type}>(entity, '{nav.Name}').reference()
+    return this.navigationProperty<{type}>(entity, '{binding.Path}').reference()
       .remove({{etag, target}});
   }}";
             }

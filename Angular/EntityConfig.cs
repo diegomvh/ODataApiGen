@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 namespace ODataApiGen.Angular
 {
-    public class MetaEntityField : StructuredProperty {
+    public class EntityFieldConfig : StructuredProperty {
         protected IEnumerable<PropertyRef> Keys { get; set; }
-        public MetaEntityField(Models.Property property, IEnumerable<PropertyRef> keys) : base(property) {
+        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys) : base(property) {
             this.Keys = keys;
         }
         public override string Name => Value.Name;
@@ -50,23 +50,32 @@ namespace ODataApiGen.Angular
             }
         } 
     }
-    public class MetaEntity : Structured 
+    public class EntityConfig : Structured 
     {
-        public MetaEntity(StructuredType type) : base(type) { }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity.meta";
-        public override string Name => this.EdmStructuredType.Name + "MetaEntity";
+        public EntityConfig(StructuredType type) : base(type) { }
+        public Angular.Entity Entity {get; private set;}
+
+        public void SetEntity(Entity entity)
+        {
+            this.Entity = entity;
+        }
+        public Angular.Model Model {get; private set;}
+
+        public void SetModel(Model model)
+        {
+            this.Model = model;
+        }
+        public Angular.Collection Collection {get; private set;}
+
+        public void SetCollection(Collection collection)
+        {
+            this.Collection = collection;
+        }
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity.config";
+        public override string Name => this.EdmStructuredType.Name + "EntityConfig";
         public string EntityName => this.EdmStructuredType.Name;
 
-        public string EntitySetAnnotations {
-            get {
-                if (this.Service is ServiceEntity) 
-                    return JsonConvert.SerializeObject((this.Service as ServiceEntity).EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
-                else if (this.Service is ServiceModel)
-                    return JsonConvert.SerializeObject((this.Service as ServiceModel).EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
-                return "[]";
-            }
-        }
-        public string EntityAnnotations {
+        public string Annotations {
             get {
                 return JsonConvert.SerializeObject(this.EdmStructuredType.Annotations.Select(annot => annot.ToDictionary()));
             }
@@ -83,7 +92,7 @@ namespace ODataApiGen.Angular
                 var keys = (this.EdmStructuredType is EntityType) ? (this.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
                 return props.Select(prop => {
                     var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new MetaEntityField(prop, keys); 
+                    return new EntityFieldConfig(prop, keys); 
                 });
             }
         } 

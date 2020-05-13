@@ -20,17 +20,13 @@ namespace ODataApiGen.Angular {
         public override string Directory => this.NameSpace;
         public override bool Overwrite => true;
 
-        public IEnumerable<string> Enums => this.Package.Enums
+        public IEnumerable<string> Apis => this.Package.ApiConfigs
+              .Select(a => $"'{a.ApiType}': {a.Name}");
+        public IEnumerable<string> Enums => this.Package.EnumConfigs
               .Select(e => $"'{e.EnumType}': {e.Name}");
-        public IEnumerable<string> Models => this.Package.Models
-              .Where(m => m is Model)
-              .Select(model => $"'{model.EntityType}': {model.Name}");
-        public IEnumerable<string> Collections => this.Package.Collections
-              .Select(col => $"'{col.EntityType}': {col.Name}");
-        public IEnumerable<string> Metas => 
-            this.Package.MetasEnums
-              .Select(entity => $"'{entity.EnumType}': {entity.Name}").Union(
-        this.Package.MetasEntities
-              .Select(entity => $"'{entity.EntityType}': {entity.Name}"));
+        public IEnumerable<string> Entities => this.Package.EntityConfigs
+              .Select(e => $"'{e.EntityType}': {e.Name}");
+        public IEnumerable<string> Services => this.Package.ServiceConfigs
+              .Select(s => $"'{s.ServiceType}': {s.Name}");
     }
 }

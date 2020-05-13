@@ -1,17 +1,15 @@
-import { MetaEntity } from 'angular-odata';
+import { EntityConfig } from 'angular-odata';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 export const {{Name}} = {
   type: "{{EntityType}}",{% if Base != null %}
-  base: "{{Base.EntityType}}",{% endif %}{% if EntitySetName != null %}
-  set: { 
-    name: "{{EntitySetName}}",
-    annotations: {{EntitySetAnnotations}},
-  },{% endif %}
-  annotations: {{EntityAnnotations}},
+  base: "{{Base.EntityType}}",{% endif %}
+  annotations: {{Annotations}},{% if Model != null %}
+  model: {{Model.Name}},{% endif %}{% if Collection != null %}
+  collection: {{Collection.Name}},{% endif %}
   fields: {
     {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as MetaEntity<{{EntityName}}>;
+} as EntityConfig<{{EntityName}}>;

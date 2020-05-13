@@ -13,7 +13,6 @@ namespace ODataApiGen.Angular
         {
             this.BaseModel = model;
             this.Dependencies.Add(model);
-            model.SetCollection(this);
         }
         
         public Angular.Collection Collection {get; private set;}
@@ -21,6 +20,7 @@ namespace ODataApiGen.Angular
         public void SetCollection(Collection collection)
         {
             this.Collection = collection;
+            this.Dependencies.Add(collection);
         }
         // Imports
         public override IEnumerable<string> ImportTypes

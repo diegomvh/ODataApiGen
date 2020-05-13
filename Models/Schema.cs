@@ -16,7 +16,7 @@ namespace ODataApiGen.Models
         public List<Function> Functions { get; private set; }
         public List<Action> Actions { get; private set; }
         public List<EntityContainer> EntityContainers { get; private set; }
-        public IDictionary<string, IEnumerable<dynamic>> Annotations { get; private set; }
+        public IDictionary<string, List<Annotation>> Annotations {get; set;}
 
         #region Static Loaders
         private static List<EnumType> ReadEnums(XElement xdoc, Schema schema)
@@ -103,15 +103,17 @@ namespace ODataApiGen.Models
             }
             return customFunctionList;
         }
-        public static IDictionary<string, IEnumerable<dynamic>> ReadAnnotations(XElement xDoc, Schema schema)
+        public static IDictionary<string, List<Annotation>> ReadAnnotations(XElement xDoc, Schema schema)
         {
             Logger.LogDebug("Parsing annotations...");
-            Dictionary<string, IEnumerable<dynamic>> annotations = new Dictionary<string, IEnumerable<dynamic>>();
+            IDictionary<string, List<Annotation>> annotations = new Dictionary<string, List<Annotation>>();
             var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "Annotations");
             foreach (var xElement in elements)
             {
                 var target = xElement.Attribute("Target")?.Value;
-                annotations[target] = xElement.Descendants().Where(a => a.Name.LocalName == "Annotation").Select(element => element.ToDynamic()).ToList();
+                annotations[target] = xElement.Descendants()
+                    .Where(a => a.Name.LocalName == "Annotation")
+                    .Select(annot => Annotation.Factory(annot)).ToList();
                 Logger.LogInformation($"Annotations '{target}' parsed");
             }
             return annotations;
@@ -146,11 +148,11 @@ namespace ODataApiGen.Models
                 container.ResolveActionImports(actions);
             }
         }
-        public void ResolveAnnotations(IEnumerable<KeyValuePair<string, IEnumerable<dynamic>>> annots) {
+        public void ResolveAnnotations(IEnumerable<KeyValuePair<string, List<Annotation>>> annots) {
             foreach (var annot in annots) {
                 var container = this.EntityContainers.Where(c => $"{c.Namespace}.{c.Name}" == annot.Key).FirstOrDefault();
                 if (container != null) {
-                    container.Annotations = annot.Value.ToList();
+                    container.Annotations = annot.Value;
                 }
             }
         }

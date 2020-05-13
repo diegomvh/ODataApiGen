@@ -5,17 +5,17 @@ using Microsoft.Extensions.Logging;
 
 namespace ODataApiGen.Models
 {
-    public class EntityContainer 
+    public class EntityContainer : Annotable
     {
         private static ILogger Logger {get;} = Program.LoggerFactory.CreateLogger<EntityContainer>();
         public Schema Schema { get; private set; }
         public string Name { get; private set; }
         public string Namespace => this.Schema.Namespace; 
+        public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
         public List<EntitySet> EntitySets { get; private set; }
         public List<Singleton> Singletons { get; private set; }
         public List<FunctionImport> FunctionImports { get; private set; }
         public List<ActionImport> ActionImports { get; private set; }
-        public List<dynamic> Annotations {get; set;}
 
         #region Static Loaders
         private static List<EntitySet> ReadEntitySets(XElement xDoc, EntityContainer container)
@@ -74,15 +74,14 @@ namespace ODataApiGen.Models
             return actionImportList;
         }
         #endregion
-        public EntityContainer(XElement xElement, Schema schema) 
+        public EntityContainer(XElement element, Schema schema) : base(element)
         {
             this.Schema = schema;
-            this.Name = xElement.Attribute("Name").Value;
-            this.EntitySets = EntityContainer.ReadEntitySets(xElement, this);
-            this.Singletons = EntityContainer.ReadSingletons(xElement, this);
-            this.ActionImports = EntityContainer.ReadActionImports(xElement, this);
-            this.FunctionImports = EntityContainer.ReadFunctionImports(xElement, this);
-
+            this.Name = element.Attribute("Name").Value;
+            this.EntitySets = EntityContainer.ReadEntitySets(element, this);
+            this.Singletons = EntityContainer.ReadSingletons(element, this);
+            this.ActionImports = EntityContainer.ReadActionImports(element, this);
+            this.FunctionImports = EntityContainer.ReadFunctionImports(element, this);
         }
 
         public void ResolveActionImports(IEnumerable<Action> actions) {

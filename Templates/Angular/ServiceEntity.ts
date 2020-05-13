@@ -12,7 +12,7 @@ import { ODataEntityService, ODataEntityAnnotations, ODataEntitiesAnnotations, O
 export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   static path: string = '{{EntitySetName}}';
   static type: string = '{{EntityType}}';
-  
+
   // Actions
   {% for action in Actions %}{{action}}
   {% endfor %}

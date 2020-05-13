@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -39,12 +40,17 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string EntitySetName => this.EdmEntitySet.Name;
         public override string EntityName => EdmEntitySet.EntityType.Split('.').Last();
+        public override string EntityType => this.EdmEntitySet.EntityType;
         public override string Name => this.EdmEntitySet.Name[0].ToString().ToUpper() + this.EdmEntitySet.Name.Substring(1) + "Service";
         public override string NameSpace => this.EdmEntitySet.Namespace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
-        public override string EntityType => this.EdmEntitySet.EntityType;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Model.EdmStructuredType.Actions));
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Model.EdmStructuredType.Functions));
-        public IEnumerable<string> Navigations => (this.Model.EdmStructuredType is EntityType) ? this.RenderReferences((this.Model.EdmStructuredType as EntityType).NavigationProperties) : Enumerable.Empty<string>();
+        public IEnumerable<string> Navigations => this.RenderReferences(this.EdmEntitySet.NavigationPropertyBindings);
+        public string EntitySetAnnotations {
+            get {
+                return JsonConvert.SerializeObject(this.EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
+            }
+        }
     }
 }

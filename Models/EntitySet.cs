@@ -12,7 +12,7 @@ namespace ODataApiGen.Models
         {
             this.EntityContainer = container;
             Name = element.Attribute("Name")?.Value;
-            EntityType = element.Attribute("EntityType")?.Value;
+            this.EntityType = element.Attribute("EntityType")?.Value;
 
             NavigationPropertyBindings = element.Descendants().Where(a => a.Name.LocalName == "NavigationPropertyBinding")
                 .Select(navPropBind => new NavigationPropertyBinding(navPropBind, this)).ToList();
