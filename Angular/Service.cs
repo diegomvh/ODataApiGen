@@ -115,9 +115,8 @@ namespace ODataApiGen.Angular
         {
             foreach (var binding in bindings)
             {
-                var entity = binding.EntityType;
                 var nav = binding.NavigationProperty;
-                var type = entity.Name;
+                var type = AngularRenderable.GetTypescriptType(nav.Type);
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
 

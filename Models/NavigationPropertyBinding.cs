@@ -30,15 +30,17 @@ namespace ODataApiGen.Models
         }
         public NavigationProperty NavigationProperty { 
             get {
-                var name = this.Path.Split('/').Last();
-                var entityType = this.EntityType;
+                var parts = this.Path.Split('/');
+                var name = parts.Last();
+                var entityType = parts.Length > 1 ? parts.First() : this.EntitySet.EntityType;
                 NavigationProperty prop = null;
+                var entity = Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entityType);
                 while (true) {
-                    prop = entityType.NavigationProperties.FirstOrDefault(nav => nav.Name == name);
+                    prop = entity.NavigationProperties.FirstOrDefault(nav => nav.Name == name);
                     if (prop != null) break;
-                    if (String.IsNullOrEmpty(entityType.BaseType))
+                    if (String.IsNullOrEmpty(entity.BaseType))
                         throw new Exception($"No navigation property for: {name}");
-                    entityType = Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entityType.BaseType);
+                    entity = Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entity.BaseType);
                 }
                 return prop;
             }
