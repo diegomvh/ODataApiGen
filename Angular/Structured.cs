@@ -63,7 +63,7 @@ namespace ODataApiGen.Angular
                 var callables = allCallables.Where(c => c.Name == name);
                 var overload = callables.Count() > 1;
                 var callable = callables.FirstOrDefault();
-                var methodName = name[0].ToString().ToLower() + name.Substring(1);
+                var methodName = name.Substring(0, 1).ToLower() + name.Substring(1);
 
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
@@ -120,13 +120,13 @@ namespace ODataApiGen.Angular
             foreach (var nav in navigations)
             {
                 var type = AngularRenderable.GetTypescriptType(nav.Type);
-                var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
+                var methodName = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 
-                var methodCreateName = $"set{name}";
+                var methodSetName = $"set{methodName}";
 
                 var returnType = $"[{type}, ODataEntityAnnotations]";
 
-                yield return $@"public {methodCreateName}(model: {type}Model<{type}> | null): Observable<this> {{
+                yield return $@"public {methodSetName}(model: {type}Model<{type}> | null): Observable<this> {{
     return this.setNavigationProperty<{type}, {type}Model<{type}>>('{nav.Name}', model);
   }}";
             }

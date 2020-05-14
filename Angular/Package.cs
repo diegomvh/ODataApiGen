@@ -312,16 +312,23 @@ namespace ODataApiGen.Angular
                     }
                 }
             }
+            // Module
             this.Module.Dependencies.AddRange(this.Services);
+            // Config
             this.Config.Dependencies.AddRange(this.ApiConfigs);
             this.Config.Dependencies.AddRange(this.EnumConfigs);
             this.Config.Dependencies.AddRange(this.EntityConfigs);
             this.Config.Dependencies.AddRange(this.ServiceConfigs);
+            this.Config.Dependencies.AddRange(this.ApiConfigs);
+            // Index
             this.Index.Dependencies.AddRange(this.Enums);
+            this.Index.Dependencies.AddRange(this.EnumConfigs);
             this.Index.Dependencies.AddRange(this.Entities);
             this.Index.Dependencies.AddRange(this.Models);
             this.Index.Dependencies.AddRange(this.Collections);
+            this.Index.Dependencies.AddRange(this.EnumConfigs);
             this.Index.Dependencies.AddRange(this.Services);
+            this.Index.Dependencies.AddRange(this.ServiceConfigs);
         }
 
         public IEnumerable<string> GetAllDirectories()

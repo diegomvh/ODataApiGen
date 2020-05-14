@@ -28,7 +28,12 @@ namespace ODataApiGen.Angular
         }
 
         public string ServiceType => (this.EdmEntitySet != null? this.EdmEntitySet.FullName : this.EdmSingleton.FullName);
-        public string ServiceName => (this.EdmEntitySet != null? this.EdmEntitySet.Name : this.EdmSingleton.Name);
+        public string ServiceName {
+            get {
+                var name = this.EdmEntitySet != null? this.EdmEntitySet.Name : this.EdmSingleton.Name;
+                return name.Substring(0, 1).ToUpper() + name.Substring(1);
+            }
+        }
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

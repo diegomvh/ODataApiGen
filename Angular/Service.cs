@@ -117,9 +117,9 @@ namespace ODataApiGen.Angular
             {
                 var nav = binding.NavigationProperty;
                 var type = AngularRenderable.GetTypescriptType(nav.Type);
-                var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
-                var methodRelationName = nav.Name;
+                var name = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 
+                var methodRelationName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
                 var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
                 var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
 
