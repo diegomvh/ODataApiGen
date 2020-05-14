@@ -78,7 +78,5 @@ namespace ODataApiGen.Angular
                 return collectionFunctions.Count() > 0 ? this.RenderCallables(collectionFunctions) : Enumerable.Empty<string>();
             }
         }
-
-        public override IEnumerable<StructuredProperty> Properties => Enumerable.Empty<StructuredProperty>();
     }
 }

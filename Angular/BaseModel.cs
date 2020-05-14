@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using ODataApiGen.Models;
-using System;
+using DotLiquid;
 
 namespace ODataApiGen.Angular
 {
-    public class BaseProperty : StructuredProperty 
+    public class BaseModelProperty : ILiquidizable
     {
-        public AngularRenderable Renderable {get; private set;}
-        public BaseProperty(ODataApiGen.Models.Property prop, AngularRenderable type) : base(prop)
+        protected Models.Property Value { get; set; }
+        public BaseModelProperty(ODataApiGen.Models.Property prop)
         {
-            this.Renderable = type;
+            this.Value = prop;
         }
-        public override string Name {
+        public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
                 var annot = Value.FindAnnotation<CoreComputedAnnotation>("Org.OData.Core.V1.Computed");
@@ -22,23 +21,29 @@ namespace ODataApiGen.Angular
                 return Value.Name + (!required? "?" : "");
             }
         }
-        public override string Type { get {
+
+        public string Type { get {
             var type = AngularRenderable.GetTypescriptType(Value.Type);
-            if (this.Renderable is Enum) {
+            if (this.Value.IsEnumType)
                 return type;
-            }
             if (Value.IsCollection)
                 return type + (Value.IsEdmType ? "[]" : $"Collection<{type}, {type}Model<{type}>>");
             else 
                 return type + (Value.IsEdmType ? "" : $"Model<{type}>");
         }}
+        public object ToLiquid() {
+            return new {
+                Name = this.Name,
+                Type = this.Type
+            };
+        }
     }
     public class BaseModel : Structured 
     {
-        public Angular.Entity Interface { get; private set; }
+        public Angular.Entity Entity { get; private set; }
 
         public BaseModel(StructuredType type, Angular.Entity entity) : base(type) {
-            this.Interface = entity;
+            this.Entity = entity;
             this.Dependencies.Add(entity);
         }
         public Angular.Model Model {get; private set;}
@@ -76,15 +81,12 @@ namespace ODataApiGen.Angular
         }
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
 
-        public override IEnumerable<Angular.StructuredProperty> Properties {
+        public IEnumerable<Angular.BaseModelProperty> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
                 if (this.EdmStructuredType is EntityType) 
                     props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
-                return props.Select(prop => {
-                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new Angular.BaseProperty(prop, type as AngularRenderable); 
-                });
+                return props.Select(prop => new Angular.BaseModelProperty(prop));
             }
         } 
         public IEnumerable<string> Actions {
@@ -117,8 +119,8 @@ namespace ODataApiGen.Angular
                 Model = new {
                     Name = this.Model.Name
                 },
-                Interface = new {
-                    Name = this.Interface.Name
+                Entity = new {
+                    Name = this.Entity.Name
                 }
             };
         }

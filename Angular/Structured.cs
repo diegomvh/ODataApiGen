@@ -8,23 +8,6 @@ using Newtonsoft.Json;
 
 namespace ODataApiGen.Angular
 {
-    public abstract class StructuredProperty : ILiquidizable
-    {
-        protected Models.Property Value { get; set; }
-        public StructuredProperty(ODataApiGen.Models.Property prop)
-        {
-            this.Value = prop;
-        }
-        public abstract string Name { get; }
-
-        public abstract string Type {get;}
-        public object ToLiquid() {
-            return new {
-                Name = this.Name,
-                Type = this.Type
-            };
-        }
-    }
     public abstract class Structured : AngularRenderable, DotLiquid.ILiquidizable
     {
         public StructuredType EdmStructuredType { get; private set; }
@@ -71,7 +54,6 @@ namespace ODataApiGen.Angular
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public abstract IEnumerable<Angular.StructuredProperty> Properties {get;} 
 
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {

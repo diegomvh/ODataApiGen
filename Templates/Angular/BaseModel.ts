@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
-export class {{Name}}<E extends {{Interface.Name}}> extends {% if Base != null %}{{Base.Model.Name}}<E>{% else %}ODataModel<E>{% endif %} {
+export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{Base.Model.Name}}<E>{% else %}ODataModel<E>{% endif %} {
   {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %};
   {% endunless %}{% endfor %}
 

@@ -7,10 +7,14 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class EntityProperty : StructuredProperty
+    public class EntityProperty : ILiquidizable
     {
-        public EntityProperty(ODataApiGen.Models.Property prop) : base(prop) { }
-        public override string Name {
+        protected Models.Property Value { get; set; }
+        public EntityProperty(ODataApiGen.Models.Property prop)
+        {
+            this.Value = prop;
+        }
+        public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
                 var annot = Value.FindAnnotation<CoreComputedAnnotation>("Org.OData.Core.V1.Computed");
@@ -19,7 +23,14 @@ namespace ODataApiGen.Angular
                 return Value.Name + (!required? "?" : "");
             }
         }
-        public override string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
+
+        public string Type => AngularRenderable.GetTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
+        public object ToLiquid() {
+            return new {
+                Name = this.Name,
+                Type = this.Type
+            };
+        }
     }
     public class Entity : Structured 
     {
@@ -30,7 +41,7 @@ namespace ODataApiGen.Angular
         public override string Name => this.EdmStructuredType.Name;
         // Exports
 
-        public override IEnumerable<Angular.StructuredProperty> Properties {
+        public IEnumerable<Angular.EntityProperty> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
                 if (this.EdmStructuredType is EntityType) 

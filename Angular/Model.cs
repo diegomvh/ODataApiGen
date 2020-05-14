@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DotLiquid;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -40,8 +41,6 @@ namespace ODataApiGen.Angular
             }
         }
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-
-        public override IEnumerable<Angular.StructuredProperty> Properties => Enumerable.Empty<Angular.StructuredProperty>();
         public IEnumerable<string> Actions => Enumerable.Empty<string>();
         public IEnumerable<string> Functions => Enumerable.Empty<string>();
         public IEnumerable<string> Navigations => Enumerable.Empty<string>();
@@ -51,7 +50,7 @@ namespace ODataApiGen.Angular
                 Name = this.Name,
                 Type = this.Type,
                 EntityType = this.EntityType,
-                Interface = new {
+                Entity = new {
                     Name = this.Entity.Name
                 }
             };

@@ -3,16 +3,21 @@ using System.Linq;
 using System;
 using ODataApiGen.Models;
 using Newtonsoft.Json;
+using DotLiquid;
 
 namespace ODataApiGen.Angular
 {
-    public class EntityFieldConfig : StructuredProperty {
+    public class EntityFieldConfig : ILiquidizable
+    {
+        protected Models.Property Value { get; set; }
         protected IEnumerable<PropertyRef> Keys { get; set; }
-        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys) : base(property) {
+        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys) {
             this.Keys = keys;
+            this.Value = property;
         }
-        public override string Name => Value.Name;
-        public override string Type { 
+        public string Name => Value.Name;
+
+        public string Type { 
             get {
                 var values = new Dictionary<string, string>();
                 values.Add("type", $"'{AngularRenderable.GetType(this.Value.Type)}'");
@@ -49,6 +54,12 @@ namespace ODataApiGen.Angular
                 return $"{{{String.Join(", ", values.Select(p => $"{p.Key}: {p.Value}"))}}}";
             }
         } 
+        public object ToLiquid() {
+            return new {
+                Name = this.Name,
+                Type = this.Type
+            };
+        }
     }
     public class EntityConfig : Structured 
     {
@@ -84,16 +95,13 @@ namespace ODataApiGen.Angular
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
 
-        public override IEnumerable<Angular.StructuredProperty> Properties {
+        public IEnumerable<Angular.EntityFieldConfig> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
                 if (this.EdmStructuredType is EntityType) 
                     props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
                 var keys = (this.EdmStructuredType is EntityType) ? (this.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
-                return props.Select(prop => {
-                    var type = this.Dependencies.FirstOrDefault(dep => dep.Type == prop.Type);
-                    return new EntityFieldConfig(prop, keys); 
-                });
+                return props.Select(prop => new EntityFieldConfig(prop, keys));
             }
         } 
 

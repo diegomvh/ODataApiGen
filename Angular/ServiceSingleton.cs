@@ -59,6 +59,7 @@ namespace ODataApiGen.Angular
         public override string EntitySetName => this.EdmSingleton.Name;
         public override string EntityName => this.EdmSingleton.Type.Split('.').Last();
         public override string EntityType => this.EdmSingleton.Type;
+        public string ServiceType => this.EdmSingleton.FullName;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmSingleton.Actions);
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmSingleton.Functions);
         public string EntitySetAnnotations {

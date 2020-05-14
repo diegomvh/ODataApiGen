@@ -5,4 +5,4 @@ import { ServiceConfig } from 'angular-odata';
 export const {{Name}} = {
   type: "{{ServiceType}}",
   annotations: {{Annotations}}
-} as ServiceConfig<{{ServiceName}}>;
+} as ServiceConfig;
