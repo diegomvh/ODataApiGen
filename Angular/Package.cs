@@ -254,7 +254,7 @@ namespace ODataApiGen.Angular
                 var inter = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
                 if (inter != null)
                 {
-                    service.SetInterface(inter);
+                    service.SetEntity(inter);
                 }
                 var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
                 if (model != null)

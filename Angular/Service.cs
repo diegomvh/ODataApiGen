@@ -11,10 +11,10 @@ namespace ODataApiGen.Angular
     {
         public Service() { }
 
-        public Angular.Entity Interface { get; private set; }
-        public void SetInterface(Angular.Entity inter)
+        public Angular.Entity Entity { get; private set; }
+        public void SetEntity(Angular.Entity entity)
         {
-            this.Interface = inter;
+            this.Entity = entity;
         }
         public Angular.Model Model { get; private set; }
         public void SetModel(Angular.Model model)

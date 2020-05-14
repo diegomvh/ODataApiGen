@@ -12,11 +12,10 @@ namespace ODataApiGen.Models
         public List<Schema> Schemas { get; private set; }
         public string Namespace => 
             this.Schemas.Select(s => s.Namespace).OrderBy(n => n.Length).FirstOrDefault();
-
+        public IEnumerable<EntityType> EntityTypes => this.Schemas.SelectMany(s => s.EntityTypes);
         public IEnumerable<Function> Functions => this.Schemas.SelectMany(s => s.Functions);
         public IEnumerable<Action> Actions => this.Schemas.SelectMany(s => s.Actions);
         public IEnumerable<KeyValuePair<string, List<Annotation>>> Annotations => this.Schemas.SelectMany(s => s.Annotations);
-
         public IEnumerable<Function> UnboundFunctions => this.Schemas.SelectMany(s => s.Functions).Where(f => !f.IsBound);
         public IEnumerable<Action> UnboundActions => this.Schemas.SelectMany(s => s.Actions).Where(f => !f.IsBound);
 
@@ -29,9 +28,9 @@ namespace ODataApiGen.Models
             
             foreach (var xElement in elements)
             {
-                var enT = new Schema(xElement);
-                schemas.Add(enT);
-                Logger.LogInformation($"Schema Type '{enT.Namespace}' parsed");
+                var entity = new Schema(xElement);
+                schemas.Add(entity);
+                Logger.LogInformation($"Schema Type '{entity.Namespace}' parsed");
             }
             return schemas;
         }
