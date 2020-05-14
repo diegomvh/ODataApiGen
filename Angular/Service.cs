@@ -117,7 +117,6 @@ namespace ODataApiGen.Angular
             {
                 var entity = binding.EntityType;
                 var nav = binding.NavigationProperty;
-                Console.WriteLine(nav.Name);
                 var type = entity.Name;
                 var name = nav.Name[0].ToString().ToUpper() + nav.Name.Substring(1);
                 var methodRelationName = nav.Name;
