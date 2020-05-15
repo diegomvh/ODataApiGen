@@ -12,7 +12,7 @@ namespace ODataApiGen
         public static ILoggerFactory LoggerFactory { get; private set; }
         public static ILogger Logger { get; private set; }
         public static IConfiguration Configuration { get; set; }
-        public static string Metadata { get; set; }
+        public static Metadata Metadata { get; set; }
         public static string Name { get; set; }
         public static string Output { get; set; }
         public static bool Purge { get; set; }
@@ -51,8 +51,8 @@ namespace ODataApiGen
             var directories = new DirectoryManager(Output);
             var renderer = new Renderer(Output);
 
-            Metadata = Configuration.GetValue<string>("Metadata");
-            var metadata = new Metadata(System.Xml.Linq.XDocument.Load(Metadata));
+            var metadata = Configuration.GetValue<string>("Metadata");
+            Metadata = new Metadata(System.Xml.Linq.XDocument.Load(metadata));
 
             Purge = Configuration.GetValue<bool>("Purge");
             directories.PrepareOutput(Purge);
@@ -60,8 +60,8 @@ namespace ODataApiGen
             WithCredentials = Configuration.GetValue<bool>("WithCredentials");
             StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
-            var package = new Angular.Package(Name, Metadata, WithCredentials, StringAsEnum, Models, "4.0");
-            package.LoadMetadata(metadata);
+            var package = new Angular.Package(Name, metadata, WithCredentials, StringAsEnum, Models, "4.0");
+            package.LoadMetadata(Program.Metadata);
             package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
