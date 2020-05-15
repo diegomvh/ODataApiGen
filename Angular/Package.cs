@@ -326,7 +326,7 @@ namespace ODataApiGen.Angular
             this.Index.Dependencies.AddRange(this.Entities);
             this.Index.Dependencies.AddRange(this.Models);
             this.Index.Dependencies.AddRange(this.Collections);
-            this.Index.Dependencies.AddRange(this.EnumConfigs);
+            this.Index.Dependencies.AddRange(this.EntityConfigs);
             this.Index.Dependencies.AddRange(this.Services);
             this.Index.Dependencies.AddRange(this.ServiceConfigs);
         }
