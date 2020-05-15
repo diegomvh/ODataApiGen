@@ -117,30 +117,12 @@ namespace ODataApiGen.Angular
             {
                 var nav = binding.NavigationProperty;
                 var type = AngularRenderable.GetTypescriptType(nav.Type);
-                var name = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 
-                var methodRelationName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
-                var methodCreateName = nav.IsCollection ? $"add{type}To{name}" : $"set{type}As{name}";
-                var methodDeleteName = nav.IsCollection ? $"remove{type}From{name}" : $"unset{type}As{name}";
-
-                var returnType = nav.IsCollection ? 
-                    $"[{type}[], ODataEntitiesAnnotations]" : 
-                    $"[{type}, ODataEntityAnnotations]";
+                var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
                 // Navigation
-                yield return $@"public {methodRelationName}(entity: {EntityName}, options?: HttpOptions): Observable<{returnType}> {{
-    return this.navigationProperty<{type}>(entity, '{binding.Path}')
-      .{(nav.IsCollection ? "collection" : "single")}(options);
-  }}";
-                // Link
-                yield return $@"public {methodCreateName}<{type}>(entity: {EntityName}, target: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
-    return this.navigationProperty<{type}>(entity, '{binding.Path}').reference()
-      .{(nav.IsCollection ? "add" : "set")}(target{(nav.IsCollection ? "" : ", {etag}")});
-  }}";
-                // Unlink
-                yield return $@"public {methodDeleteName}<{type}>(entity: {EntityName}, target?: ODataEntityResource<{type}>, etag?: string): Observable<any> {{
-    return this.navigationProperty<{type}>(entity, '{binding.Path}').reference()
-      .remove({{etag, target}});
+                yield return $@"public {methodName}(entity: {EntityName}): ODataNavigationPropertyResource<{type}> {{
+    return this.navigationProperty<{type}>(entity, '{binding.Path}');
   }}";
             }
         }
