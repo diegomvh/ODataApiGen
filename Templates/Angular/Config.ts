@@ -1,5 +1,7 @@
+//#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
-{% endfor %}
+{% endfor %}//#endregion
+
 export const {{Name}} = {
   baseUrl: '{{Package.BaseUrl}}',
   metadataUrl: '{{Package.MetadataUrl}}',

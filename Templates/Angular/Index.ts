@@ -1,4 +1,5 @@
-{% for export in Exports %}{{export}}{% unless forloop.last %};
-{% endunless %}{% endfor %}
+//#region ODataApi Imports
+{% for export in Exports %}{{export}};
+{% endfor %}//#endregion
 export * from './{{Package.Endpoint}}.config';
 export * from './{{Package.Endpoint}}.module';

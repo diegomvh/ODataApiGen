@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { ODataModelService, ODataEntityAnnotations, ODataEntitiesAnnotations, ODataValueAnnotations, ODataEntityResource } from 'angular-odata';
 
+//#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}
 

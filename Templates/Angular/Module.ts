@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
+
+//#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
-{% endfor %}
+{% endfor %}//#endregion
 
 @NgModule({
   providers: [

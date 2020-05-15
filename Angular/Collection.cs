@@ -9,13 +9,10 @@ namespace ODataApiGen.Angular
     public class Collection : Structured
     {
         public Angular.Model Model { get; private set; }
-        public Angular.BaseCollection BaseCollection { get; private set; }
-        public Collection(StructuredType type, Angular.Model model, Angular.BaseCollection baseCollection) : base(type)
+        public Collection(StructuredType type, Angular.Model model) : base(type)
         {
             this.Model = model;
             this.Dependencies.Add(model);
-            this.BaseCollection = baseCollection;
-            this.Dependencies.Add(baseCollection);
         }
         
         // Imports
@@ -44,7 +41,6 @@ namespace ODataApiGen.Angular
         // Exports
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
         public override string Name => this.EdmStructuredType.Name + "Collection";
-        public override bool Overwrite => false;
         public string ModelName => this.Model.Name;
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
@@ -54,10 +50,7 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EntityType = this.EntityType,
-                Model = new {
-                    Name = this.Model.Name
-                } 
+                EntityType = this.EntityType
             };
         }
 

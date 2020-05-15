@@ -5,8 +5,9 @@ import { map } from 'rxjs/operators';
 
 import { ODataEntityService, ODataEntityAnnotations, ODataEntitiesAnnotations, ODataValueAnnotations, ODataEntityResource } from 'angular-odata';
 
+//#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
-{% endfor %}
+{% endfor %}//#endregion
 
 @Injectable()
 export class {{Name}} extends ODataEntityService<{{EntityName}}> {
@@ -14,13 +15,13 @@ export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   static type: string = '{{ServiceType}}';
   static entity: string = '{{EntityType}}';
   
-  // Actions
+  //#region ODataApi Actions
   {% for action in Actions %}{{action}}
-  {% endfor %}
-  // Functions
+  {% endfor %}//#endregion
+  //#region ODataApi Functions
   {% for func in Functions %}{{func}}
-  {% endfor %}
-  // Navigations
+  {% endfor %}//#endregion
+  //#region ODataApi Navigations
   {% for nav in Navigations %}{{nav}}
-  {% endfor %}
+  {% endfor %}//#endregion
 }

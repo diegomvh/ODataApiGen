@@ -1,8 +1,10 @@
+//#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
-{% endfor %}
-{% capture splitNewLine %},
-  {% endcapture %}
+{% endfor %}//#endregion
+
 export const ISFLAGS_{{Name | upcase}} = {{Flags}};
 export enum {{Name}} {
-  {{ Members | join: splitNewLine}}
+  //#region ODataApi Members
+  {% for member in Members %}{{member}},
+  {% endfor %}//#endregion
 }
