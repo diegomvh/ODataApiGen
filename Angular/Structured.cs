@@ -49,7 +49,6 @@ namespace ODataApiGen.Angular
         public string EntityType => this.EdmStructuredType.FullName;
         public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override bool Overwrite => true;
         public string EntitySetName => this.Service?.EntitySetName;
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

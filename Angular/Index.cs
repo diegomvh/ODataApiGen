@@ -20,7 +20,6 @@ namespace ODataApiGen.Angular
         public override string NameSpace => "";
         public override string FileName => "index";
         public override string Directory => this.NameSpace;
-        public override bool Overwrite => true;
         public IEnumerable<string> Exports =>this.GetImportRecords().Select(import => $"export * from './{import.From}'");
     }
 }

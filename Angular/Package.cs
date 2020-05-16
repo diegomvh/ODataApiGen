@@ -141,8 +141,9 @@ namespace ODataApiGen.Angular
             {
                 if (!String.IsNullOrEmpty(entity.EdmStructuredType.BaseType))
                 {
-                    var baseInter = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
-                    entity.SetBase(baseInter);
+                    var baseEntity = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
+                    entity.SetBase(baseEntity);
+                    entity.Dependencies.Add(baseEntity);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == entity.EdmStructuredType.Name);
                 if (service != null)
@@ -158,6 +159,7 @@ namespace ODataApiGen.Angular
                 {
                     var baseModel = this.Models.FirstOrDefault(e => e.EdmStructuredType.FullName == model.EdmStructuredType.BaseType);
                     model.SetBase(baseModel);
+                    model.Dependencies.Add(baseModel);
                 }
                 var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == model.EdmStructuredType.Name);
                 if (collection != null)
@@ -177,6 +179,7 @@ namespace ODataApiGen.Angular
                 {
                     var baseCollection = this.Collections.FirstOrDefault(e => e.EdmStructuredType.FullName == collection.EdmStructuredType.BaseType);
                     collection.SetBase(baseCollection);
+                    collection.Dependencies.Add(baseCollection);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == collection.EdmStructuredType.Name);
                 if (service != null)
@@ -189,8 +192,8 @@ namespace ODataApiGen.Angular
             {
                 if (!String.IsNullOrEmpty(config.EdmStructuredType.BaseType))
                 {
-                    var baseInter = this.EntityConfigs.FirstOrDefault(e => e.EdmStructuredType.FullName == config.EdmStructuredType.BaseType);
-                    config.SetBase(baseInter);
+                    var baseConfig = this.EntityConfigs.FirstOrDefault(e => e.EdmStructuredType.FullName == config.EdmStructuredType.BaseType);
+                    config.SetBase(baseConfig);
                 }
                 var service = this.Services.FirstOrDefault(s => s.EntityName == config.EdmStructuredType.Name);
                 if (service != null)

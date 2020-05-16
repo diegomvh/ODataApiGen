@@ -44,7 +44,6 @@ namespace ODataApiGen.Angular
 
         public Model(StructuredType type, Angular.Entity entity) : base(type) {
             this.Entity = entity;
-            this.Dependencies.Add(entity);
         }
         public Angular.Collection Collection {get; private set;}
 

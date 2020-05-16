@@ -40,7 +40,6 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string NameSpace => (this.EdmEntitySet != null? this.EdmEntitySet.Namespace : this.EdmSingleton.Namespace);
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override bool Overwrite => true; 
         public object ToLiquid()
         {
             return new {

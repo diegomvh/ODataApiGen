@@ -18,7 +18,6 @@ namespace ODataApiGen.Angular {
         // About File
         public override string FileName => this.Package.EndpointName.ToLower() + ".config";
         public override string Directory => this.NameSpace;
-        public override bool Overwrite => true;
 
         public IEnumerable<string> Apis => this.Package.ApiConfigs
               .Select(a => $"'{a.ApiType}': {a.Name}");

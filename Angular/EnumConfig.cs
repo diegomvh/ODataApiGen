@@ -30,7 +30,6 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string NameSpace => this.EdmEnumType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public override bool Overwrite => true; 
         public bool Flags => this.EdmEnumType.Flags; 
 
         public object ToLiquid()

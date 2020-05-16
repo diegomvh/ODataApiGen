@@ -13,7 +13,6 @@ namespace ODataApiGen.Abstracts
         // About File
         public abstract string FileName { get; }
         public abstract string Directory { get; }
-        public abstract bool Overwrite { get; }
         public Uri Uri => !String.IsNullOrEmpty(Directory) ? new Uri($"r://{Directory}{Path.DirectorySeparatorChar}{FileName}", UriKind.Absolute) : new Uri($"r://{FileName}");
 
         // About References

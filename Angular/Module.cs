@@ -16,7 +16,6 @@ namespace ODataApiGen.Angular
         public override string NameSpace => "";
         public override string FileName => this.Package.EndpointName.ToLower() + ".module";
         public override string Directory => this.NameSpace;
-        public override bool Overwrite => true;
         public IEnumerable<Service> Services => this.Package.Services;
         // Imports and Exports
         public override IEnumerable<string> ImportTypes => this.Package.Services.Select(a => a.EntityType);

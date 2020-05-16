@@ -12,7 +12,6 @@ namespace ODataApiGen.Angular
         public Collection(StructuredType type, Angular.Model model) : base(type)
         {
             this.Model = model;
-            this.Dependencies.Add(model);
         }
         
         // Imports

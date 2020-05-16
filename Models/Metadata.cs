@@ -12,6 +12,8 @@ namespace ODataApiGen.Models
         public List<Schema> Schemas { get; private set; }
         public string Namespace => 
             this.Schemas.Select(s => s.Namespace).OrderBy(n => n.Length).FirstOrDefault();
+        public IEnumerable<EnumType> EnumTypes => this.Schemas.SelectMany(s => s.EnumTypes);
+        public IEnumerable<ComplexType> ComplexTypes => this.Schemas.SelectMany(s => s.ComplexTypes);
         public IEnumerable<EntityType> EntityTypes => this.Schemas.SelectMany(s => s.EntityTypes);
         public IEnumerable<Function> Functions => this.Schemas.SelectMany(s => s.Functions);
         public IEnumerable<Action> Actions => this.Schemas.SelectMany(s => s.Actions);
