@@ -92,9 +92,9 @@ namespace ODataApiGen.Angular
         }
         public IEnumerable<string> Navigations {
             get {
-                if (this.EdmStructuredType is EntityType) {
-                    var modelNavigations = (this.EdmStructuredType as EntityType).NavigationProperties.Where(nav => !nav.IsCollection);
-                    return modelNavigations.Count() > 0 ? this.RenderReferences(modelNavigations) : Enumerable.Empty<string>();
+                if (this.Service is ServiceEntity) {
+                    var bindings = (this.Service as ServiceEntity).EdmEntitySet.NavigationPropertyBindings.Where(binding => !binding.NavigationProperty.IsCollection);
+                    return bindings.Count() > 0 ? this.RenderReferences(bindings) : Enumerable.Empty<string>();
                 }
                 return Enumerable.Empty<string>();
             }

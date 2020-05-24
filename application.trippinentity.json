@@ -3,7 +3,5 @@
     "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
     "Output": "../TripPinEntity/src/app",
     "Purge": true,
-    "WithCredentials": false,
-    "StringAsEnum": true,
     "Models": false
 }

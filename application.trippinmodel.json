@@ -2,8 +2,6 @@
     "Name": "TripPin",
     "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
     "Output": "../TripPinModel/src/app",
-    "Purge": false,
-    "WithCredentials": false,
-    "StringAsEnum": true,
+    "Purge": true,
     "Models": true
 }

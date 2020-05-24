@@ -115,14 +115,20 @@ namespace ODataApiGen.Angular
             foreach (var binding in bindings)
             {
                 var nav = binding.NavigationProperty;
+                var navEntity = nav.EntityType;
+                var bindingEntity = binding.EntityType;
                 var type = AngularRenderable.GetTypescriptType(nav.Type);
 
-                var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+                if (navEntity.IsBaseOf(bindingEntity)) {
+                    Console.WriteLine("Es una base");
+                } else {
+                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
-                // Navigation
-                yield return $@"public {methodName}(entity: {EntityName}): ODataNavigationPropertyResource<{type}> {{
-    return this.navigationProperty<{type}>(entity, '{binding.Path}');
-  }}";
+                    // Navigation
+                    yield return $@"public {methodName}(entity: {EntityName}): ODataNavigationPropertyResource<{type}> {{
+        return this.navigationProperty<{type}>(entity, '{binding.Path}');
+    }}";
+                }
             }
         }
         public object ToLiquid()

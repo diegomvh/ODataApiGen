@@ -3,7 +3,5 @@
     "Metadata": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
     "Output": "../NorthwindModels/src/app",
     "Purge": true,
-    "WithCredentials": false,
-    "StringAsEnum": false,
     "Models": true
 }

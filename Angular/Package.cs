@@ -22,7 +22,7 @@ namespace ODataApiGen.Angular
         public ICollection<Angular.Service> Services { get; private set; }
         public ICollection<Angular.ServiceConfig> ServiceConfigs { get; private set; }
 
-        public Package(string endpointName, string metadataPath, bool secure, bool stringAsEnums, bool models, string version) : base(endpointName, metadataPath, secure, stringAsEnums, models, version)
+        public Package(string endpointName, string metadataPath, bool models) : base(endpointName, metadataPath, models)
         {
             this.Module = new Module(this);
             Config = new Angular.Config(this);
@@ -292,12 +292,9 @@ namespace ODataApiGen.Angular
         {
             return new
             {
-                BaseUrl = this.MetadataPath.TrimEnd("$metadata".ToCharArray()),
+                ServiceRootUrl = this.MetadataPath.TrimEnd("$metadata".ToCharArray()),
                 MetadataUrl = this.MetadataPath,
-                WithCredentials = this.WithCredentials.ToString().ToLower(),
-                StringAsEnum = this.StringAsEnum.ToString().ToLower(),
                 Creation = DateTime.Now,
-                Version = this.Version,
                 Endpoint = this.EndpointName.ToLower()
             };
         }

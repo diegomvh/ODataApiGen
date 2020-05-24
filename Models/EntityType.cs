@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -24,5 +25,6 @@ namespace ODataApiGen.Models
         public bool IsCompositeKey { get { return this.Keys.Count() > 1; } }
         public List<PropertyRef> Keys { get; private set; }
         public List<NavigationProperty> NavigationProperties { get; set; }
+
     }
 }

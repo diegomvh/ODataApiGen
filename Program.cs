@@ -16,8 +16,6 @@ namespace ODataApiGen
         public static string Name { get; set; }
         public static string Output { get; set; }
         public static bool Purge { get; set; }
-        public static bool WithCredentials { get; set; }
-        public static bool StringAsEnum { get; set; }
         public static bool Models { get; set; }
 
         static void Main(string[] args)
@@ -33,14 +31,12 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.siu.json")
+                .AddJsonFile("application.trippinentity.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
                     {"-Purge", "Purge"},
                     {"-Output", "Output"},
-                    {"-WithCredentials", "WithCredentials"},
-                    {"-StringAsEnum", "StringAsEnum"},
                     {"-Models", "Models"}
                 });
             Configuration = builder.Build();
@@ -57,10 +53,8 @@ namespace ODataApiGen
             Purge = Configuration.GetValue<bool>("Purge");
             directories.PrepareOutput(Purge);
 
-            WithCredentials = Configuration.GetValue<bool>("WithCredentials");
-            StringAsEnum = Configuration.GetValue<bool>("StringAsEnum");
             Models = Configuration.GetValue<bool>("Models");
-            var package = new Angular.Package(Name, metadata, WithCredentials, StringAsEnum, Models, "4.0");
+            var package = new Angular.Package(Name, metadata, Models);
             package.LoadMetadata(Program.Metadata);
             package.ResolveDependencies();
 

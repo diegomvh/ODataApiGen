@@ -3,7 +3,5 @@
     "Metadata": "https://graph.microsoft.com/v1.0/$metadata",
     "Output": "./local",
     "Purge": true,
-    "Secure": false,
-    "StringAsEnum": false,
     "Models": false
 }

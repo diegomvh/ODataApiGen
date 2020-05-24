@@ -18,6 +18,10 @@ namespace ODataApiGen.Models
             Properties = element.Descendants().Where(a => a.Name.LocalName == "Property")
                 .Select(prop => new Property(prop, this)).ToList();
         }
+        public bool IsBaseOf(StructuredType structured)
+        {
+            return this.BaseType == structured.FullName;
+        }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }
         public string BaseType { get; private set; }

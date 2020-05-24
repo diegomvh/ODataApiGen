@@ -114,10 +114,11 @@ namespace ODataApiGen.Angular
                     "\n  }";
             }
         }
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationProperty> navigations)
+        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationPropertyBinding> bindings)
         {
-            foreach (var nav in navigations)
+            foreach (var binding in bindings)
             {
+                var nav = binding.NavigationProperty;
                 var type = AngularRenderable.GetTypescriptType(nav.Type);
                 var methodName = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 

@@ -3,12 +3,9 @@
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  baseUrl: '{{Package.BaseUrl}}',
+  serviceRootUrl: '{{Package.ServiceRootUrl}}',
   metadataUrl: '{{Package.MetadataUrl}}',
-  withCredentials: {{Package.WithCredentials}},
-  stringAsEnum: {{Package.StringAsEnum}},
   creation: new Date('{{Package.Creation | date: "o"}}'),
-  version: '{{Package.Version}}',
   apis: {
     {% for api in Apis %}{{api}}{% unless forloop.last %},
     {% endunless %}{% endfor %}},
