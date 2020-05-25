@@ -143,7 +143,7 @@ namespace ODataApiGen.Angular
 
                     // Navigation
                     yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{type}> {{
-    return this.navigationProperty<{type}>(entity, '{binding.Path}');
+    return this.entity(entity).navigationProperty<{type}>('{binding.Path}');
   }}";
                 }
             }
