@@ -24,16 +24,21 @@ namespace ODataApiGen.Models
         public string Target { get; set; }
         public EntityType EntityType { 
             get {
-                var parts = this.Path.Split('/');
-                var entityType = parts.Length == 2 ? parts[0] : this.EntitySet.EntityType;
-                return Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entityType);
+                return Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == this.EntitySet.EntityType);
             }
         }
+        public EntityType PropertyType {
+            get {
+                var parts = this.Path.Split('/');
+                var entityType = parts.Length == 2 ? parts[0] : String.Empty;
+                return Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entityType);
+            }
+        } 
         public string PropertyName => this.Path.Split('/').Last();
         public NavigationProperty NavigationProperty { 
             get {
                 var name = this.PropertyName;
-                var entity = this.EntityType; 
+                var entity = (this.PropertyType != null)? this.PropertyType : this.EntityType; 
                 while (true) {
                     var prop = entity.NavigationProperties.FirstOrDefault(nav => nav.Name == name);
                     if (prop != null) return prop;

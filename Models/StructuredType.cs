@@ -20,7 +20,7 @@ namespace ODataApiGen.Models
         }
         public bool IsBaseOf(StructuredType structured)
         {
-            return this.BaseType == structured.FullName;
+            return structured.BaseType == this.FullName;
         }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }

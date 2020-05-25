@@ -112,22 +112,39 @@ namespace ODataApiGen.Angular
 
         protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationPropertyBinding> bindings)
         {
+            var casts = new List<string>();
             foreach (var binding in bindings)
             {
                 var nav = binding.NavigationProperty;
                 var navEntity = nav.EntityType;
                 var bindingEntity = binding.EntityType;
-                var type = AngularRenderable.GetTypescriptType(nav.Type);
+                var propertyEntity = binding.PropertyType;
 
-                if (navEntity.IsBaseOf(bindingEntity)) {
-                    Console.WriteLine("Es una base");
+                var type = navEntity.Name;
+                if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity)) {
+                    var castName = $"as{propertyEntity.Name}";
+                    if (!casts.Contains(propertyEntity.FullName)) {
+                        // Cast
+                        type = propertyEntity.Name;
+                        yield return $@"public {castName}(): ODataEntitySetResource<{type}> {{
+    return this.entities().cast<{type}>('{propertyEntity.FullName}');
+  }}";
+                        casts.Add(propertyEntity.FullName);
+                    }
+                    var methodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+
+                    // Navigation
+                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{type}> {{
+    return this.{castName}().entity(entity).navigationProperty<{type}>('{binding.PropertyName}');
+  }}";
+
                 } else {
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
                     // Navigation
-                    yield return $@"public {methodName}(entity: {EntityName}): ODataNavigationPropertyResource<{type}> {{
-        return this.navigationProperty<{type}>(entity, '{binding.Path}');
-    }}";
+                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{type}> {{
+    return this.navigationProperty<{type}>(entity, '{binding.Path}');
+  }}";
                 }
             }
         }
