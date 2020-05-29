@@ -54,8 +54,8 @@ namespace ODataApiGen
             directories.PrepareOutput(Purge);
 
             Models = Configuration.GetValue<bool>("Models");
-            var package = new Angular.Package(Name, metadata, Models);
-            package.LoadMetadata(Program.Metadata);
+            var package = new Angular.Package(Name);
+            package.Build(Models);
             package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");

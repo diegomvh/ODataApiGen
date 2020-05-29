@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DotLiquid;
 using ODataApiGen.Abstracts;
-using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
@@ -12,216 +11,27 @@ namespace ODataApiGen.Angular
         public Angular.Module Module { get; private set; }
         public Angular.Config Config { get; private set; }
         public Angular.Index Index { get; private set; }
-        public ICollection<Angular.ApiConfig> ApiConfigs { get; private set; }
-        public ICollection<Angular.Enum> Enums { get; private set; }
-        public ICollection<Angular.EnumConfig> EnumConfigs { get; private set; }
-        public ICollection<Angular.Entity> Entities { get; private set; }
-        public ICollection<Angular.Model> Models { get; private set; }
-        public ICollection<Angular.Collection> Collections { get; private set; }
-        public ICollection<Angular.EntityConfig> EntityConfigs { get; private set; }
-        public ICollection<Angular.Service> Services { get; private set; }
-        public ICollection<Angular.ServiceConfig> ServiceConfigs { get; private set; }
-
-        public Package(string endpointName, string metadataPath, bool models) : base(endpointName, metadataPath, models)
+        public ICollection<Angular.Schema> Schemas { get; private set; }
+        public Package(string name) : base(name)
         {
             this.Module = new Module(this);
             Config = new Angular.Config(this);
             Index = new Angular.Index(this);
-            ApiConfigs = new List<Angular.ApiConfig>();
-            Enums = new List<Angular.Enum>();
-            EnumConfigs = new List<Angular.EnumConfig>();
-            Entities = new List<Angular.Entity>();
-            Models = new List<Angular.Model>();
-            Collections = new List<Angular.Collection>();
-            EntityConfigs = new List<Angular.EntityConfig>();
-            Services = new List<Angular.Service>();
-            ServiceConfigs = new List<Angular.ServiceConfig>();
+            Schemas = new List<Angular.Schema>();
         }
 
-        public override void LoadMetadata(Metadata metadata)
+        public override void Build(bool models)
         {
-            this.Services.Add(new Angular.ServiceApi(this.EndpointName, metadata));
-            foreach (var schema in metadata.Schemas)
+            foreach (var schema in Program.Metadata.Schemas)
             {
-                this.AddEnums(schema.EnumTypes);
-                this.AddComplexes(schema.ComplexTypes);
-                this.AddEntities(schema.EntityTypes);
-                foreach (var container in schema.EntityContainers)
-                {
-                    this.AddServices(container);
-                }
+                this.Schemas.Add(new Angular.Schema(schema, this.Name, models));
             }
         }
-
-        public void AddEnums(IEnumerable<Models.EnumType> enums)
-        {
-            foreach (var e in enums)
-            {
-                var config = new Angular.EnumConfig(e);
-                this.EnumConfigs.Add(config);
-                var enu = new Angular.Enum(e);
-                this.Enums.Add(enu);
-            }
-        }
-
-        public void AddEntities(IEnumerable<Models.EntityType> entities)
-        {
-            foreach (var enty in entities)
-            {
-                var config = new Angular.EntityConfig(enty);
-                this.EntityConfigs.Add(config);
-                var entity = new Angular.Entity(enty);
-                this.Entities.Add(entity);
-                config.SetEntity(entity);
-                if (this.CreateModels)
-                {
-                    var model = new Angular.Model(enty, entity);
-                    this.Models.Add(model);
-                    config.SetModel(model);
-                    var collection = new Angular.Collection(enty, model);
-                    this.Collections.Add(collection);
-                    config.SetCollection(collection);
-                }
-            }
-        }
-
-        public void AddComplexes(IEnumerable<Models.ComplexType> complexes)
-        {
-            foreach (var cmplx in complexes)
-            {
-                var config = new Angular.EntityConfig(cmplx);
-                this.EntityConfigs.Add(config);
-                var entity = new Angular.Entity(cmplx);
-                this.Entities.Add(entity);
-                config.SetEntity(entity);
-                if (this.CreateModels)
-                {
-                    var model = new Angular.Model(cmplx, entity);
-                    this.Models.Add(model);
-                    config.SetModel(model);
-                    var collection = new Angular.Collection(cmplx, model);
-                    this.Collections.Add(collection);
-                    config.SetCollection(collection);
-                }
-            }
-        }
-
-        public void AddServices(Models.EntityContainer container)
-        {
-            this.ApiConfigs.Add(new Angular.ApiConfig(container));
-            foreach (var eset in container.EntitySets)
-            {
-                var config = new Angular.ServiceConfig(eset);
-                if (this.CreateModels)
-                {
-                    this.Services.Add(new Angular.ServiceModel(eset));
-                }
-                else
-                {
-                    this.Services.Add(new Angular.ServiceEntity(eset));
-                }
-                this.ServiceConfigs.Add(config);
-            }
-            foreach (var s in container.Singletons)
-            {
-                var config = new Angular.ServiceConfig(s);
-                this.Services.Add(new Angular.ServiceSingleton(s));
-                this.ServiceConfigs.Add(config);
-            }
-        }
-
         public void ResolveDependencies()
         {
-            // Enums
-            foreach (var enumm in Enums)
-            {
-            }
-            // Entities
-            foreach (var entity in Entities)
-            {
-                if (!String.IsNullOrEmpty(entity.EdmStructuredType.BaseType))
-                {
-                    var baseEntity = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
-                    entity.SetBase(baseEntity);
-                    entity.Dependencies.Add(baseEntity);
-                }
-                var service = this.Services.FirstOrDefault(s => s.EntityName == entity.EdmStructuredType.Name);
-                if (service != null)
-                {
-                    entity.SetService(service);
-                }
-            }
-
-            // Models
-            foreach (var model in Models)
-            {
-                if (!String.IsNullOrEmpty(model.EdmStructuredType.BaseType))
-                {
-                    var baseModel = this.Models.FirstOrDefault(e => e.EdmStructuredType.FullName == model.EdmStructuredType.BaseType);
-                    model.SetBase(baseModel);
-                    model.Dependencies.Add(baseModel);
-                }
-                var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == model.EdmStructuredType.Name);
-                if (collection != null)
-                {
-                    model.SetCollection(collection);
-                }
-                var service = this.Services.FirstOrDefault(s => s.EntityName == model.EdmStructuredType.Name);
-                if (service != null)
-                {
-                    model.SetService(service);
-                }
-            }
-            // Collections
-            foreach (var collection in Collections)
-            {
-                if (!String.IsNullOrEmpty(collection.EdmStructuredType.BaseType))
-                {
-                    var baseCollection = this.Collections.FirstOrDefault(e => e.EdmStructuredType.FullName == collection.EdmStructuredType.BaseType);
-                    collection.SetBase(baseCollection);
-                    collection.Dependencies.Add(baseCollection);
-                }
-                var service = this.Services.FirstOrDefault(s => s.EntityName == collection.EdmStructuredType.Name);
-                if (service != null)
-                {
-                    collection.SetService(service);
-                }
-            }
-            // Entity Config
-            foreach (var config in EntityConfigs)
-            {
-                if (!String.IsNullOrEmpty(config.EdmStructuredType.BaseType))
-                {
-                    var baseConfig = this.EntityConfigs.FirstOrDefault(e => e.EdmStructuredType.FullName == config.EdmStructuredType.BaseType);
-                    config.SetBase(baseConfig);
-                }
-                var service = this.Services.FirstOrDefault(s => s.EntityName == config.EdmStructuredType.Name);
-                if (service != null)
-                {
-                    config.SetService(service);
-                }
-            }
-
-            // Services
-            foreach (var service in Services)
-            {
-                var inter = this.Entities.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
-                if (inter != null)
-                {
-                    service.SetEntity(inter);
-                }
-                var model = this.Models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
-                if (model != null)
-                {
-                    service.SetModel(model);
-                }
-                var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
-                if (collection != null)
-                {
-                    service.SetCollection(collection);
-                }
-            }
-
+            foreach (var schema in Schemas)
+                schema.ResolveDependencies();
+            /*
             // Resolve Renderable Dependencies
             var renderables = new List<Renderable>();
             renderables.AddRange(this.ApiConfigs);
@@ -273,18 +83,12 @@ namespace ODataApiGen.Angular
             this.Index.Dependencies.AddRange(this.EntityConfigs);
             this.Index.Dependencies.AddRange(this.Services);
             this.Index.Dependencies.AddRange(this.ServiceConfigs);
+            */
         }
 
         public IEnumerable<string> GetAllDirectories()
         {
-            return this.Enums.Select(e => e.Directory)
-                .Union(this.Entities.Select(m => m.Directory))
-                .Union(this.Models.Select(m => m.Directory))
-                .Union(this.ApiConfigs.Select(m => m.Directory))
-                .Union(this.EntityConfigs.Select(m => m.Directory))
-                .Union(this.EnumConfigs.Select(m => m.Directory))
-                .Union(this.Collections.Select(m => m.Directory))
-                .Union(this.Services.Select(s => s.Directory))
+            return this.Schemas.SelectMany(s => s.GetAllDirectories())
                 .Distinct();
         }
 
@@ -293,9 +97,8 @@ namespace ODataApiGen.Angular
             return new
             {
                 ServiceRootUrl = this.MetadataPath.TrimEnd("$metadata".ToCharArray()),
-                MetadataUrl = this.MetadataPath,
                 Creation = DateTime.Now,
-                Endpoint = this.EndpointName.ToLower()
+                Endpoint = this.Name.ToLower()
             };
         }
 
@@ -304,15 +107,7 @@ namespace ODataApiGen.Angular
             get
             {
                 var renderables = new List<Renderable>();
-                renderables.AddRange(this.ApiConfigs);
-                renderables.AddRange(this.Enums);
-                renderables.AddRange(this.EnumConfigs);
-                renderables.AddRange(this.Entities);
-                renderables.AddRange(this.Models);
-                renderables.AddRange(this.Collections);
-                renderables.AddRange(this.EntityConfigs);
-                renderables.AddRange(this.Services);
-                renderables.AddRange(this.ServiceConfigs);
+                renderables.AddRange(this.Schemas.SelectMany(s => s.Renderables));
                 renderables.Add(this.Module);
                 renderables.Add(this.Config);
                 renderables.Add(this.Index);

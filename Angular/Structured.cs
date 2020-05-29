@@ -21,11 +21,6 @@ namespace ODataApiGen.Angular
         {
             this.Base = b;
         }
-        public Angular.Service Service {get; private set;}
-        public void SetService(Service service)
-        {
-            this.Service = service;
-        }
 
         // Imports
         public override IEnumerable<string> ImportTypes
@@ -49,12 +44,12 @@ namespace ODataApiGen.Angular
         public string EntityType => this.EdmStructuredType.FullName;
         public override string NameSpace => this.EdmStructuredType.Namespace;
         public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public string EntitySetName => this.Service?.EntitySetName;
+        public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EntityType)?.Name;
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
+        protected override IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)

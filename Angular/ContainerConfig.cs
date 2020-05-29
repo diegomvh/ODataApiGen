@@ -7,14 +7,14 @@ using System.IO;
 
 namespace ODataApiGen.Angular
 {
-    public class ApiConfig: AngularRenderable, DotLiquid.ILiquidizable 
+    public class ContainerConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Models.EntityContainer EdmEntityContainer {get; private set;}
-        public ApiConfig(EntityContainer container) {
+        public ContainerConfig(EntityContainer container) {
             this.EdmEntityContainer = container;
         }
-        public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".api.config";
-        public override string Name => this.EdmEntityContainer.Name + "ApiConfig";
+        public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container.config";
+        public override string Name => this.EdmEntityContainer.Name + "ContainerConfig";
 
         public string Annotations {
             get {
