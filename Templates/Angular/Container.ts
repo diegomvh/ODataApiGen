@@ -5,6 +5,8 @@ import { Container } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  type: "{{ContainerType}}",
-  annotations: {{Annotations}},
+  name: "{{Name}}",
+  services: {
+    {% for config in ServiceConfigs %}'{{config.ServiceName}}': {{config.Name}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}}
 } as Container;

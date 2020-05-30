@@ -5,7 +5,7 @@ using DotLiquid;
 
 namespace ODataApiGen.Angular
 {
-    public class Api : AngularRenderable, ILiquidizable
+    public class Api : Service 
     {
         public string ApiName {get; private set;}
         public Api(string name)
@@ -33,15 +33,17 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
 
         public override string Name => this.ApiName + "Api";
-        public override string NameSpace => "";
+        public override string Namespace => "";
         public override string FileName => this.Name.ToLower() + ".api";
         public IEnumerable<string> Actions =>  this.RenderCallables(Program.Metadata.UnboundActions);
         public IEnumerable<string> Functions => this.RenderCallables(Program.Metadata.UnboundFunctions);
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-        public object ToLiquid()
-        {
-            return new { Name = this.Name };
-        }
+
+        public override string EntitySetName => "";
+
+        public override string EntityType => "";
+
+        public override string EntityName => "";
     }
 }

@@ -26,7 +26,7 @@ namespace ODataApiGen.Angular
                     parameters.AddRange(cal.Parameters);
 
                 var list = new List<string> {
-                    this.Model.EntityType
+                    this.Model.Entity.EdmStructuredType.FullName
                 };
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
@@ -48,8 +48,7 @@ namespace ODataApiGen.Angular
         {
             return new {
                 Name = this.Name,
-                Type = this.Type,
-                EntityType = this.EntityType
+                Type = this.Type
             };
         }
 

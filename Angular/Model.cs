@@ -15,9 +15,6 @@ namespace ODataApiGen.Angular
         public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
-                var annot = Value.FindAnnotation<CoreComputedAnnotation>("Org.OData.Core.V1.Computed");
-                if (annot != null)
-                    required = annot.Bool;
                 return Value.Name + (!required? "?" : "");
             }
         }
@@ -58,7 +55,7 @@ namespace ODataApiGen.Angular
             get
             {
                 var list = new List<string> {
-                    this.EntityType
+                    this.EdmStructuredType.FullName
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
@@ -92,8 +89,9 @@ namespace ODataApiGen.Angular
         }
         public IEnumerable<string> Navigations {
             get {
-                if (this.Service is ServiceEntity) {
-                    var bindings = (this.Service as ServiceEntity).EdmEntitySet.NavigationPropertyBindings.Where(binding => !binding.NavigationProperty.IsCollection);
+                var service = Program.Metadata.EntitySets.FirstOrDefault(s => s.EntityType == this.EdmStructuredType.FullName);
+                if (service != null) {
+                    var bindings = service.NavigationPropertyBindings.Where(binding => !binding.NavigationProperty.IsCollection);
                     return bindings.Count() > 0 ? this.RenderReferences(bindings) : Enumerable.Empty<string>();
                 }
                 return Enumerable.Empty<string>();
@@ -104,7 +102,6 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EntityType = this.EntityType,
                 Entity = new {
                     Name = this.Entity.Name
                 }

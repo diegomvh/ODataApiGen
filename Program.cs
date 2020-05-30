@@ -31,7 +31,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.trippinentity.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -48,13 +48,14 @@ namespace ODataApiGen
             var renderer = new Renderer(Output);
 
             var metadata = Configuration.GetValue<string>("Metadata");
+            var serviceRootUrl = metadata.StartsWith("http") ? metadata.TrimEnd("$metadata".ToCharArray()) : "";
             Metadata = new Metadata(System.Xml.Linq.XDocument.Load(metadata));
 
             Purge = Configuration.GetValue<bool>("Purge");
             directories.PrepareOutput(Purge);
 
             Models = Configuration.GetValue<bool>("Models");
-            var package = new Angular.Package(Name);
+            var package = new Angular.Package(Name, serviceRootUrl);
             package.Build(Models);
             package.ResolveDependencies();
 

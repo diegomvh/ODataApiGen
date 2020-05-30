@@ -10,7 +10,7 @@ namespace ODataApiGen.Angular
     {
         public Models.Schema EdmSchema { get; private set; }
         public string SchemaName { get; private set; }
-        public override string FileName => this.SchemaName.ToLower() + "schema";
+        public override string FileName => this.SchemaName.ToLower() + ".schema";
         public override string Name => this.SchemaName + "Schema";
         public Angular.Api Api { get; private set; }
         public Angular.ContainerConfig ApiConfig { get; private set; }
@@ -25,7 +25,7 @@ namespace ODataApiGen.Angular
         {
             this.EdmSchema = schema;
             this.SchemaName = name;
-            this.Api = new Angular.Api(this.Name);
+            this.Api = new Angular.Api(name);
             this.AddEnums(schema.EnumTypes);
             this.AddComplexes(schema.ComplexTypes, models);
             this.AddEntities(schema.EntityTypes, models);
@@ -42,6 +42,7 @@ namespace ODataApiGen.Angular
                 this.EnumConfigs.Add(config);
                 var enu = new Angular.Enum(e);
                 this.Enums.Add(enu);
+                config.SetEnum(enu);
             }
         }
         public void AddComplexes(IEnumerable<Models.ComplexType> complexes, bool models)
@@ -88,16 +89,8 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string NameSpace => this.EdmSchema.Namespace;
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        /*
-        public IEnumerable<string> Enums => this.Package.EnumConfigs
-              .Select(e => $"'{e.EnumType}': {e.Name}");
-        public IEnumerable<string> Entities => this.Package.EntityConfigs
-              .Select(e => $"'{e.EntityType}': {e.Name}");
-        public IEnumerable<string> Services => this.Package.ServiceConfigs
-              .Select(s => $"'{s.ServiceType}': {s.Name}");
-              */
+        public override string Namespace => this.EdmSchema.Namespace;
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {
 
@@ -152,8 +145,43 @@ namespace ODataApiGen.Angular
 
             foreach (var container in Containers)
             {
-                container.ResolveDependencies(this.Entities, this.Models, this.Collections);
+                container.ResolveDependencies(this.Enums, this.Entities, this.Models, this.Collections);
             }
+
+            // Resolve Renderable Dependencies
+            var renderables = new List<Renderable>();
+            renderables.AddRange(this.Enums);
+            renderables.AddRange(this.EnumConfigs);
+            renderables.AddRange(this.Entities);
+            renderables.AddRange(this.Models);
+            renderables.AddRange(this.Collections);
+            renderables.AddRange(this.EntityConfigs);
+            foreach (var renderable in renderables)
+            {
+                var types = renderable.ImportTypes;
+                if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
+                {
+                    renderable.Dependencies.AddRange(
+    this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
+                    if (renderable is Structured || renderable is Service)
+                    {
+                        renderable.Dependencies.AddRange(
+        this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        if (!(renderable is EnumConfig))
+                        {
+                            {
+                                renderable.Dependencies.AddRange(
+                this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                                renderable.Dependencies.AddRange(
+                this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            }
+                        }
+                    }
+                }
+            }
+            this.Dependencies.AddRange(this.EnumConfigs);
+            this.Dependencies.AddRange(this.EntityConfigs);
+            this.Dependencies.AddRange(this.Containers);
         }
         public IEnumerable<string> GetAllDirectories()
         {
@@ -178,6 +206,7 @@ namespace ODataApiGen.Angular
                 renderables.AddRange(this.Models);
                 renderables.AddRange(this.Collections);
                 renderables.AddRange(this.EntityConfigs);
+                renderables.AddRange(this.Containers);
                 renderables.AddRange(this.Containers.SelectMany(s => s.Renderables));
                 return renderables;
             }
@@ -187,6 +216,7 @@ namespace ODataApiGen.Angular
             return new
             {
                 Name = this.Name,
+                Namespace = this.Namespace,
                 Type = this.Type
             };
         }

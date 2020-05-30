@@ -5,6 +5,6 @@ import { ServiceConfig } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  type: "{{ServiceType}}",
+  name: "{{ServiceName}}",
   annotations: {{Annotations}}
 } as ServiceConfig;

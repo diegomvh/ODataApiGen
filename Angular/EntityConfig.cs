@@ -93,7 +93,7 @@ namespace ODataApiGen.Angular
         }
 
         // Imports
-        public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
+        public override IEnumerable<string> ImportTypes => new List<string> { this.EdmStructuredType.FullName };
 
         public IEnumerable<Angular.EntityFieldConfig> Properties {
             get {
@@ -110,7 +110,7 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EntityType = this.EntityType
+                EntityName = this.EdmStructuredType.Name
             };
         }
     }

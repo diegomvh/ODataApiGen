@@ -7,8 +7,8 @@ namespace ODataApiGen.Abstracts
     public abstract class Renderable {
         // About Identity
         public abstract string Name { get; }
-        public abstract string NameSpace { get; }
-        public string Type => $"{this.NameSpace}.{this.Name}";
+        public abstract string Namespace { get; }
+        public string Type => $"{this.Namespace}.{this.Name}";
 
         // About File
         public abstract string FileName { get; }

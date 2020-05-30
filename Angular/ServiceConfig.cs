@@ -27,7 +27,6 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public string ServiceType => (this.EdmEntitySet != null? this.EdmEntitySet.FullName : this.EdmSingleton.FullName);
         public string ServiceName {
             get {
                 var name = this.EdmEntitySet != null? this.EdmEntitySet.Name : this.EdmSingleton.Name;
@@ -38,13 +37,14 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string NameSpace => (this.EdmEntitySet != null? this.EdmEntitySet.Namespace : this.EdmSingleton.Namespace);
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Namespace => (this.EdmEntitySet != null? this.EdmEntitySet.Namespace : this.EdmSingleton.Namespace);
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public object ToLiquid()
         {
             return new {
                 Name = this.Name,
-                Type = this.Type
+                Type = this.Type,
+                ServiceName = this.ServiceName
             };
         }
     }

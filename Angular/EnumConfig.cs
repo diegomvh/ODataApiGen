@@ -13,6 +13,12 @@ namespace ODataApiGen.Angular
         public EnumConfig(EnumType type) {
             this.EdmEnumType = type;
         }
+        public Angular.Enum Enum {get; private set;}
+
+        public void SetEnum(Enum enu)
+        {
+            this.Enum = enu;
+        }
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum.config";
         public override string Name => this.EdmEnumType.Name + "EnumConfig";
         public string EnumType => this.EdmEnumType.FullName;
@@ -28,8 +34,8 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ImportTypes => new List<string> { this.EnumType };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string NameSpace => this.EdmEnumType.Namespace;
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Namespace => this.EdmEnumType.Namespace;
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public bool Flags => this.EdmEnumType.Flags; 
 
         public object ToLiquid()
@@ -37,7 +43,7 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EnumType = this.EnumType
+                EnumName = this.EdmEnumType.Name
             };
         }
     }

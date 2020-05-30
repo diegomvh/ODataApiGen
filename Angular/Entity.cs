@@ -17,9 +17,6 @@ namespace ODataApiGen.Angular
         public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
-                var annot = Value.FindAnnotation<CoreComputedAnnotation>("Org.OData.Core.V1.Computed");
-                if (annot != null)
-                    required = annot.Bool;
                 return Value.Name + (!required? "?" : "");
             }
         }
@@ -54,7 +51,7 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EntityType = this.EntityType
+                EntityType = this.EdmStructuredType.FullName
             };
         }
     }

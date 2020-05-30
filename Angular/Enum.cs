@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DotLiquid;
 
 namespace ODataApiGen.Angular {
-    public class Enum : AngularRenderable {
+    public class Enum : AngularRenderable, ILiquidizable {
         public Models.EnumType EdmEnumType {get; private set;}
         public Enum(Models.EnumType type) {
             EdmEnumType = type;
@@ -16,10 +17,17 @@ namespace ODataApiGen.Angular {
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.EdmEnumType.Name;
         public string EnumType => this.EdmEnumType.FullName;
-        public override string NameSpace => this.EdmEnumType.Namespace;
+        public override string Namespace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public IEnumerable<string> Members => this.EdmEnumType.Members.Select(m => $"{m.Name} = {m.Value}");
         public bool Flags => this.EdmEnumType.Flags;
+        public object ToLiquid()
+        {
+            return new { 
+                Name = this.Name,
+                EnumType = this.EnumType
+            };
+        }
     }
 }

@@ -27,14 +27,13 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ImportTypes => new List<string> { this.ApiType };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string NameSpace => this.EdmEntityContainer.Namespace;
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Namespace => this.EdmEntityContainer.Namespace;
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public object ToLiquid()
         {
             return new {
                 Name = this.Name,
-                Type = this.Type,
-                ApiType = this.ApiType
+                Type = this.Type
             };
         }
     }

@@ -1,5 +1,5 @@
 //#region ODataApi Imports
 {% for export in Exports %}{{export}};
 {% endfor %}//#endregion
-export * from './{{Package.Endpoint}}.config';
-export * from './{{Package.Endpoint}}.module';
+export * from './{{Package.Name}}.config';
+export * from './{{Package.Name}}.module';

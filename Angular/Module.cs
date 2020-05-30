@@ -12,9 +12,9 @@ namespace ODataApiGen.Angular
             Package = package;
         }
         public override string Name => this.Package.Name + "Module";
-        public override string NameSpace => "";
+        public override string Namespace => "";
         public override string FileName => this.Package.Name.ToLower() + ".module";
-        public override string Directory => this.NameSpace;
+        public override string Directory => this.Namespace;
         public IEnumerable<Service> Services => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services));
         // Imports and Exports
         public override IEnumerable<string> ImportTypes => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)).Select(a => a.EntityType);

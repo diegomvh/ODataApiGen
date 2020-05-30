@@ -5,7 +5,7 @@ import { EntityConfig } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  type: "{{EntityType}}",{% if Base != null %}
+  name: "{{EntityName}}",{% if Base != null %}
   base: "{{Base.EntityType}}",{% endif %}
   annotations: {{Annotations}},{% if Model != null %}
   model: {{Model.Name}},{% endif %}{% if Collection != null %}

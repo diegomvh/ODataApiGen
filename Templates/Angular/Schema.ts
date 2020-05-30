@@ -5,6 +5,14 @@ import { Schema } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  type: "{{ContainerType}}",
-  annotations: {{Annotations}},
+  namespace: "{{Namespace}}",
+  enums: {
+    {% for config in EnumConfigs %}'{{config.EnumName}}': {{config.Name}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}},
+  entities: {
+    {% for config in EntityConfigs %}'{{config.EntityName}}': {{config.Name}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}},
+  containers: {
+    {% for container in Containers %}'{{container.Name}}': {{container.Name}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}}
 } as Schema;

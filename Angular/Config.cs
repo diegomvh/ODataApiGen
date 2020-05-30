@@ -14,10 +14,10 @@ namespace ODataApiGen.Angular {
         public override IEnumerable<string> ExportTypes => new string[] {this.Name};
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.Package.Name + "Config";
-        public override string NameSpace => "";
+        public override string Namespace => "";
         // About File
         public override string FileName => this.Package.Name.ToLower() + ".config";
-        public override string Directory => this.NameSpace;
+        public override string Directory => this.Namespace;
 
         public IEnumerable<string> Schemas => this.Package.Schemas
               .Select(s => $"'{s.SchemaName}': {s.Name}");

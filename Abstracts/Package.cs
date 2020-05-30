@@ -7,9 +7,11 @@ namespace ODataApiGen.Abstracts
 {
     public abstract class Package {
         public string Name {get; private set;}
-        public Package(string name)
+        public string ServiceRootUrl {get; private set;}
+        public Package(string name, string serviceRootUrl)
         {
             this.Name = name;
+            this.ServiceRootUrl = serviceRootUrl;
         }
         public abstract IEnumerable<Renderable> Renderables { get; }
         public abstract void Build(bool models);

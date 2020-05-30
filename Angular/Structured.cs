@@ -41,15 +41,15 @@ namespace ODataApiGen.Angular
                 return types.Distinct();
             }
         }
-        public string EntityType => this.EdmStructuredType.FullName;
-        public override string NameSpace => this.EdmStructuredType.Namespace;
-        public override string Directory => this.NameSpace.Replace('.', Path.DirectorySeparatorChar);
-        public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EntityType)?.Name;
+        public override string Namespace => this.EdmStructuredType.Namespace;
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+        public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.FullName)?.Name;
+        public string EntityName => this.EdmStructuredType.Name; 
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        protected override IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
+        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)
