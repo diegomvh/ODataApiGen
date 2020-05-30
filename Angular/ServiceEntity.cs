@@ -52,5 +52,7 @@ namespace ODataApiGen.Angular
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Entity.EdmStructuredType.Actions));
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Entity.EdmStructuredType.Functions));
         public IEnumerable<string> Navigations => this.RenderReferences(this.EdmEntitySet.NavigationPropertyBindings);
+
+        public override IEnumerable<Models.Annotation> Annotations => this.EdmEntitySet.Annotations; 
     }
 }

@@ -29,6 +29,7 @@ namespace ODataApiGen.Angular
         public abstract string EntitySetName {get;}
         public abstract string EntityType {get;}
         public abstract string EntityName {get;}
+        public abstract IEnumerable<Models.Annotation> Annotations {get;}
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

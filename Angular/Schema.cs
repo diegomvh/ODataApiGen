@@ -38,51 +38,50 @@ namespace ODataApiGen.Angular
         {
             foreach (var e in enums)
             {
-                var config = new Angular.EnumConfig(e);
-                this.EnumConfigs.Add(config);
                 var enu = new Angular.Enum(e);
                 this.Enums.Add(enu);
-                config.SetEnum(enu);
+                var config = new Angular.EnumConfig(enu);
+                this.EnumConfigs.Add(config);
             }
         }
         public void AddComplexes(IEnumerable<Models.ComplexType> complexes, bool models)
         {
             foreach (var cmplx in complexes)
             {
-                var config = new Angular.EntityConfig(cmplx);
-                this.EntityConfigs.Add(config);
+                Angular.EntityConfig config;
                 var entity = new Angular.Entity(cmplx);
                 this.Entities.Add(entity);
-                config.SetEntity(entity);
                 if (models)
                 {
                     var model = new Angular.Model(cmplx, entity);
                     this.Models.Add(model);
-                    config.SetModel(model);
                     var collection = new Angular.Collection(cmplx, model);
                     this.Collections.Add(collection);
-                    config.SetCollection(collection);
+                    config = new Angular.EntityConfig(entity, model, collection);
+                } else {
+                    config = new Angular.EntityConfig(entity);
                 }
+                this.EntityConfigs.Add(config);
             }
         }
         public void AddEntities(IEnumerable<Models.EntityType> entities, bool models)
         {
             foreach (var enty in entities)
             {
-                var config = new Angular.EntityConfig(enty);
-                this.EntityConfigs.Add(config);
+                Angular.EntityConfig config;
                 var entity = new Angular.Entity(enty);
                 this.Entities.Add(entity);
-                config.SetEntity(entity);
                 if (models)
                 {
                     var model = new Angular.Model(enty, entity);
                     this.Models.Add(model);
-                    config.SetModel(model);
                     var collection = new Angular.Collection(enty, model);
                     this.Collections.Add(collection);
-                    config.SetCollection(collection);
+                    config = new Angular.EntityConfig(entity, model, collection);
+                } else {
+                    config = new Angular.EntityConfig(entity);
                 }
+                this.EntityConfigs.Add(config);
             }
         }
         // Imports
@@ -133,15 +132,6 @@ namespace ODataApiGen.Angular
                     collection.Dependencies.Add(baseCollection);
                 }
             }
-            // Entity Config
-            foreach (var config in EntityConfigs)
-            {
-                if (!String.IsNullOrEmpty(config.EdmStructuredType.BaseType))
-                {
-                    var baseConfig = this.EntityConfigs.FirstOrDefault(e => e.EdmStructuredType.FullName == config.EdmStructuredType.BaseType);
-                    config.SetBase(baseConfig);
-                }
-            }
 
             foreach (var container in Containers)
             {
@@ -150,6 +140,7 @@ namespace ODataApiGen.Angular
 
             // Resolve Renderable Dependencies
             var renderables = new List<Renderable>();
+            renderables.Add(this.Api);
             renderables.AddRange(this.Enums);
             renderables.AddRange(this.EnumConfigs);
             renderables.AddRange(this.Entities);
@@ -185,10 +176,10 @@ namespace ODataApiGen.Angular
         }
         public IEnumerable<string> GetAllDirectories()
         {
-            return this.Enums.Select(e => e.Directory)
+            return new string[] {this.Api.Directory}
+                .Union(this.Enums.Select(e => e.Directory))
                 .Union(this.Entities.Select(m => m.Directory))
                 .Union(this.Models.Select(m => m.Directory))
-                .Union(new string[] {this.Api.Directory})
                 .Union(this.EntityConfigs.Select(m => m.Directory))
                 .Union(this.EnumConfigs.Select(m => m.Directory))
                 .Union(this.Collections.Select(m => m.Directory))

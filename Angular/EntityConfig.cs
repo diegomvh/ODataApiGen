@@ -4,6 +4,7 @@ using System;
 using ODataApiGen.Models;
 using Newtonsoft.Json;
 using DotLiquid;
+using System.IO;
 
 namespace ODataApiGen.Angular
 {
@@ -61,56 +62,56 @@ namespace ODataApiGen.Angular
             };
         }
     }
-    public class EntityConfig : Structured 
+    public class EntityConfig : AngularRenderable, DotLiquid.ILiquidizable
     {
-        public EntityConfig(StructuredType type) : base(type) { }
         public Angular.Entity Entity {get; private set;}
-
-        public void SetEntity(Entity entity)
-        {
-            this.Entity = entity;
-        }
         public Angular.Model Model {get; private set;}
-
-        public void SetModel(Model model)
-        {
-            this.Model = model;
-        }
         public Angular.Collection Collection {get; private set;}
-
-        public void SetCollection(Collection collection)
-        {
-            this.Collection = collection;
+        public EntityConfig(Angular.Entity entity) {
+            this.Entity = entity;
+            this.Dependencies.Add(entity);
         }
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity.config";
-        public override string Name => this.EdmStructuredType.Name + "EntityConfig";
-        public string EntityName => this.EdmStructuredType.Name;
+        public EntityConfig(Angular.Entity entity, Angular.Model model, Angular.Collection collection) : this(entity) {
+            this.Model = model;
+            this.Collection = collection;
+            this.Dependencies.Add(model);
+            this.Dependencies.Add(collection);
+        }
+        public override string FileName => this.Entity.FileName + ".config";
+        public override string Name => this.Entity.Name + "Config";
+        public string EntityType => this.Entity.EdmStructuredType.FullName;
+        public string EntityName => this.Entity.Name;
 
         public string Annotations {
             get {
-                return JsonConvert.SerializeObject(this.EdmStructuredType.Annotations.Select(annot => annot.ToDictionary()));
+                return JsonConvert.SerializeObject(this.Entity.EdmStructuredType.Annotations.Select(annot => annot.ToDictionary()));
+            }
+        }
+
+        public IEnumerable<Angular.EntityFieldConfig> Properties {
+            get {
+                var props = this.Entity.EdmStructuredType.Properties.ToList();
+                if (this.Entity.EdmStructuredType is EntityType) 
+                    props.AddRange((this.Entity.EdmStructuredType as EntityType).NavigationProperties);
+                var keys = (this.Entity.EdmStructuredType is EntityType) ? (this.Entity.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
+                return props.Select(prop => new EntityFieldConfig(prop, keys));
             }
         }
 
         // Imports
-        public override IEnumerable<string> ImportTypes => new List<string> { this.EdmStructuredType.FullName };
+        public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
+        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
+        public override string Namespace => this.Entity.EdmStructuredType.Namespace;
+        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+        public override IEnumerable<Import> Imports => GetImportRecords();
 
-        public IEnumerable<Angular.EntityFieldConfig> Properties {
-            get {
-                var props = this.EdmStructuredType.Properties.ToList();
-                if (this.EdmStructuredType is EntityType) 
-                    props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
-                var keys = (this.EdmStructuredType is EntityType) ? (this.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
-                return props.Select(prop => new EntityFieldConfig(prop, keys));
-            }
-        } 
-
-        public override object ToLiquid()
+        public Angular.Structured Base => this.Entity.Base;
+        public object ToLiquid()
         {
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EntityName = this.EdmStructuredType.Name
+                EntityName = this.EntityName
             };
         }
     }

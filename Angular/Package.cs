@@ -32,6 +32,7 @@ namespace ODataApiGen.Angular
             foreach (var schema in Schemas)
                 schema.ResolveDependencies();
             // Module
+            this.Module.Dependencies.AddRange(this.Schemas.Select(s => s.Api));
             this.Module.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             // Config
             this.Config.Dependencies.AddRange(this.Schemas);

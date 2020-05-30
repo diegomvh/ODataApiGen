@@ -38,6 +38,7 @@ namespace ODataApiGen.Angular
         public IEnumerable<string> Actions =>  this.RenderCallables(Program.Metadata.UnboundActions);
         public IEnumerable<string> Functions => this.RenderCallables(Program.Metadata.UnboundFunctions);
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+        public override IEnumerable<Models.Annotation> Annotations => Enumerable.Empty<Models.Annotation>(); 
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
 
         public override string EntitySetName => "";

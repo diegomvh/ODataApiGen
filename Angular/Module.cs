@@ -15,7 +15,8 @@ namespace ODataApiGen.Angular
         public override string Namespace => "";
         public override string FileName => this.Package.Name.ToLower() + ".module";
         public override string Directory => this.Namespace;
-        public IEnumerable<Service> Services => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services));
+        public IEnumerable<Service> Services => this.Package.Schemas.Select(s => s.Api).Union(
+            this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
         // Imports and Exports
         public override IEnumerable<string> ImportTypes => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)).Select(a => a.EntityType);
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

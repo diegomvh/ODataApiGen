@@ -9,24 +9,18 @@ namespace ODataApiGen.Angular
 {
     public class EnumConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
-        public Models.EnumType EdmEnumType {get; private set;}
-        public EnumConfig(EnumType type) {
-            this.EdmEnumType = type;
-        }
         public Angular.Enum Enum {get; private set;}
-
-        public void SetEnum(Enum enu)
-        {
+        public EnumConfig(Angular.Enum enu) {
             this.Enum = enu;
         }
-        public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum.config";
-        public override string Name => this.EdmEnumType.Name + "EnumConfig";
-        public string EnumType => this.EdmEnumType.FullName;
-        public string EnumName => this.EdmEnumType.Name;
+        public override string FileName => this.Enum.FileName + ".config";
+        public override string Name => this.Enum.Name + "Config";
+        public string EnumType => this.Enum.EdmEnumType.FullName;
+        public string EnumName => this.Enum.Name;
 
         public string EnumAnnotations {
             get {
-                return JsonConvert.SerializeObject(this.EdmEnumType.Annotations.Select(annot => annot.ToDictionary()));
+                return JsonConvert.SerializeObject(this.Enum.EdmEnumType.Annotations.Select(annot => annot.ToDictionary()));
             }
         }
 
@@ -34,16 +28,16 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ImportTypes => new List<string> { this.EnumType };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string Namespace => this.EdmEnumType.Namespace;
+        public override string Namespace => this.Enum.EdmEnumType.Namespace;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
-        public bool Flags => this.EdmEnumType.Flags; 
+        public bool Flags => this.Enum.EdmEnumType.Flags; 
 
         public object ToLiquid()
         {
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                EnumName = this.EdmEnumType.Name
+                EnumName = this.EnumName
             };
         }
     }

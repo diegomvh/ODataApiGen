@@ -9,35 +9,25 @@ namespace ODataApiGen.Angular
 {
     public class ServiceConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
-        public Models.EntitySet EdmEntitySet { get; private set; }
-        public Models.Singleton EdmSingleton { get; private set; }
-        public ServiceConfig(EntitySet type) {
-            EdmEntitySet = type;
+        public Angular.Service Service { get; private set; }
+        public ServiceConfig(Angular.Service service) {
+            Service = service;
         }
-        public ServiceConfig(Singleton singleton) {
-            EdmSingleton = singleton;
-        }
-        public override string FileName => this.ServiceName.ToLower() + ".service.config";
-        public override string Name => this.ServiceName + "ServiceConfig";
+        public override string FileName => this.Service.FileName + ".config";
+        public override string Name => this.ServiceName + "Config";
 
         public string Annotations {
             get {
-                var annotations = this.EdmEntitySet != null ? this.EdmEntitySet.Annotations : this.EdmSingleton.Annotations;
+                var annotations = this.Service.Annotations;
                 return JsonConvert.SerializeObject(annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
             }
         }
-
-        public string ServiceName {
-            get {
-                var name = this.EdmEntitySet != null? this.EdmEntitySet.Name : this.EdmSingleton.Name;
-                return name.Substring(0, 1).ToUpper() + name.Substring(1);
-            }
-        }
+        public string ServiceName => this.Service.Name;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string Namespace => (this.EdmEntitySet != null? this.EdmEntitySet.Namespace : this.EdmSingleton.Namespace);
+        public override string Namespace => this.Service.Namespace;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public object ToLiquid()
         {

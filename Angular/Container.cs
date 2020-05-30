@@ -19,21 +19,25 @@ namespace ODataApiGen.Angular
             this.Config = new Angular.ContainerConfig(container);
             foreach (var eset in container.EntitySets)
             {
-                var config = new Angular.ServiceConfig(eset);
+                Service service;
                 if (models)
                 {
-                    this.Services.Add(new Angular.ServiceModel(eset));
+                    service = new Angular.ServiceModel(eset);
+                    this.Services.Add(service);
                 }
                 else
                 {
-                    this.Services.Add(new Angular.ServiceEntity(eset));
+                    service = new Angular.ServiceEntity(eset);
+                    this.Services.Add(service);
                 }
+                var config = new Angular.ServiceConfig(service);
                 this.ServiceConfigs.Add(config);
             }
             foreach (var s in container.Singletons)
             {
-                var config = new Angular.ServiceConfig(s);
-                this.Services.Add(new Angular.ServiceSingleton(s));
+                var service = new Angular.ServiceSingleton(s);
+                this.Services.Add(service);
+                var config = new Angular.ServiceConfig(service);
                 this.ServiceConfigs.Add(config);
             }
         }

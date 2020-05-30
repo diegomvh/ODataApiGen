@@ -6,7 +6,8 @@ import { Container } from 'angular-odata';
 
 export const {{Name}} = {
   name: "{{Name}}",
-  services: {
-    {% for config in ServiceConfigs %}'{{config.ServiceName}}': {{config.Name}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}}
+  services: [
+    {% for config in ServiceConfigs %}{{config.Name}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}
+  ]
 } as Container;
