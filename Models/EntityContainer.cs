@@ -12,10 +12,12 @@ namespace ODataApiGen.Models
         public string Name { get; private set; }
         public string Namespace => this.Schema.Namespace; 
         public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
-        public List<EntitySet> EntitySets { get; private set; }
-        public List<Singleton> Singletons { get; private set; }
-        public List<FunctionImport> FunctionImports { get; private set; }
-        public List<ActionImport> ActionImports { get; private set; }
+        public IEnumerable<EntitySet> EntitySets { get; private set; }
+        public IEnumerable<Singleton> Singletons { get; private set; }
+        public IEnumerable<FunctionImport> FunctionImports { get; private set; }
+        public IEnumerable<ActionImport> ActionImports { get; private set; }
+        public IEnumerable<Function> UnboundFunctions {get; private set;}
+        public IEnumerable<Action> UnboundActions {get; private set;}
 
         #region Static Loaders
         private static List<EntitySet> ReadEntitySets(XElement xDoc, EntityContainer container)
@@ -85,6 +87,7 @@ namespace ODataApiGen.Models
         }
 
         public void ResolveActionImports(IEnumerable<Action> actions) {
+            this.UnboundActions = actions.Where(f => !f.IsBound);
             foreach (var eset in EntitySets) {
                 eset.ImportActions(ActionImports, actions);
             }
@@ -94,6 +97,7 @@ namespace ODataApiGen.Models
         }
 
         public void ResolveFunctionImports(IEnumerable<Function> functions) {
+            this.UnboundFunctions = functions.Where(f => !f.IsBound);
             foreach (var eset in EntitySets) {
                 eset.ImportFunctions(FunctionImports, functions);
             }

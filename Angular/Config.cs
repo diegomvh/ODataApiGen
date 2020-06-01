@@ -18,8 +18,5 @@ namespace ODataApiGen.Angular {
         // About File
         public override string FileName => this.Package.Name.ToLower() + ".config";
         public override string Directory => this.Namespace;
-
-        public IEnumerable<string> Schemas => this.Package.Schemas
-              .Select(s => $"'{s.SchemaName}': {s.Name}");
     }
 }

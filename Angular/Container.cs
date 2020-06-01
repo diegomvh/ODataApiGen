@@ -11,11 +11,13 @@ namespace ODataApiGen.Angular
     public class Container: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Models.EntityContainer EdmEntityContainer {get; private set;}
+        public Angular.ServiceContainer Service { get; private set; }
         public Angular.ContainerConfig Config {get; private set;}
         public ICollection<Angular.Service> Services { get; } = new List<Angular.Service>();
         public ICollection<Angular.ServiceConfig> ServiceConfigs { get; } = new List<Angular.ServiceConfig>();
         public Container(EntityContainer container, bool models) {
             this.EdmEntityContainer = container;
+            this.Service = new Angular.ServiceContainer(container);
             this.Config = new Angular.ContainerConfig(container);
             foreach (var eset in container.EntitySets)
             {
@@ -61,7 +63,7 @@ namespace ODataApiGen.Angular
             // Services
             foreach (var service in Services)
             {
-                var inter = entities.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
+                var inter = entities.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
                 if (inter != null)
                 {
                     service.SetEntity(inter);
@@ -80,6 +82,7 @@ namespace ODataApiGen.Angular
 
             // Resolve Renderable Dependencies
             var renderables = new List<Renderable>();
+            renderables.Add(this.Service);
             renderables.AddRange(this.Services);
             renderables.AddRange(this.ServiceConfigs);
             foreach (var renderable in renderables)
@@ -109,7 +112,8 @@ namespace ODataApiGen.Angular
         }
         public IEnumerable<string> GetAllDirectories()
         {
-            return this.Services.Select(s => s.Directory)
+            return new string[] { this.Service.Directory }
+                .Union(this.Services.Select(s => s.Directory))
                 .Union(this.ServiceConfigs.Select(s => s.Directory));
         }
         public IEnumerable<Renderable> Renderables
@@ -117,6 +121,7 @@ namespace ODataApiGen.Angular
             get
             {
                 var renderables = new List<Renderable>();
+                renderables.Add(this.Service);
                 renderables.AddRange(this.Services);
                 renderables.AddRange(this.ServiceConfigs);
                 return renderables;

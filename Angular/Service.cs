@@ -106,7 +106,8 @@ namespace ODataApiGen.Angular
                     $"\n    {args}" +
                     $"\n    var res = this.{baseMethodName}<{typescriptType}>(" + 
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
-                    $"'{callableFullName}', '{returnType}');" +
+                    $"'{callableFullName}'" +
+                    (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
                     $"\n    return res.call(args, '{responseType}', options);\n  }}";
             }
         }

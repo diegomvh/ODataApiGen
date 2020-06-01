@@ -19,8 +19,6 @@ namespace ODataApiGen.Models
         public IEnumerable<Action> Actions => this.Schemas.SelectMany(s => s.Actions);
         public IEnumerable<EntitySet> EntitySets => this.Schemas.SelectMany(s => s.EntityContainers.SelectMany(c => c.EntitySets));
         public IEnumerable<KeyValuePair<string, List<Annotation>>> Annotations => this.Schemas.SelectMany(s => s.Annotations);
-        public IEnumerable<Function> UnboundFunctions => this.Schemas.SelectMany(s => s.Functions).Where(f => !f.IsBound);
-        public IEnumerable<Action> UnboundActions => this.Schemas.SelectMany(s => s.Actions).Where(f => !f.IsBound);
 
         #region Static Loaders
         public static List<Schema> ReadSchemas(XDocument xdoc)
