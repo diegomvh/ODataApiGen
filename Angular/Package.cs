@@ -81,6 +81,31 @@ namespace ODataApiGen.Angular
                 }
             }
 
+            // Resolve Renderable Dependencies
+            foreach (var renderable in this.Renderables)
+            {
+                var types = renderable.ImportTypes;
+                if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
+                {
+                    renderable.Dependencies.AddRange(
+    this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
+                    if (renderable is Structured || renderable is Service)
+                    {
+                        renderable.Dependencies.AddRange(
+        this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                        if (!(renderable is EnumConfig))
+                        {
+                            {
+                                renderable.Dependencies.AddRange(
+                this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                                renderable.Dependencies.AddRange(
+                this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                            }
+                        }
+                    }
+                }
+            }
+
             // Module
             this.Module.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Module.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
@@ -96,6 +121,8 @@ namespace ODataApiGen.Angular
             this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.ServiceConfigs)));
+            this.Index.Dependencies.Add(this.Config);
+            this.Index.Dependencies.Add(this.Module);
         }
 
         public IEnumerable<string> GetAllDirectories()
@@ -108,7 +135,7 @@ namespace ODataApiGen.Angular
         {
             return new
             {
-                Name = this.Name.ToLower(),
+                Name = this.Name,
                 ServiceRootUrl = this.ServiceRootUrl,
                 Creation = DateTime.Now,
                 Schemas = this.Schemas

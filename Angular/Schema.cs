@@ -9,8 +9,8 @@ namespace ODataApiGen.Angular
     public class Schema : AngularRenderable, DotLiquid.ILiquidizable
     {
         public Models.Schema EdmSchema { get; private set; }
-        public override string FileName => this.Namespace.Split('.').First().ToLower() + ".schema";
-        public override string Name => this.Namespace.Split('.').First() + "Schema";
+        public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema";
+        public override string Name => this.Namespace.Split('.').Last() + "Schema";
         public Angular.ContainerConfig ApiConfig { get; private set; }
         public ICollection<Angular.Enum> Enums { get; } = new List<Angular.Enum>();
         public ICollection<Angular.EnumConfig> EnumConfigs { get; } = new List<Angular.EnumConfig>();
@@ -88,37 +88,6 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {
-            // Resolve Renderable Dependencies
-            var renderables = new List<Renderable>();
-            renderables.AddRange(this.Enums);
-            renderables.AddRange(this.EnumConfigs);
-            renderables.AddRange(this.Entities);
-            renderables.AddRange(this.Models);
-            renderables.AddRange(this.Collections);
-            renderables.AddRange(this.EntityConfigs);
-            foreach (var renderable in renderables)
-            {
-                var types = renderable.ImportTypes;
-                if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
-                {
-                    renderable.Dependencies.AddRange(
-    this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
-                    if (renderable is Structured || renderable is Service)
-                    {
-                        renderable.Dependencies.AddRange(
-        this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        if (!(renderable is EnumConfig))
-                        {
-                            {
-                                renderable.Dependencies.AddRange(
-                this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                                renderable.Dependencies.AddRange(
-                this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                            }
-                        }
-                    }
-                }
-            }
             this.Dependencies.AddRange(this.EnumConfigs);
             this.Dependencies.AddRange(this.EntityConfigs);
             this.Dependencies.AddRange(this.Containers);

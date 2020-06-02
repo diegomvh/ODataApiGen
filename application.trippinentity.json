@@ -1,7 +1,7 @@
 {
     "Name": "TripPin",
     "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
-    "Output": "../TripPinEntity/src/app",
+    "Output": "../AngularODataEntity/src/app",
     "Purge": true,
     "Models": false
 }

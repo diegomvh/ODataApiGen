@@ -80,34 +80,6 @@ namespace ODataApiGen.Angular
                 }
             }
 
-            // Resolve Renderable Dependencies
-            var renderables = new List<Renderable>();
-            renderables.Add(this.Service);
-            renderables.AddRange(this.Services);
-            renderables.AddRange(this.ServiceConfigs);
-            foreach (var renderable in renderables)
-            {
-                var types = renderable.ImportTypes;
-                if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
-                {
-                    renderable.Dependencies.AddRange(
-    enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
-                    if (renderable is Structured || renderable is Service)
-                    {
-                        renderable.Dependencies.AddRange(
-        entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                        if (!(renderable is EnumConfig))
-                        {
-                            {
-                                renderable.Dependencies.AddRange(
-                models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                                renderable.Dependencies.AddRange(
-                collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
-                            }
-                        }
-                    }
-                }
-            }
             this.Dependencies.AddRange(this.ServiceConfigs);
         }
         public IEnumerable<string> GetAllDirectories()

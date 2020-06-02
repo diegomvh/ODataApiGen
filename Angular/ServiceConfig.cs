@@ -14,7 +14,7 @@ namespace ODataApiGen.Angular
             Service = service;
         }
         public override string FileName => this.Service.FileName + ".config";
-        public override string Name => this.ServiceName + "Config";
+        public override string Name => this.Service.Name + "Config";
 
         public string Annotations {
             get {
@@ -22,7 +22,7 @@ namespace ODataApiGen.Angular
                 return JsonConvert.SerializeObject(annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
             }
         }
-        public string ServiceName => this.Service.Name;
+        public string ServiceName => this.Service.EntitySetName;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
