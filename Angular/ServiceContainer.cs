@@ -36,8 +36,8 @@ namespace ODataApiGen.Angular
         public override string Name => this.EdmEntityContainer.Name + "Service";
         public override string Namespace => this.EdmEntityContainer.Namespace;
         public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".service";
-        public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntityContainer.UnboundActions);
-        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntityContainer.UnboundFunctions);
+        public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntityContainer.UnboundActions, usename: true);
+        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntityContainer.UnboundFunctions, usename: true);
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<Models.Annotation> Annotations => Enumerable.Empty<Models.Annotation>(); 
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };

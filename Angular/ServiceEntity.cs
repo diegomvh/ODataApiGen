@@ -35,6 +35,7 @@ namespace ODataApiGen.Angular
                     list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
                 }
                 list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
+                list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
                 return list;
             }
         }

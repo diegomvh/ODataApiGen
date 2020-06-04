@@ -49,7 +49,7 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
+        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables, bool useset = true, bool usename = false)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)
@@ -105,7 +105,8 @@ namespace ODataApiGen.Angular
                     $"\n    {args}" +
                     $"\n    var res = this._segments.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}'" +
                     (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
-                    $"\n    res.entitySet('{this.EntitySetName}');" +
+                    (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
+                    (usename ? $"\n    options = Object.assign({{config: '{Program.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +
                     "\n  }";
             }

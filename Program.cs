@@ -31,7 +31,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.siuelements.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},

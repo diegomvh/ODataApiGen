@@ -34,7 +34,7 @@ namespace ODataApiGen.Angular
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
 
-        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
+        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables, bool useset = false, bool usename = false)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)
@@ -108,6 +108,8 @@ namespace ODataApiGen.Angular
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callableFullName}'" +
                     (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
+                    (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
+                    (usename ? $"\n    options = Object.assign({{config: '{Program.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, '{responseType}', options);\n  }}";
             }
         }
