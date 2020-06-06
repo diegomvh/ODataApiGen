@@ -39,10 +39,12 @@ Org.OData.Capabilities.V1.FilterFunctions
         public static Annotation Factory(XElement element) {
            var dyn = element.ToDynamic(); 
            switch(dyn.Term) {
+               case "Org.OData.Core.V1.Description": return new CoreDescriptionAnnotation(dyn);
                case "Org.OData.Core.V1.OptimisticConcurrency": return new CoreOptimisticConcurrencyAnnotation(dyn);
                case "Org.OData.Core.V1.Computed": return new CoreComputedAnnotation(dyn);
                case "Org.OData.Core.V1.Immutable": return new CoreImmutableAnnotation(dyn);
                case "Org.OData.Core.V1.Permissions": return new CorePermissionsAnnotation(dyn);
+               case "Org.OData.Core.V1.ResourcePath": return new CoreResourcePathAnnotation(dyn);
                case "Org.OData.Core.V1.DereferenceableIDs":return new CoreDereferenceableIDsAnnotation(dyn);
                case "Org.OData.Core.V1.ConventionalIDs":return new CoreConventionalIDsAnnotation(dyn);
                case "Org.OData.Measures.V1.ISOCurrency": return new MeasuresISOCurrencyAnnotation(dyn);
@@ -52,6 +54,9 @@ Org.OData.Capabilities.V1.FilterFunctions
                case "Org.OData.Capabilities.V1.SupportedFormats": return new CapabilitiesSupportedFormatsAnnotation(dyn);
                case "Org.OData.Capabilities.V1.AsynchronousRequestsSupported": return new CapabilitiesAsynchronousRequestsSupportedAnnotation(dyn);
                case "Org.OData.Capabilities.V1.BatchContinueOnErrorSupported": return new CapabilitiesBatchContinueOnErrorSupportedAnnotation(dyn);
+               case "Org.OData.Capabilities.V1.SearchRestrictions": return new CapabilitiesSearchRestrictionsAnnotation(dyn);
+               case "Org.OData.Capabilities.V1.InsertRestrictions": return new CapabilitiesInsertRestrictionsAnnotation(dyn);
+               case "Org.OData.Capabilities.V1.DeleteRestrictions": return new CapabilitiesDeleteRestrictionsAnnotation(dyn);
            }
            return new Annotation(dyn);
         }
@@ -59,6 +64,18 @@ Org.OData.Capabilities.V1.FilterFunctions
         {         
             var result = new Dictionary<string, object>();
             result.Add("type", this.Term);
+            return result;
+        }
+    }
+    public class CoreDescriptionAnnotation : Annotation
+    {
+        public string String => this.Value.String;
+        public CoreDescriptionAnnotation(object value) : base(value)
+        {
+        }
+        public override IDictionary<string, object> ToDictionary() {
+            var result = base.ToDictionary();
+            result.Add("string", this.String);
             return result;
         }
     }
@@ -132,6 +149,18 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             result.Add("bool", this.Bool);
+            return result;
+        }
+    }
+    public class CoreResourcePathAnnotation : Annotation
+    {
+        public string String => this.Value.String;
+        public CoreResourcePathAnnotation(object value) : base(value)
+        {
+        }
+        public override IDictionary<string, object> ToDictionary() {
+            var result = base.ToDictionary();
+            result.Add("string", this.String);
             return result;
         }
     }
@@ -218,6 +247,42 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             result.Add("bool", this.Bool);
+            return result;
+        }
+    }
+    public class CapabilitiesSearchRestrictionsAnnotation : Annotation
+    {
+        public CapabilitiesSearchRestrictionsAnnotation(object value) : base(value)
+        {
+        }
+        public override IDictionary<string, object> ToDictionary() {
+            var result = base.ToDictionary();
+            var els = this.Value.Elements();
+            result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
+            return result;
+        }
+    }
+    public class CapabilitiesInsertRestrictionsAnnotation : Annotation
+    {
+        public CapabilitiesInsertRestrictionsAnnotation(object value) : base(value)
+        {
+        }
+        public override IDictionary<string, object> ToDictionary() {
+            var result = base.ToDictionary();
+            var els = this.Value.Elements();
+            result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
+            return result;
+        }
+    }
+    public class CapabilitiesDeleteRestrictionsAnnotation : Annotation
+    {
+        public CapabilitiesDeleteRestrictionsAnnotation(object value) : base(value)
+        {
+        }
+        public override IDictionary<string, object> ToDictionary() {
+            var result = base.ToDictionary();
+            var els = this.Value.Elements();
+            result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
     }

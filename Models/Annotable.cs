@@ -7,7 +7,7 @@ namespace ODataApiGen.Models
     public class Annotable 
     {
         public Annotable(XElement element) {
-            Annotations = element.Descendants().Where(a => a.Name.LocalName == "Annotation")
+            Annotations = element.Descendants().Where(a => a.Parent == element && a.Name.LocalName == "Annotation")
                 .Select(annot => Annotation.Factory(annot)).ToList();
         }
         public List<Annotation> Annotations {get; set;}

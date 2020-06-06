@@ -150,9 +150,9 @@ namespace ODataApiGen.Models
         }
         public void ResolveAnnotations(IEnumerable<KeyValuePair<string, List<Annotation>>> annots) {
             foreach (var annot in annots) {
-                var container = this.EntityContainers.Where(c => $"{c.Namespace}.{c.Name}" == annot.Key).FirstOrDefault();
+                var container = this.EntityContainers.Where(c => c.FullName == annot.Key).FirstOrDefault();
                 if (container != null) {
-                    container.Annotations = annot.Value;
+                    container.Annotations.AddRange(annot.Value);
                 }
             }
         }
