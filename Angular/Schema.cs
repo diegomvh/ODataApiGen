@@ -11,7 +11,6 @@ namespace ODataApiGen.Angular
         public Models.Schema EdmSchema { get; private set; }
         public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema";
         public override string Name => this.Namespace.Split('.').Last() + "Schema";
-        public Angular.ContainerConfig ApiConfig { get; private set; }
         public ICollection<Angular.Enum> Enums { get; } = new List<Angular.Enum>();
         public ICollection<Angular.EnumConfig> EnumConfigs { get; } = new List<Angular.EnumConfig>();
         public ICollection<Angular.Entity> Entities { get; } = new List<Angular.Entity>();

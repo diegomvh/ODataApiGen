@@ -12,13 +12,11 @@ namespace ODataApiGen.Angular
     {
         public Models.EntityContainer EdmEntityContainer {get; private set;}
         public Angular.ServiceContainer Service { get; private set; }
-        public Angular.ContainerConfig Config {get; private set;}
         public ICollection<Angular.Service> Services { get; } = new List<Angular.Service>();
         public ICollection<Angular.ServiceConfig> ServiceConfigs { get; } = new List<Angular.ServiceConfig>();
         public Container(EntityContainer container, bool models) {
             this.EdmEntityContainer = container;
-            this.Service = new Angular.ServiceContainer(container);
-            this.Config = new Angular.ContainerConfig(container);
+            this.Service = new Angular.ServiceContainer(this);
             foreach (var eset in container.EntitySets)
             {
                 Service service;
@@ -43,14 +41,13 @@ namespace ODataApiGen.Angular
                 this.ServiceConfigs.Add(config);
             }
         }
-        public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
-        public override string Name => this.EdmEntityContainer.Name + "Container";
-
         public string Annotations {
             get {
                 return JsonConvert.SerializeObject(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
             }
         }
+        public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
+        public override string Name => this.EdmEntityContainer.Name + "Container";
         public string ContainerType => this.EdmEntityContainer.FullName;
         public string ApiName => this.EdmEntityContainer.Name;
         // Imports
