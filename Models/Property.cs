@@ -21,11 +21,11 @@ namespace ODataApiGen.Models
         public string Name { get; set; }
         public string Type { get; set; }
         public bool IsEdmType => !System.String.IsNullOrWhiteSpace(Type) && Type.StartsWith("Edm.");
-        public EnumType EnumType => Program.Metadata.EnumTypes.FirstOrDefault(e => e.FullName == this.Type);
+        public EnumType EnumType => Program.Metadata.FindEnumType(this.Type);
         public bool IsEnumType => this.EnumType != null;
-        public ComplexType ComplexType => Program.Metadata.ComplexTypes.FirstOrDefault(e => e.FullName == this.Type);
+        public ComplexType ComplexType => Program.Metadata.FindComplexType(this.Type);
         public bool IsComplexType => this.ComplexType != null;
-        public EntityType EntityType => Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == this.Type);
+        public EntityType EntityType => Program.Metadata.FindEntityType(this.Type);
         public bool IsEntityType => this.EntityType != null;
         public bool IsCollection { get; set; }
         public bool Nullable { get; set; }

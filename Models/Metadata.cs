@@ -13,8 +13,17 @@ namespace ODataApiGen.Models
         public string Namespace => 
             this.Schemas.Select(s => s.Namespace).OrderBy(n => n.Length).FirstOrDefault();
         public IEnumerable<EnumType> EnumTypes => this.Schemas.SelectMany(s => s.EnumTypes);
+        public EnumType FindEnumType(string type) {
+            return this.EnumTypes.FirstOrDefault(e => e.IsTypeOf(type));
+        }
         public IEnumerable<ComplexType> ComplexTypes => this.Schemas.SelectMany(s => s.ComplexTypes);
+        public ComplexType FindComplexType(string type) {
+            return this.ComplexTypes.FirstOrDefault(c => c.IsTypeOf(type));
+        }
         public IEnumerable<EntityType> EntityTypes => this.Schemas.SelectMany(s => s.EntityTypes);
+        public EntityType FindEntityType(string type) {
+            return this.EntityTypes.FirstOrDefault(c => c.IsTypeOf(type));
+        }
         public IEnumerable<Function> Functions => this.Schemas.SelectMany(s => s.Functions);
         public IEnumerable<Action> Actions => this.Schemas.SelectMany(s => s.Actions);
         public IEnumerable<EntitySet> EntitySets => this.Schemas.SelectMany(s => s.EntityContainers.SelectMany(c => c.EntitySets));

@@ -24,29 +24,30 @@ namespace ODataApiGen.Models
         public string Target { get; set; }
         public EntityType EntityType { 
             get {
-                return Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == this.EntitySet.EntityType);
+                return Program.Metadata.FindEntityType(this.EntitySet.EntityType);
             }
         }
-        public EntityType PropertyType {
+        public EntityType PropertyType { 
             get {
                 var parts = this.Path.Split('/');
-                var entityType = parts.Length == 2 ? parts[0] : String.Empty;
-                return Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entityType);
+                var entity = Program.Metadata.FindEntityType(this.EntitySet.EntityType);
+                if (parts.Length > 1) {
+                    foreach (var nameOrType in parts.Take(parts.Length - 1)) {
+                        var baseEntity = Program.Metadata.FindEntityType(nameOrType);
+                        if (baseEntity != null && entity.IsBaseOf(baseEntity)) {
+                            entity = baseEntity;
+                        } else {
+                            entity = entity.FindNavigationProperty(nameOrType).EntityType;
+                        }
+                    }
+                }
+                return entity;
             }
-        } 
+        }
         public string PropertyName => this.Path.Split('/').Last();
         public NavigationProperty NavigationProperty { 
             get {
-                var name = this.PropertyName;
-                var entity = (this.PropertyType != null)? this.PropertyType : this.EntityType; 
-                while (true) {
-                    var prop = entity.NavigationProperties.FirstOrDefault(nav => nav.Name == name);
-                    if (prop != null) return prop;
-                    if (String.IsNullOrEmpty(entity.BaseType))
-                        break;
-                    entity = Program.Metadata.EntityTypes.FirstOrDefault(e => e.FullName == entity.BaseType);
-                }
-                throw new Exception($"No navigation property for: {name}");
+                return this.PropertyType.FindNavigationProperty(this.PropertyName);
             }
         }
     }

@@ -10,6 +10,7 @@ namespace ODataApiGen.Models
     {
         private static ILogger Logger {get;} = Program.LoggerFactory.CreateLogger<Schema>();
         public string Namespace { get; private set; }
+        public string Alias { get; private set; }
         public List<EnumType> EnumTypes { get; private set; }
         public List<ComplexType> ComplexTypes { get; private set; }
         public List<EntityType> EntityTypes { get; private set; }
@@ -123,6 +124,7 @@ namespace ODataApiGen.Models
         public Schema(XElement xElement) 
         {
             this.Namespace = xElement.Attribute("Namespace").Value;
+            this.Alias = xElement.Attribute("Alias")?.Value;
             this.EnumTypes = Schema.ReadEnums(xElement, this);
             this.ComplexTypes = Schema.ReadComplexTypes(xElement, this);
             this.EntityTypes = Schema.ReadEntityTypes(xElement, this);

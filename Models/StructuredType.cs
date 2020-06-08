@@ -20,7 +20,13 @@ namespace ODataApiGen.Models
         }
         public bool IsBaseOf(StructuredType structured)
         {
-            return structured.BaseType == this.FullName;
+            return this.IsTypeOf(structured.BaseType);
+        }
+        public bool IsTypeOf(string type) {
+            var names = new List<string>() {$"{this.Schema.Namespace}.{this.Name}"};
+            if (!String.IsNullOrEmpty(this.Schema.Alias))
+                names.Add($"{this.Schema.Alias}.{this.Name}");
+            return names.Contains(type);
         }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }
@@ -29,10 +35,10 @@ namespace ODataApiGen.Models
         public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
         public List<Property> Properties { get; private set; }
         public void AddActions(IEnumerable<Action> actions) {
-            Actions = actions.Where(a => a.IsBound && a.BindingParameter == FullName);
+            Actions = actions.Where(a => a.IsBound && this.IsTypeOf(a.BindingParameter));
         }
         public void AddFunctions(IEnumerable<Function> functions) {
-            Functions = functions.Where(f => f.IsBound && f.BindingParameter == FullName);
+            Functions = functions.Where(f => f.IsBound && this.IsTypeOf(f.BindingParameter));
         }
         public IEnumerable<Action> Actions { get; set; } = Enumerable.Empty<Action>();
         public IEnumerable<Function> Functions { get; set; } = Enumerable.Empty<Function>();

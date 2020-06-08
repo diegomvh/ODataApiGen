@@ -21,5 +21,11 @@ namespace ODataApiGen.Models
             Members = element.Descendants().Where(a => a.Name.LocalName == "Member")
                 .Select(member => new EnumMember(member, this)).ToList();
         }
+        public bool IsTypeOf(string type) {
+            var names = new List<string>() {$"{this.Schema.Namespace}.{this.Name}"};
+            if (!String.IsNullOrEmpty(this.Schema.Alias))
+                names.Add($"{this.Schema.Alias}.{this.Name}");
+            return names.Contains(type);
+        }
     }
 }
