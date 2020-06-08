@@ -1,6 +1,6 @@
 {
-    "Name": "TripPin",
-    "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
+    "Name": "Tetra",
+    "Metadata": "http://localhost:5000/odata/$metadata",
     "Output": "./",
     "Purge": true,
     "Models": false
