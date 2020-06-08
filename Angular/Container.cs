@@ -60,7 +60,7 @@ namespace ODataApiGen.Angular
             // Services
             foreach (var service in Services)
             {
-                var inter = entities.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
+                var inter = entities.FirstOrDefault(m => m.EdmStructuredType.IsTypeOf(service.EntityType));
                 if (inter != null)
                 {
                     service.SetEntity(inter);

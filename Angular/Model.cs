@@ -89,7 +89,7 @@ namespace ODataApiGen.Angular
         }
         public IEnumerable<string> Navigations {
             get {
-                var service = Program.Metadata.EntitySets.FirstOrDefault(s => s.EntityType == this.EdmStructuredType.FullName);
+                var service = Program.Metadata.EntitySets.FirstOrDefault(s => this.EdmStructuredType.IsTypeOf(s.EntityType));
                 if (service != null) {
                     var bindings = service.NavigationPropertyBindings.Where(binding => !binding.NavigationProperty.IsCollection);
                     return bindings.Count() > 0 ? this.RenderReferences(bindings) : Enumerable.Empty<string>();

@@ -41,7 +41,7 @@ namespace ODataApiGen.Angular
             {
                 if (!String.IsNullOrEmpty(entity.EdmStructuredType.BaseType))
                 {
-                    var baseEntity = this.Entities.FirstOrDefault(e => e.EdmStructuredType.FullName == entity.EdmStructuredType.BaseType);
+                    var baseEntity = this.Entities.FirstOrDefault(e => e.EdmStructuredType.IsTypeOf(entity.EdmStructuredType.BaseType));
                     entity.SetBase(baseEntity);
                     entity.Dependencies.Add(baseEntity);
                 }
@@ -51,7 +51,7 @@ namespace ODataApiGen.Angular
             {
                 if (!String.IsNullOrEmpty(model.EdmStructuredType.BaseType))
                 {
-                    var baseModel = this.Models.FirstOrDefault(e => e.EdmStructuredType.FullName == model.EdmStructuredType.BaseType);
+                    var baseModel = this.Models.FirstOrDefault(e => e.EdmStructuredType.IsTypeOf(model.EdmStructuredType.BaseType));
                     model.SetBase(baseModel);
                     model.Dependencies.Add(baseModel);
                 }
@@ -66,7 +66,7 @@ namespace ODataApiGen.Angular
             {
                 if (!String.IsNullOrEmpty(collection.EdmStructuredType.BaseType))
                 {
-                    var baseCollection = this.Collections.FirstOrDefault(e => e.EdmStructuredType.FullName == collection.EdmStructuredType.BaseType);
+                    var baseCollection = this.Collections.FirstOrDefault(e => e.EdmStructuredType.IsTypeOf(collection.EdmStructuredType.BaseType));
                     collection.SetBase(baseCollection);
                     collection.Dependencies.Add(baseCollection);
                 }
@@ -92,14 +92,14 @@ namespace ODataApiGen.Angular
                     if (renderable is Structured || renderable is Service)
                     {
                         renderable.Dependencies.AddRange(
-        this.Entities.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+        this.Entities.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
                         if (!(renderable is EnumConfig))
                         {
                             {
                                 renderable.Dependencies.AddRange(
-                this.Models.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                this.Models.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
                                 renderable.Dependencies.AddRange(
-                this.Collections.Where(e => e != renderable && types.Contains(e.EdmStructuredType.FullName)));
+                this.Collections.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
                             }
                         }
                     }
