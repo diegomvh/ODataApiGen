@@ -88,7 +88,7 @@ namespace ODataApiGen.Angular
                 if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
                 {
                     renderable.Dependencies.AddRange(
-    this.Enums.Where(e => e != renderable && types.Contains(e.EdmEnumType.FullName)));
+    this.Enums.Where(e => e != renderable && types.Any(type => e.EdmEnumType.IsTypeOf(type))));
                     if (renderable is Structured || renderable is Service)
                     {
                         renderable.Dependencies.AddRange(
