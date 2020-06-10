@@ -35,7 +35,7 @@ namespace ODataApiGen.Angular
         }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
-        public override string Name => this.EdmStructuredType.Name;
+        public override string Name => this.EdmStructuredType.Name.Substring(0, 1).ToUpper() + this.EdmStructuredType.Name.Substring(1);
         // Exports
 
         public IEnumerable<Angular.EntityProperty> Properties {

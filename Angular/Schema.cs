@@ -10,6 +10,7 @@ namespace ODataApiGen.Angular
     {
         public Models.Schema EdmSchema { get; private set; }
         public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema";
+        //TODO: Create nice schema names
         public override string Name => this.Namespace.Split('.').Last() + "Schema";
         public ICollection<Angular.Enum> Enums { get; } = new List<Angular.Enum>();
         public ICollection<Angular.EnumConfig> EnumConfigs { get; } = new List<Angular.EnumConfig>();

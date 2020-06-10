@@ -42,7 +42,7 @@ namespace ODataApiGen.Angular
         public override string EntityName => EdmEntitySet.EntityType.Split('.').Last();
         public override string EntityType => this.EdmEntitySet.EntityType;
         public string ServiceType => this.EdmEntitySet.FullName;
-        public override string Name => this.EdmEntitySet.Name[0].ToString().ToUpper() + this.EdmEntitySet.Name.Substring(1) + "Service";
+        public override string Name => this.EdmEntitySet.Name.Substring(0, 1).ToUpper() + this.EdmEntitySet.Name.Substring(1) + "Service";
         public override string Namespace => this.EdmEntitySet.Namespace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
         public override IEnumerable<Models.Annotation> Annotations => this.EdmEntitySet.Annotations; 

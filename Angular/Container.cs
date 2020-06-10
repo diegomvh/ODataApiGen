@@ -47,7 +47,7 @@ namespace ODataApiGen.Angular
             }
         }
         public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
-        public override string Name => this.EdmEntityContainer.Name + "Container";
+        public override string Name => this.EdmEntityContainer.Name.Substring(0, 1).ToUpper() + this.EdmEntityContainer.Name.Substring(1) + "Container";
         public string ContainerType => this.EdmEntityContainer.FullName;
         public string ApiName => this.EdmEntityContainer.Name;
         // Imports

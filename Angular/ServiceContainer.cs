@@ -33,7 +33,7 @@ namespace ODataApiGen.Angular
 
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        public override string Name => this.Container.EdmEntityContainer.Name + "Service";
+        public override string Name => this.Container.EdmEntityContainer.Name.Substring(0, 1).ToUpper() + this.Container.EdmEntityContainer.Name.Substring(1) + "Service";
         public override string Namespace => this.Container.EdmEntityContainer.Namespace;
         public override string FileName => this.Container.EdmEntityContainer.Name.ToLower() + ".service";
         public IEnumerable<string> Actions =>  this.RenderCallables(this.Container.EdmEntityContainer.UnboundActions, usename: true);

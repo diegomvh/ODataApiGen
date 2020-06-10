@@ -39,7 +39,7 @@ namespace ODataApiGen.Angular
         }
         // Exports
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
-        public override string Name => this.EdmStructuredType.Name + "Collection";
+        public override string Name => this.EdmStructuredType.Name.Substring(0, 1).ToUpper() + this.EdmStructuredType.Name.Substring(1) + "Collection";
         public string ModelName => this.Model.Name;
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();

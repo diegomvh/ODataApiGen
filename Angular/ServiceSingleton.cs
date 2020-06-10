@@ -16,7 +16,7 @@ namespace ODataApiGen.Angular
         {
             EdmSingleton = type;
         }
-        public override string Name => this.EdmSingleton.Name[0].ToString().ToUpper() + this.EdmSingleton.Name.Substring(1) + "Service";
+        public override string Name => this.EdmSingleton.Name.Substring(0, 1).ToUpper() + this.EdmSingleton.Name.Substring(1) + "Service";
         public override string Namespace => this.EdmSingleton.Namespace;
         public override string FileName => this.EdmSingleton.Name.ToLower() + ".service";
         // Imports
