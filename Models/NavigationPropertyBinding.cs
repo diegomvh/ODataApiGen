@@ -34,7 +34,7 @@ namespace ODataApiGen.Models
                 if (parts.Length > 1) {
                     foreach (var nameOrType in parts.Take(parts.Length - 1)) {
                         var baseEntity = Program.Metadata.FindEntityType(nameOrType);
-                        if (baseEntity != null && entity.IsBaseOf(baseEntity)) {
+                        if (baseEntity != null) {
                             entity = baseEntity;
                         } else {
                             entity = entity.FindNavigationProperty(nameOrType).EntityType;
