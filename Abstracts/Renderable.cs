@@ -10,7 +10,6 @@ namespace ODataApiGen.Abstracts
         public bool Models {get; set;}
         public bool GeoJson {get; set;}
         public bool Decimal {get; set;}
-        public bool Guid {get; set;}
     }
     public abstract class Renderable {
         public ApiOptions Options  {get; set;} 

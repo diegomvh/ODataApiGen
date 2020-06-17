@@ -12,8 +12,6 @@ namespace ODataApiGen.Angular
         public string ResolveType(string type)
         {
             if (String.IsNullOrEmpty(type)) return "";
-            if (Options.Guid && type == "Edm.Guid")
-                return "Guid";
             if (Options.Decimal && type == "Edm.Decimal")
                 return "Decimal";
             if (Options.GeoJson && (type.StartsWith("Edm.Geography") || type.StartsWith("Edm.Geometry"))) {
@@ -83,8 +81,6 @@ namespace ODataApiGen.Angular
         public string ResolveTypescriptType(string type)
         {
             if (String.IsNullOrEmpty(type)) return "any";
-            if (Options.Guid && type == "Edm.Guid")
-                return "Guid";
             if (Options.Decimal && type == "Edm.Decimal")
                 return "Decimal";
             if (Options.GeoJson && (type.StartsWith("Edm.Geography") || type.StartsWith("Edm.Geometry"))) {

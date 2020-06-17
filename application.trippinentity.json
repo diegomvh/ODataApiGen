@@ -5,6 +5,5 @@
     "Purge": true,
     "Decimal": true,
     "GeoJson": true,
-    "Guid": true,
     "Models": false
 }

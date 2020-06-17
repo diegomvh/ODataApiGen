@@ -28,7 +28,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.trippinentity.json")
+                .AddJsonFile("application.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -59,7 +59,6 @@ namespace ODataApiGen
                 Models = Configuration.GetValue<bool>("Models"),
                 Decimal = Configuration.GetValue<bool>("Decimal"),
                 GeoJson = Configuration.GetValue<bool>("GeoJson"),
-                Guid = Configuration.GetValue<bool>("Guid")
             };
             var package = new Angular.Package(options);
             package.Build();
