@@ -2,15 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using ODataApiGen.Models;
 using DotLiquid;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
     public class ModelProperty : ILiquidizable
     {
         protected Models.Property Value { get; set; }
-        public ModelProperty(ODataApiGen.Models.Property prop)
+        protected Angular.Structured Structured { get; set; }
+        public ModelProperty(ODataApiGen.Models.Property prop, Angular.Structured structured)
         {
             this.Value = prop;
+            this.Structured = structured;
         }
         public string Name {
             get {
@@ -20,7 +23,7 @@ namespace ODataApiGen.Angular
         }
 
         public string Type { get {
-            var type = AngularRenderable.GetTypescriptType(Value.Type);
+            var type = this.Structured.ResolveTypescriptType(Value.Type);
             if (this.Value.IsEnumType)
                 return type;
             if (Value.IsCollection)
@@ -39,7 +42,7 @@ namespace ODataApiGen.Angular
     {
         public Angular.Entity Entity { get; private set; }
 
-        public Model(StructuredType type, Angular.Entity entity) : base(type) {
+        public Model(StructuredType type, Angular.Entity entity, ApiOptions options) : base(type, options) {
             this.Entity = entity;
         }
         public Angular.Collection Collection {get; private set;}
@@ -72,7 +75,7 @@ namespace ODataApiGen.Angular
                 var props = this.EdmStructuredType.Properties.ToList();
                 if (this.EdmStructuredType is EntityType) 
                     props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
-                return props.Select(prop => new Angular.ModelProperty(prop));
+                return props.Select(prop => new Angular.ModelProperty(prop, this));
             }
         } 
         public IEnumerable<string> Actions {

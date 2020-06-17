@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotLiquid;
+using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
     {
-        public Service() { }
+        public Service(ApiOptions options) : base(options) { }
 
         public Angular.Entity Entity { get; private set; }
         public void SetEntity(Angular.Entity entity)
@@ -55,9 +56,9 @@ namespace ODataApiGen.Angular
                     baseMethodName = $"client.{baseMethodName}";
                 }
 
-                var returnType = AngularRenderable.GetType(callable.ReturnType);
+                var returnType = this.ResolveType(callable.ReturnType);
 
-                var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
+                var typescriptType = this.ResolveTypescriptType(callable.ReturnType);
                 var callableReturnType = callable.IsEdmReturnType ?
                         $"[{typescriptType}, ODataValueAnnotations]" :
                     callable.ReturnsCollection ?
@@ -86,7 +87,7 @@ namespace ODataApiGen.Angular
                     argumentWithType.Add($"{boundArgument}: any");
 
                 argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {AngularRenderable.GetTypescriptType(p.Type)}" +
+                    $"{p.Name}: {this.ResolveTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
@@ -109,7 +110,7 @@ namespace ODataApiGen.Angular
                     $"'{callableFullName}'" +
                     (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
                     (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
-                    (usename ? $"\n    options = Object.assign({{config: '{Program.Name}'}}, options || {{}});" : "") +
+                    (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, '{responseType}', options);\n  }}";
             }
         }

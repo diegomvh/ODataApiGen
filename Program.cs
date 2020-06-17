@@ -4,6 +4,7 @@ using ODataApiGen.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen
 {
@@ -13,10 +14,6 @@ namespace ODataApiGen
         public static ILogger Logger { get; private set; }
         public static IConfiguration Configuration { get; set; }
         public static Metadata Metadata { get; set; }
-        public static string Name { get; set; }
-        public static string Output { get; set; }
-        public static bool Purge { get; set; }
-        public static bool Models { get; set; }
 
         static void Main(string[] args)
         {
@@ -31,39 +28,48 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.trippinentity.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
                     {"-Purge", "Purge"},
+                    {"-Decimal", "Decimal"},
+                    {"-GeoJson", "GeoJson"},
                     {"-Output", "Output"},
                     {"-Models", "Models"}
                 });
             Configuration = builder.Build();
 
-            Name = Configuration.GetValue<string>("Name");
-            Output = Configuration.GetValue<string>("Output");
-            Output = $"{Output}{Path.DirectorySeparatorChar}{Name.ToLower()}";
-            var directories = new DirectoryManager(Output);
-            var renderer = new Renderer(Output);
+            var name = Configuration.GetValue<string>("Name");
+            var output = Configuration.GetValue<string>("Output");
+            output = $"{output}{Path.DirectorySeparatorChar}{name.ToLower()}";
+            var directories = new DirectoryManager(output);
+            var renderer = new Renderer(output);
 
             var metadata = Configuration.GetValue<string>("Metadata");
             var serviceRootUrl = metadata.StartsWith("http") ? metadata.TrimEnd("$metadata".ToCharArray()) : "";
             Metadata = new Metadata(System.Xml.Linq.XDocument.Load(metadata));
 
-            Purge = Configuration.GetValue<bool>("Purge");
-            directories.PrepareOutput(Purge);
+            var purge = Configuration.GetValue<bool>("Purge");
+            directories.PrepareOutput(purge);
 
-            Models = Configuration.GetValue<bool>("Models");
-            var package = new Angular.Package(Name, serviceRootUrl);
-            package.Build(Models);
+            var options = new ApiOptions() {
+                Name = name,
+                ServiceRootUrl = serviceRootUrl,
+                Models = Configuration.GetValue<bool>("Models"),
+                Decimal = Configuration.GetValue<bool>("Decimal"),
+                GeoJson = Configuration.GetValue<bool>("GeoJson"),
+                Guid = Configuration.GetValue<bool>("Guid")
+            };
+            var package = new Angular.Package(options);
+            package.Build();
             package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
             directories.PrepareFolders(package.GetAllDirectories());
 
             Logger.LogInformation("Copy static content");
-            directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}Angular", Output, true);
+            directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}Angular", output, true);
 
             Logger.LogInformation("Render");
             renderer.Render(package);

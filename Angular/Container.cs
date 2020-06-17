@@ -14,30 +14,30 @@ namespace ODataApiGen.Angular
         public Angular.ServiceContainer Service { get; private set; }
         public ICollection<Angular.Service> Services { get; } = new List<Angular.Service>();
         public ICollection<Angular.ServiceConfig> ServiceConfigs { get; } = new List<Angular.ServiceConfig>();
-        public Container(EntityContainer container, bool models) {
+        public Container(EntityContainer container, ApiOptions options) : base(options) {
             this.EdmEntityContainer = container;
-            this.Service = new Angular.ServiceContainer(this);
+            this.Service = new Angular.ServiceContainer(this, options);
             foreach (var eset in container.EntitySets)
             {
                 Service service;
-                if (models)
+                if (options.Models)
                 {
-                    service = new Angular.ServiceModel(eset);
+                    service = new Angular.ServiceModel(eset, options);
                     this.Services.Add(service);
                 }
                 else
                 {
-                    service = new Angular.ServiceEntity(eset);
+                    service = new Angular.ServiceEntity(eset, options);
                     this.Services.Add(service);
                 }
-                var config = new Angular.ServiceConfig(service);
+                var config = new Angular.ServiceConfig(service, options);
                 this.ServiceConfigs.Add(config);
             }
             foreach (var s in container.Singletons)
             {
-                var service = new Angular.ServiceSingleton(s);
+                var service = new Angular.ServiceSingleton(s, options);
                 this.Services.Add(service);
-                var config = new Angular.ServiceConfig(service);
+                var config = new Angular.ServiceConfig(service, options);
                 this.ServiceConfigs.Add(config);
             }
         }

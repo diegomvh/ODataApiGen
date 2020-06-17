@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -9,7 +10,7 @@ namespace ODataApiGen.Angular
     public class Collection : Structured
     {
         public Angular.Model Model { get; private set; }
-        public Collection(StructuredType type, Angular.Model model) : base(type)
+        public Collection(StructuredType type, Angular.Model model, ApiOptions options) : base(type, options)
         {
             this.Model = model;
         }

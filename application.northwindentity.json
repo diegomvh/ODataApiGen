@@ -3,5 +3,8 @@
     "Metadata": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
     "Output": "../AngularODataEntity/src/app",
     "Purge": true,
+    "Decimal": false,
+    "GeoJson": false,
+    "Guid": false,
     "Models": false
 }

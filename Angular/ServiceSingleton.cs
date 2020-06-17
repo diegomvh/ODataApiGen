@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DotLiquid;
 using Newtonsoft.Json;
+using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -12,7 +13,7 @@ namespace ODataApiGen.Angular
     {
         public Models.Singleton EdmSingleton { get; private set; }
 
-        public ServiceSingleton(Models.Singleton type)
+        public ServiceSingleton(Models.Singleton type, ApiOptions options) : base(options)
         {
             EdmSingleton = type;
         }

@@ -5,6 +5,7 @@ using ODataApiGen.Models;
 using Newtonsoft.Json;
 using DotLiquid;
 using System.IO;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
@@ -12,16 +13,18 @@ namespace ODataApiGen.Angular
     {
         protected Models.Property Value { get; set; }
         protected IEnumerable<PropertyRef> Keys { get; set; }
-        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys) {
+        protected Angular.EntityConfig Config { get; set; }
+        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys, Angular.EntityConfig config) {
             this.Keys = keys;
             this.Value = property;
+            this.Config = config;
         }
         public string Name => Value.Name;
 
         public string Type { 
             get {
                 var values = new Dictionary<string, string>();
-                values.Add("type", $"'{AngularRenderable.GetType(this.Value.Type)}'");
+                values.Add("type", $"'{this.Config.ResolveType(this.Value.Type)}'");
                 var key = this.Keys.FirstOrDefault(k => k.Name == this.Value.Name);
                 if (key != null) {
                     values.Add("key", "true");
@@ -67,11 +70,11 @@ namespace ODataApiGen.Angular
         public Angular.Entity Entity {get; private set;}
         public Angular.Model Model {get; private set;}
         public Angular.Collection Collection {get; private set;}
-        public EntityConfig(Angular.Entity entity) {
+        public EntityConfig(Angular.Entity entity, ApiOptions options) : base(options) {
             this.Entity = entity;
             this.Dependencies.Add(entity);
         }
-        public EntityConfig(Angular.Entity entity, Angular.Model model, Angular.Collection collection) : this(entity) {
+        public EntityConfig(Angular.Entity entity, Angular.Model model, Angular.Collection collection, ApiOptions options) : this(entity, options) {
             this.Model = model;
             this.Collection = collection;
             this.Dependencies.Add(model);
@@ -94,7 +97,7 @@ namespace ODataApiGen.Angular
                 if (this.Entity.EdmStructuredType is EntityType) 
                     props.AddRange((this.Entity.EdmStructuredType as EntityType).NavigationProperties);
                 var keys = (this.Entity.EdmStructuredType is EntityType) ? (this.Entity.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
-                return props.Select(prop => new EntityFieldConfig(prop, keys));
+                return props.Select(prop => new EntityFieldConfig(prop, keys, this));
             }
         }
 

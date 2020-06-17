@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using ODataApiGen.Models;
 using Newtonsoft.Json;
 using System.IO;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
     public class EnumConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Angular.Enum Enum {get; private set;}
-        public EnumConfig(Angular.Enum enu) {
+        public EnumConfig(Angular.Enum enu, ApiOptions options) : base(options) {
             this.Enum = enu;
         }
         public override string FileName => this.Enum.FileName + ".config";

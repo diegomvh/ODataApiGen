@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -9,7 +10,7 @@ namespace ODataApiGen.Angular
     public class ServiceEntity : Service
     {
         public Models.EntitySet EdmEntitySet { get; private set; }
-        public ServiceEntity(EntitySet type) {
+        public ServiceEntity(EntitySet type, ApiOptions options) : base(options) {
             EdmEntitySet = type;
         }
         public override IEnumerable<string> ImportTypes

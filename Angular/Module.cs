@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
     public class Module : AngularRenderable
     {
         public Angular.Package Package {get; private set;}
-        public Module(Package package)
+        public Module(Package package, ApiOptions options) : base(options)
         {
             Package = package;
         }

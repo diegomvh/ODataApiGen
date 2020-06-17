@@ -1,20 +1,17 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using ODataApiGen.Models;
 
 namespace ODataApiGen.Abstracts
 {
     public abstract class Package {
-        public string Name {get; private set;}
-        public string ServiceRootUrl {get; private set;}
-        public Package(string name, string serviceRootUrl)
+        public ApiOptions Options  {get; set;} 
+        public string Name => this.Options.Name;
+        public string ServiceRootUrl => this.Options.ServiceRootUrl;
+        public Package(ApiOptions options)
         {
-            this.Name = name;
-            this.ServiceRootUrl = serviceRootUrl;
+            this.Options = options;
         }
         public abstract IEnumerable<Renderable> Renderables { get; }
-        public abstract void Build(bool models);
+        public abstract void Build();
 
     }
 }

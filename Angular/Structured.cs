@@ -5,13 +5,14 @@ using System.IO;
 using DotLiquid;
 using ODataApiGen.Models;
 using Newtonsoft.Json;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
     public abstract class Structured : AngularRenderable, DotLiquid.ILiquidizable
     {
         public StructuredType EdmStructuredType { get; private set; }
-        public Structured(StructuredType type)
+        public Structured(StructuredType type, ApiOptions options) : base(options)
         {
             EdmStructuredType = type;
         }
@@ -61,9 +62,9 @@ namespace ODataApiGen.Angular
 
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
-                var returnType = AngularRenderable.GetType(callable.ReturnType);
+                var returnType = this.ResolveType(callable.ReturnType);
 
-                var typescriptType = AngularRenderable.GetTypescriptType(callable.ReturnType);
+                var typescriptType = this.ResolveTypescriptType(callable.ReturnType);
                 var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
                         $"{typescriptType}" :
                     callable.ReturnsCollection ?
@@ -80,7 +81,7 @@ namespace ODataApiGen.Angular
                 var argumentWithType = new List<string>();
 
                 argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {AngularRenderable.GetTypescriptType(p.Type)}" +
+                    $"{p.Name}: {this.ResolveTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
@@ -106,7 +107,7 @@ namespace ODataApiGen.Angular
                     $"\n    var res = this._segments.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}'" +
                     (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
                     (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
-                    (usename ? $"\n    options = Object.assign({{config: '{Program.Name}'}}, options || {{}});" : "") +
+                    (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +
                     "\n  }";
             }
@@ -116,7 +117,7 @@ namespace ODataApiGen.Angular
             foreach (var binding in bindings)
             {
                 var nav = binding.NavigationProperty;
-                var type = AngularRenderable.GetTypescriptType(nav.Type);
+                var type = this.ResolveTypescriptType(nav.Type);
                 var methodName = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 
                 var methodSetName = $"set{methodName}";

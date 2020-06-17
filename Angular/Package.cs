@@ -16,18 +16,18 @@ namespace ODataApiGen.Angular
         public IEnumerable<Angular.Entity> Entities => this.Schemas.SelectMany(s => s.Entities);
         public IEnumerable<Angular.Model> Models => this.Schemas.SelectMany(s => s.Models);
         public IEnumerable<Angular.Collection> Collections => this.Schemas.SelectMany(s => s.Collections);
-        public Package(string name, string serviceRootUrl) : base(name, serviceRootUrl)
+        public Package(ApiOptions options) : base(options)
         {
-            this.Module = new Module(this);
-            Config = new Angular.Config(this);
-            Index = new Angular.Index(this);
+            this.Module = new Module(this, options);
+            Config = new Angular.Config(this, options);
+            Index = new Angular.Index(this, options);
         }
 
-        public override void Build(bool models)
+        public override void Build()
         {
             foreach (var schema in Program.Metadata.Schemas)
             {
-                this.Schemas.Add(new Angular.Schema(schema, models));
+                this.Schemas.Add(new Angular.Schema(schema, this.Options));
             }
         }
         public void ResolveDependencies()

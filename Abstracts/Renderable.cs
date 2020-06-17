@@ -4,7 +4,19 @@ using System.IO;
 
 namespace ODataApiGen.Abstracts
 {
+    public class ApiOptions {
+        public string Name {get; set;}
+        public string ServiceRootUrl {get; set;}
+        public bool Models {get; set;}
+        public bool GeoJson {get; set;}
+        public bool Decimal {get; set;}
+        public bool Guid {get; set;}
+    }
     public abstract class Renderable {
+        public ApiOptions Options  {get; set;} 
+        public Renderable(ApiOptions options) {
+            this.Options = options;
+        }
         // About Identity
         public abstract string Name { get; }
         public abstract string Namespace { get; }

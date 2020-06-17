@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotLiquid;
+using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular {
     public class Enum : AngularRenderable, ILiquidizable {
         public Models.EnumType EdmEnumType {get; private set;}
-        public Enum(Models.EnumType type) {
+        public Enum(Models.EnumType type, ApiOptions options) : base(options) {
             EdmEnumType = type;
         }
         // Imports

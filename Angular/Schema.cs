@@ -19,63 +19,63 @@ namespace ODataApiGen.Angular
         public ICollection<Angular.Collection> Collections { get; } = new List<Angular.Collection>();
         public ICollection<Angular.EntityConfig> EntityConfigs { get; } = new List<Angular.EntityConfig>();
         public ICollection<Angular.Container> Containers { get; } = new List<Angular.Container>();
-        public Schema(Models.Schema schema, bool models)
+        public Schema(Models.Schema schema, ApiOptions options) : base(options)
         {
             this.EdmSchema = schema;
             this.AddEnums(schema.EnumTypes);
-            this.AddComplexes(schema.ComplexTypes, models);
-            this.AddEntities(schema.EntityTypes, models);
+            this.AddComplexes(schema.ComplexTypes);
+            this.AddEntities(schema.EntityTypes);
             foreach (var container in schema.EntityContainers)
             {
-                this.Containers.Add(new Angular.Container(container, models));
+                this.Containers.Add(new Angular.Container(container, options));
             }
         }
         public void AddEnums(IEnumerable<Models.EnumType> enums)
         {
             foreach (var e in enums)
             {
-                var enu = new Angular.Enum(e);
+                var enu = new Angular.Enum(e, this.Options);
                 this.Enums.Add(enu);
-                var config = new Angular.EnumConfig(enu);
+                var config = new Angular.EnumConfig(enu, this.Options);
                 this.EnumConfigs.Add(config);
             }
         }
-        public void AddComplexes(IEnumerable<Models.ComplexType> complexes, bool models)
+        public void AddComplexes(IEnumerable<Models.ComplexType> complexes)
         {
             foreach (var cmplx in complexes)
             {
                 Angular.EntityConfig config;
-                var entity = new Angular.Entity(cmplx);
+                var entity = new Angular.Entity(cmplx, this.Options);
                 this.Entities.Add(entity);
-                if (models)
+                if (this.Options.Models)
                 {
-                    var model = new Angular.Model(cmplx, entity);
+                    var model = new Angular.Model(cmplx, entity, this.Options);
                     this.Models.Add(model);
-                    var collection = new Angular.Collection(cmplx, model);
+                    var collection = new Angular.Collection(cmplx, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Angular.EntityConfig(entity, model, collection);
+                    config = new Angular.EntityConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Angular.EntityConfig(entity);
+                    config = new Angular.EntityConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
             }
         }
-        public void AddEntities(IEnumerable<Models.EntityType> entities, bool models)
+        public void AddEntities(IEnumerable<Models.EntityType> entities)
         {
             foreach (var enty in entities)
             {
                 Angular.EntityConfig config;
-                var entity = new Angular.Entity(enty);
+                var entity = new Angular.Entity(enty, this.Options);
                 this.Entities.Add(entity);
-                if (models)
+                if (this.Options.Models)
                 {
-                    var model = new Angular.Model(enty, entity);
+                    var model = new Angular.Model(enty, entity, this.Options);
                     this.Models.Add(model);
-                    var collection = new Angular.Collection(enty, model);
+                    var collection = new Angular.Collection(enty, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Angular.EntityConfig(entity, model, collection);
+                    config = new Angular.EntityConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Angular.EntityConfig(entity);
+                    config = new Angular.EntityConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
             }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DotLiquid;
+using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
@@ -9,7 +9,7 @@ namespace ODataApiGen.Angular
     public class ServiceContainer : Service 
     {
         public Angular.Container Container {get; private set;}
-        public ServiceContainer(Angular.Container container)
+        public ServiceContainer(Angular.Container container, ApiOptions options) : base(options)
         {
             Container = container;
         }
