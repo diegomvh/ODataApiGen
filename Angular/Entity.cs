@@ -31,6 +31,7 @@ namespace ODataApiGen.Angular
                 Type = this.Type
             };
         }
+        public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
     }
     public class Entity : Structured 
     {
@@ -49,6 +50,8 @@ namespace ODataApiGen.Angular
                 return props.Select(prop => new Angular.EntityProperty(prop, this));
             }
         } 
+        public IEnumerable<Angular.EntityProperty> GeoProperties => this.Properties.Where(p => p.IsGeo);
+        public bool HasGeoFields => this.Options.GeoJson && this.GeoProperties.Count() > 0;
         public override object ToLiquid()
         {
             return new {
