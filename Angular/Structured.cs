@@ -92,7 +92,7 @@ namespace ODataApiGen.Angular
                     args = "let args = Object.entries({" +
                         String.Join(", ", parameters.Select(p => p.IsEdmType ? 
                             $"\n        {p.Name}: {p.Name}":
-                            $"\n        {p.Name}: this._resource.parserForType('{p.Type}').toJSON({p.Name})")) +
+                            $"\n        {p.Name}: this._resource.parserForType('{p.Type}').serialize({p.Name})")) +
                     "\n      })" +
                     "\n      .filter(pair => pair[1] !== null)" +
                     "\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {});";
