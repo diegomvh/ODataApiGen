@@ -39,6 +39,10 @@ namespace ODataApiGen.Angular
                     values.Add("maxLength", this.Value.MaxLength);
                 if (!String.IsNullOrEmpty(this.Value.SRID))
                     values.Add("srid", this.Value.SRID);
+                if (!String.IsNullOrEmpty(this.Value.Precision))
+                    values.Add("precition", this.Value.Precision);
+                if (!String.IsNullOrEmpty(this.Value.Scale))
+                    values.Add("scale", this.Value.Scale);
                 if (this.Value.IsCollection)
                     values.Add("collection", "true");
                 if (this.Value is NavigationProperty) {

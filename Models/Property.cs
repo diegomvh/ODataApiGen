@@ -17,6 +17,8 @@ namespace ODataApiGen.Models
             Nullable = !(element.Attribute("Nullable")?.Value == "false");
             Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             SRID = element.Attribute("SRID")?.Value;
+            Scale = element.Attribute("Scale")?.Value;
+            Precision = element.Attribute("Precition")?.Value;
         }
         public string Name { get; set; }
         public string Type { get; set; }
@@ -32,6 +34,8 @@ namespace ODataApiGen.Models
         public string MaxLength { get; set; }
         public string DisplayName { get; set; }
         public string SRID { get; set; }
+        public string Precision { get; set; }
+        public string Scale { get; set; }
     }
     public class PropertyRef
     {
