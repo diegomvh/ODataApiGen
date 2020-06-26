@@ -9,7 +9,7 @@ namespace ODataApiGen.Angular
     public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
-        public string ResolveType(string type)
+        public string ToParser(string type)
         {
             if (String.IsNullOrEmpty(type)) return "";
             if (Options.Decimal && type == "Edm.Decimal")
@@ -78,11 +78,9 @@ namespace ODataApiGen.Angular
                     }
             }
         }
-        public string ResolveTypescriptType(string type)
+        public string ToTypescript(string type)
         {
             if (String.IsNullOrEmpty(type)) return "any";
-            if (Options.Decimal && type == "Edm.Decimal")
-                return "Decimal";
             if (Options.GeoJson && (type.StartsWith("Edm.Geography") || type.StartsWith("Edm.Geometry"))) {
                 switch (type)
                 {

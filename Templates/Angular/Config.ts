@@ -1,4 +1,4 @@
-import { Configuration, DATE_PARSER } from 'angular-odata';
+import { Configuration, DATE_PARSER, DECIMAL_PARSER } from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -13,6 +13,7 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}
   ],
   parsers: {
-    ...DATE_PARSER
+    ...DATE_PARSER,
+    ...DECIMAL_PARSER
   }
 } as Configuration;

@@ -24,7 +24,7 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public string Type => this.Structured.ResolveTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
+        public string Type => this.Structured.ToTypescript(Value.Type) + (Value.IsCollection ? "[]" : "");
         public object ToLiquid() {
             return new {
                 Name = this.Name,

@@ -56,9 +56,9 @@ namespace ODataApiGen.Angular
                     baseMethodName = $"client.{baseMethodName}";
                 }
 
-                var returnType = this.ResolveType(callable.ReturnType);
+                var returnType = this.ToParser(callable.ReturnType);
 
-                var typescriptType = this.ResolveTypescriptType(callable.ReturnType);
+                var typescriptType = this.ToTypescript(callable.ReturnType);
                 var callableReturnType = callable.IsEdmReturnType ?
                         $"[{typescriptType}, ODataValueAnnotations]" :
                     callable.ReturnsCollection ?
@@ -87,7 +87,7 @@ namespace ODataApiGen.Angular
                     argumentWithType.Add($"{boundArgument}: any");
 
                 argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {this.ResolveTypescriptType(p.Type)}" +
+                    $"{p.Name}: {this.ToTypescript(p.Type)}" +
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
