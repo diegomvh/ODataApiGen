@@ -18,7 +18,7 @@ namespace ODataApiGen.Models
             Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             SRID = element.Attribute("SRID")?.Value;
             Scale = element.Attribute("Scale")?.Value;
-            Precision = element.Attribute("Precition")?.Value;
+            Precision = element.Attribute("Precision")?.Value;
         }
         public string Name { get; set; }
         public string Type { get; set; }
