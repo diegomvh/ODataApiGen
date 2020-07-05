@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 //#region ODataApi Imports
 {% if HasGeoFields %}import { {% for p in GeoProperties %}{{p.Type}}{% unless forloop.last %},{% endunless %}{% endfor %} } from 'geojson';
-{% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
+{% endif %}{% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
 export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{Base.Name}}<E>{% else %}ODataModel<E>{% endif %} {
