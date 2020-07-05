@@ -1,0 +1,9 @@
+{
+    "Name": "Northwind",
+    "Metadata": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
+    "Output": "../AngularODataEntity/src/app",
+    "Purge": true,
+    "Decimal": true,
+    "GeoJson": false,
+    "Models": true
+}
