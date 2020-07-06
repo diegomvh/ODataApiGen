@@ -9,7 +9,7 @@ namespace ODataApiGen.Angular
     public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
-        public string ToParser(string type)
+        public string _ToParser(string type)
         {
             if (String.IsNullOrEmpty(type)) return "";
             if (Options.Decimal && type == "Edm.Decimal")

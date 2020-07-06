@@ -62,10 +62,8 @@ namespace ODataApiGen.Angular
 
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
-                var returnType = this.ToParser(callable.ReturnType);
-
                 var typescriptType = this.ToTypescript(callable.ReturnType);
-                var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
+                var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
                         $"{typescriptType}" :
                     callable.ReturnsCollection ?
                         $"{typescriptType}Collection<{typescriptType}, {typescriptType}Model<{typescriptType}>>" :
@@ -97,7 +95,7 @@ namespace ODataApiGen.Angular
                     "\n      .filter(pair => pair[1] !== null)" +
                     "\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {});";
                 }
-                var mapTo = (callable.IsEdmReturnType || String.IsNullOrEmpty(returnType)) ?
+                var mapTo = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
                         $"toValue(body)[0] as {callableReturnType}" :
                     callable.ReturnsCollection ?
                         $"toCollection<{callableReturnType}>(body)" :
@@ -105,7 +103,7 @@ namespace ODataApiGen.Angular
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
                     $"\n    var res = this._segments.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}'" +
-                    (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
+                    (String.IsNullOrWhiteSpace(callable.ReturnType) ? ");" : $", '{callable.ReturnType}');") +
                     (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +

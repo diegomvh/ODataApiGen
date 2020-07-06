@@ -56,8 +56,6 @@ namespace ODataApiGen.Angular
                     baseMethodName = $"client.{baseMethodName}";
                 }
 
-                var returnType = this.ToParser(callable.ReturnType);
-
                 var typescriptType = this.ToTypescript(callable.ReturnType);
                 var callableReturnType = callable.IsEdmReturnType ?
                         $"[{typescriptType}, ODataValueAnnotations]" :
@@ -108,7 +106,7 @@ namespace ODataApiGen.Angular
                     $"\n    var res = this.{baseMethodName}<{typescriptType}>(" + 
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callableFullName}'" +
-                    (String.IsNullOrWhiteSpace(returnType) ? ");" : $", '{returnType}');") +
+                    (String.IsNullOrWhiteSpace(callable.ReturnType) ? ");" : $", '{callable.ReturnType}');") +
                     (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, '{responseType}', options);\n  }}";

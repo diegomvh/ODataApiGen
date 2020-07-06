@@ -24,7 +24,7 @@ namespace ODataApiGen.Angular
         public string Type { 
             get {
                 var values = new Dictionary<string, string>();
-                values.Add("type", $"'{this.Config.ToParser(this.Value.Type)}'");
+                values.Add("type", $"'{this.Value.Type}'");
                 var key = this.Keys.FirstOrDefault(k => k.Name == this.Value.Name);
                 if (key != null) {
                     values.Add("key", "true");
