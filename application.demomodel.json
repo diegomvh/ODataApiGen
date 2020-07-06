@@ -3,7 +3,6 @@
     "Metadata": "https://services.odata.org/V4/OData/OData.svc/$metadata",
     "Output": "../ProductModels/src/app",
     "Purge": true,
-    "Decimal": false,
     "GeoJson": false,
     "Models": true
 }

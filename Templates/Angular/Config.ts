@@ -1,4 +1,4 @@
-import { Configuration, DATE_PARSER, DECIMAL_PARSER } from 'angular-odata';
+import { Configuration, EDM_PARSERS } from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -12,8 +12,5 @@ export const {{Name}} = {
     {% for schema in Package.Schemas %}{{schema.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   ],
-  parsers: {
-    ...DATE_PARSER,
-    ...DECIMAL_PARSER
-  }
+  parsers: EDM_PARSERS
 } as Configuration;

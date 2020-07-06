@@ -3,7 +3,6 @@
     "Metadata": "https://graph.microsoft.com/v1.0/$metadata",
     "Output": "./local",
     "Purge": true,
-    "Decimal": false,
     "GeoJson": false,
     "Models": false
 }

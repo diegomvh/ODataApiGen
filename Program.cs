@@ -28,12 +28,11 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.northwindentity.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
                     {"-Purge", "Purge"},
-                    {"-Decimal", "Decimal"},
                     {"-GeoJson", "GeoJson"},
                     {"-Output", "Output"},
                     {"-Models", "Models"}
@@ -57,7 +56,6 @@ namespace ODataApiGen
                 Name = name,
                 ServiceRootUrl = serviceRootUrl,
                 Models = Configuration.GetValue<bool>("Models"),
-                Decimal = Configuration.GetValue<bool>("Decimal"),
                 GeoJson = Configuration.GetValue<bool>("GeoJson"),
             };
             var package = new Angular.Package(options);

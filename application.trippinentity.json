@@ -3,7 +3,6 @@
     "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
     "Output": "../AngularODataEntity/src/app",
     "Purge": true,
-    "Decimal": true,
     "GeoJson": true,
     "Models": false
 }
