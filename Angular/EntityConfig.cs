@@ -88,6 +88,7 @@ namespace ODataApiGen.Angular
         public override string Name => this.Entity.Name + "Config";
         public string EntityType => this.Entity.EdmStructuredType.FullName;
         public string EntityName => this.Entity.Name;
+        public bool OpenType => this.Entity.OpenType; 
 
         public string Annotations {
             get {
