@@ -107,7 +107,7 @@ namespace ODataApiGen.Angular
                     (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
                     $"'{callableFullName}'" +
                     (String.IsNullOrWhiteSpace(callable.ReturnType) ? ");" : $", '{callable.ReturnType}');") +
-                    (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
+                    (useset ? $"\n    res.segment.entitySet('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, '{responseType}', options);\n  }}";
             }

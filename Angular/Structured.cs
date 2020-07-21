@@ -103,9 +103,9 @@ namespace ODataApiGen.Angular
                         $"toModel<{callableReturnType}>(body)";
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
-                    $"\n    var res = this._segments.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}'" +
+                    $"\n    var res = this._segment.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}'" +
                     (String.IsNullOrWhiteSpace(callable.ReturnType) ? ");" : $", '{callable.ReturnType}');") +
-                    (useset ? $"\n    res.entitySet('{this.EntitySetName}');" : "") +
+                    (useset ? $"\n    res.segment.entitySet('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +
                     "\n  }";
