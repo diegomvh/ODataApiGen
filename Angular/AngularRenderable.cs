@@ -50,10 +50,12 @@ namespace ODataApiGen.Angular
             switch (type)
             {
                 case "Edm.String": //Sequence of UTF-8 characters
-                case "Edm.Duration": //Signed duration in days, hours, minutes, and (sub)seconds
                 case "Edm.Guid": //16-byte (128-bit) unique identifier
-                case "Edm.Binary": //Binary data
                     return "string";
+                case "Edm.Binary": //Binary data
+                    return "ArrayBuffer";
+                case "Edm.Duration": //Signed duration in days, hours, minutes, and (sub)seconds
+                    return "Duration";
                 case "Edm.Int16": //Signed 16-bit integer
                 case "Edm.Int32": //Signed 32-bit integer
                 case "Edm.Int64": //Signed 64-bit integer
