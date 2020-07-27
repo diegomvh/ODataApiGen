@@ -3,7 +3,17 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ODataEntityService, ODataEntityAnnotations, ODataEntitiesAnnotations, EntityKey, ODataValueAnnotations, ODataEntityResource, ODataEntitySetResource, ODataNavigationPropertyResource, HttpOptions } from 'angular-odata';
+import { 
+  ODataEntityService, 
+  ODataEntityAnnotations, 
+  ODataEntitiesAnnotations, 
+  ODataPropertyAnnotations, 
+  EntityKey,
+  ODataEntityResource,
+  ODataEntitySetResource,
+  ODataNavigationPropertyResource,
+  HttpOptions
+} from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -13,7 +23,7 @@ import { ODataEntityService, ODataEntityAnnotations, ODataEntitiesAnnotations, E
 export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   static path: string = '{{EntitySetName}}';
   static type: string = '{{ServiceType}}';
-  static entity: string = '{{EntityType}}';
+  static entityType: string = '{{EntityType}}';
 
   //#region ODataApi Actions
   {% for action in Actions %}{{action}}

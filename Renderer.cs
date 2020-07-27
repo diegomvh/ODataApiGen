@@ -24,6 +24,7 @@ namespace ODataApiGen
         {
             //Template.FileSystem = new LocalFileSystem(TemplatesPath);
             this.Output = output;
+            Template.RegisterFilter(typeof(Angular.Filters));
         }
 
         private void DoRender(Renderable entity)

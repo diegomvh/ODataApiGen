@@ -18,6 +18,7 @@ namespace ODataApiGen.Angular
         public ICollection<Angular.Model> Models { get; } = new List<Angular.Model>();
         public ICollection<Angular.Collection> Collections { get; } = new List<Angular.Collection>();
         public ICollection<Angular.EntityConfig> EntityConfigs { get; } = new List<Angular.EntityConfig>();
+        public ICollection<Angular.CallableConfig> CallablesConfigs { get; } = new List<Angular.CallableConfig>();
         public ICollection<Angular.Container> Containers { get; } = new List<Angular.Container>();
         public Schema(Models.Schema schema, ApiOptions options) : base(options)
         {
@@ -25,6 +26,8 @@ namespace ODataApiGen.Angular
             this.AddEnums(schema.EnumTypes);
             this.AddComplexes(schema.ComplexTypes);
             this.AddEntities(schema.EntityTypes);
+            this.AddCallables(schema.Functions);
+            this.AddCallables(schema.Actions);
             foreach (var container in schema.EntityContainers)
             {
                 this.Containers.Add(new Angular.Container(container, options));
@@ -78,6 +81,13 @@ namespace ODataApiGen.Angular
                     config = new Angular.EntityConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
+            }
+        }
+        public void AddCallables(IEnumerable<Models.Callable> callables)
+        {
+            foreach (var callable in callables)
+            {
+                this.CallablesConfigs.Add(new Angular.CallableConfig(callable));
             }
         }
         // Imports

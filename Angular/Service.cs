@@ -47,24 +47,16 @@ namespace ODataApiGen.Angular
 
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
-                var baseMethodName = callable.IsCollection
-                    ? $"collection{callable.Type}"
-                    : $"{callable.Type.ToLower()}";
-
-                if (!callable.IsBound) {
-                    // Create function from odata client
-                    baseMethodName = $"client.{baseMethodName}";
-                }
 
                 var typescriptType = this.ToTypescript(callable.ReturnType);
                 var callableReturnType = callable.IsEdmReturnType ?
-                        $"[{typescriptType}, ODataValueAnnotations]" :
+                        $"[{typescriptType}, ODataPropertyAnnotations]" :
                     callable.ReturnsCollection ?
                         $"[{typescriptType}[], ODataEntitiesAnnotations]" :
                         $"[{typescriptType}, ODataEntityAnnotations]";
 
                 var responseType = callable.IsEdmReturnType ?
-                        $"value" :
+                        $"property" :
                     callable.ReturnsCollection ?
                         $"entities" :
                         $"entity";
@@ -81,6 +73,12 @@ namespace ODataApiGen.Angular
                     callable.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)).ToLower() + "Id" :
                     "";
 
+                var baseMethodName = !callable.IsBound ?
+                    $"client.{callable.Type.ToLower()}" : 
+                    callable.IsCollection
+                    ? $"entities().{callable.Type.ToLower()}"
+                    : $"entity({boundArgument}).{callable.Type.ToLower()}";
+
                 if (callable.IsBound && !callable.IsCollection)
                     argumentWithType.Add($"{boundArgument}: any");
 
@@ -93,20 +91,11 @@ namespace ODataApiGen.Angular
 
                 var args = "let args = null;";
                 if (parameters.Count() > 0) {
-                    args = "let args = Object.entries({" +
-                        String.Join(", ", parameters.Select(p => p.IsEdmType ? 
-                            $"\n        {p.Name}: {p.Name}":
-                            $"\n        {p.Name}: this.client.parserForType('{p.Type}').serialize({p.Name})")) +
-                    "\n      })" +
-                    "\n      .filter(pair => pair[1] !== null)" +
-                    "\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {});";
+                    args = $"let args = {{{String.Join(", ", parameters.Select(p => p.Name))}}}";
                 }
                 yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
                     $"\n    {args}" +
-                    $"\n    var res = this.{baseMethodName}<{typescriptType}>(" + 
-                    (String.IsNullOrWhiteSpace(boundArgument) ? boundArgument : $"{boundArgument}, ") +
-                    $"'{callableFullName}'" +
-                    (String.IsNullOrWhiteSpace(callable.ReturnType) ? ");" : $", '{callable.ReturnType}');") +
+                    $"\n    var res = this.{baseMethodName}<{typescriptType}>('{callableFullName}');" +
                     (useset ? $"\n    res.segment.entitySet('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call(args, '{responseType}', options);\n  }}";
