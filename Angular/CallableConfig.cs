@@ -49,6 +49,8 @@ namespace ODataApiGen.Angular
     {
         return new {
             Name = this.Name,
+            HasPath = !String.IsNullOrWhiteSpace(this.Callable.EntitySetPath),
+            Path = this.Callable.EntitySetPath,
             HasParameters = this.Parameters.Count() > 0,
             Parameters = this.Parameters,
             Bound = this.Callable.IsBound,
