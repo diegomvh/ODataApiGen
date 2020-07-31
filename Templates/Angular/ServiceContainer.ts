@@ -5,14 +5,16 @@ import { map } from 'rxjs/operators';
 
 import { 
   ODataClient,
-  ODataEntityService, 
-  ODataEntityAnnotations, 
-  ODataEntitiesAnnotations, 
-  ODataPropertyAnnotations, 
+  ODataService, 
+  ODataEntity, 
+  ODataEntities, 
+  ODataProperty, 
   EntityKey,
   ODataEntityResource,
   ODataEntitySetResource,
   ODataNavigationPropertyResource,
+  ODataActionResource,
+  ODataFunctionResource,
   HttpOptions
 } from 'angular-odata';
 

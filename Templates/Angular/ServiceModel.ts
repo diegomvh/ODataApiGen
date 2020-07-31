@@ -4,14 +4,17 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { 
-  ODataEntityService, 
-  ODataEntityAnnotations, 
-  ODataEntitiesAnnotations, 
-  ODataPropertyAnnotations, 
+  ODataClient,
+  ODataService, 
+  ODataEntity, 
+  ODataEntities, 
+  ODataProperty, 
   EntityKey,
   ODataEntityResource,
   ODataEntitySetResource,
   ODataNavigationPropertyResource,
+  ODataActionResource,
+  ODataFunctionResource,
   HttpOptions
 } from 'angular-odata';
 
@@ -20,8 +23,15 @@ import {
 {% endfor %}//#endregion
 
 @Injectable()
-export class {{Name}} extends ODataModelService<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>, {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>> {
-  static path: string = '{{EntitySetName}}';
-  static type: string = '{{ServiceType}}';
-  static entityType: string = '{{EntityType}}';
+export class {{Name}} extends ODataService<{{EntityName}}> {
+  constructor(protected client: ODataClient) {
+    super(client, '{{EntitySetName}}', '{{EntityType}}');
+  }
+
+  blabla(): {{EntityName}}Model<{{EntityName}}> {
+    return super.model() as {{EntityName}}Model<{{EntityName}}>;
+  }
+  blablabla(): {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>> {
+    return super.collection() as {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>>;
+  }
 }

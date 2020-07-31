@@ -45,60 +45,45 @@ namespace ODataApiGen.Angular
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
 
-                var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
-
+                var callableFullName = $"{callable.Namespace}.{callable.Name}";
 
                 var typescriptType = this.ToTypescript(callable.ReturnType);
-                var callableReturnType = callable.IsEdmReturnType ?
-                        $"[{typescriptType}, ODataPropertyAnnotations]" :
-                    callable.ReturnsCollection ?
-                        $"[{typescriptType}[], ODataEntitiesAnnotations]" :
-                        $"[{typescriptType}, ODataEntityAnnotations]";
-
-                var responseType = callable.IsEdmReturnType ?
-                        $"property" :
-                    callable.ReturnsCollection ?
-                        $"entities" :
-                        $"entity";
 
                 var parameters = new List<Models.Parameter>();
-                foreach (var cal in callables)
-                    parameters.AddRange(cal.Parameters);
-                var optionals = parameters.Where(p =>
-                    !callables.All(c => c.Parameters.Contains(p))).ToList();
+                var optionals = new List<string>();
+                foreach (var cal in callables) {
+                    foreach (var param in cal.Parameters) {
+                        if (parameters.All(p => p.Name != param.Name))
+                            parameters.Add(param);
+                        if (optionals.All(o => o != param.Name) && !callables.All(c => c.Parameters.Any(p => p.Name == param.Name)))
+                            optionals.Add(param.Name);
+                    }
+                }
                 parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
-
-                var argumentWithType = new List<string>();
-                var boundArgument = callable.IsBound && !callable.IsCollection?
-                    callable.BindingParameter.Split('.').Last(a => !string.IsNullOrWhiteSpace(a)).ToLower() + "Id" :
-                    "";
 
                 var baseMethodName = !callable.IsBound ?
                     $"client.{callable.Type.ToLower()}" : 
                     callable.IsCollection
                     ? $"entities().{callable.Type.ToLower()}"
-                    : $"entity({boundArgument}).{callable.Type.ToLower()}";
+                    : $"entity(entity).{callable.Type.ToLower()}";
 
-                if (callable.IsBound && !callable.IsCollection)
-                    argumentWithType.Add($"{boundArgument}: any");
+                var key = (callable.IsBound && !callable.IsCollection) ?
+                    $"entity: EntityKey<{EntityName}>" :  "";
 
-                argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {this.ToTypescript(p.Type)}" +
-                    (p.IsCollection ? "[]" : "") +
-                    (optionals.Contains(p) ? " = null" : "")
-                ));
-                argumentWithType.Add(@"options?: HttpOptions");
+                var arguments = parameters.Select(p =>
+                    $"{p.Name}" + 
+                    (optionals.Any(o => o == p.Name) ? "?" : "") + 
+                    $": {this.ToTypescript(p.Type)}" +
+                    (p.IsCollection ? "[]" : ""));
 
-                var args = "let args = null;";
+                var args = "null";
                 if (parameters.Count() > 0) {
-                    args = $"let args = {{{String.Join(", ", parameters.Select(p => p.Name))}}}";
+                    args = $"{{{String.Join(", ", arguments)}}}";
                 }
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    {args}" +
-                    $"\n    var res = this.{baseMethodName}<{typescriptType}>('{callableFullName}');" +
-                    (useset ? $"\n    res.segment.entitySet('{this.EntitySetName}');" : "") +
-                    (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
-                    $"\n    return res.call(args, '{responseType}', options);\n  }}";
+                yield return $"public {methodName}({key}): OData{callable.Type}Resource<{args}, {typescriptType}> {{" +
+                    $"\n    const resource = this.{baseMethodName}<{args}, {typescriptType}>('{callableFullName}');" +
+          (useset ? $"\n    resource.segment.entitySet('{EntitySetName}');" : "") +
+                     "\n    return resource;\n  }";
             }
         }
 
