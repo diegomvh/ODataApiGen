@@ -28,10 +28,11 @@ export class {{Name}} extends ODataService<{{EntityName}}> {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }
 
-  blabla(): {{EntityName}}Model<{{EntityName}}> {
+  {{EntityName | downcase}}(): {{EntityName}}Model<{{EntityName}}> {
     return super.model() as {{EntityName}}Model<{{EntityName}}>;
   }
-  blablabla(): {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>> {
-    return super.collection() as {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>>;
+  
+  {{EntitySetName | downcase}}(): {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>> {
+    return super.collection() as {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>>;
   }
 }
