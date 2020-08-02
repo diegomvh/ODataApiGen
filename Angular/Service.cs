@@ -47,7 +47,7 @@ namespace ODataApiGen.Angular
 
                 var callableFullName = $"{callable.Namespace}.{callable.Name}";
 
-                var typescriptType = this.ToTypescript(callable.ReturnType);
+                var typescriptType = this.ToTypescriptType(callable.ReturnType);
 
                 var parameters = new List<Models.Parameter>();
                 var optionals = new List<string>();
@@ -73,7 +73,7 @@ namespace ODataApiGen.Angular
                 var arguments = parameters.Select(p =>
                     $"{p.Name}" + 
                     (optionals.Any(o => o == p.Name) ? "?" : "") + 
-                    $": {this.ToTypescript(p.Type)}" +
+                    $": {this.ToTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : ""));
 
                 var args = "null";

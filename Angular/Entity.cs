@@ -20,11 +20,11 @@ namespace ODataApiGen.Angular
         public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
-                return Value.Name + (!required? "?" : "");
+                return AngularRenderable.ToTypescriptName(Value.Name, TypeScript.Method) + (!required? "?" : "");
             }
         }
 
-        public string Type => this.Structured.ToTypescript(Value.Type) + (Value.IsCollection ? "[]" : "");
+        public string Type => this.Structured.ToTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
         public object ToLiquid() {
             return new {
                 Name = this.Name,
@@ -39,7 +39,7 @@ namespace ODataApiGen.Angular
         }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
-        public override string Name => this.EdmStructuredType.Name.Substring(0, 1).ToUpper() + this.EdmStructuredType.Name.Substring(1);
+        public override string Name => AngularRenderable.ToTypescriptName(this.EdmStructuredType.Name, TypeScript.Class);
         // Exports
 
         public IEnumerable<Angular.EntityProperty> Properties {

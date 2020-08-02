@@ -19,24 +19,28 @@ namespace ODataApiGen.Angular
             this.Value = property;
             this.Config = config;
         }
-        public string Name => Value.Name;
+        public string Name => AngularRenderable.ToTypescriptName(Value.Name, TypeScript.Method);
 
         public string Type { 
             get {
                 var values = new Dictionary<string, string>();
+                if (this.Name != this.Value.Name)
+                    values.Add("name", $"'{this.Value.Name}'");
                 values.Add("type", $"'{this.Value.Type}'");
                 var key = this.Keys.FirstOrDefault(k => k.Name == this.Value.Name);
                 if (key != null) {
                     values.Add("key", "true");
-                    values.Add("ref", $"'{key.Name}'");
+                    values.Add("ref", $"'{this.Name}'");
                     if (!String.IsNullOrWhiteSpace(key.Alias)) {
-                        values.Add("name", $"'{key.Alias}'");
+                        values.Add("alias", $"'{key.Alias}'");
                     }
                 }
                 if (!(this.Value is NavigationProperty) && !this.Value.Nullable)
                     values.Add("nullable", "false");
                 if (!String.IsNullOrEmpty(this.Value.MaxLength) && this.Value.MaxLength.ToLower() != "max")
                     values.Add("maxLength", this.Value.MaxLength);
+                if (!String.IsNullOrEmpty(this.Value.DefaultValue))
+                    values.Add("default", $"'{this.Value.DefaultValue}'");
                 if (!String.IsNullOrEmpty(this.Value.SRID))
                     values.Add("srid", this.Value.SRID);
                 if (!String.IsNullOrEmpty(this.Value.Precision))

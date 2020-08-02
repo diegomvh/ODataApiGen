@@ -1,15 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
+    public enum TypeScript {
+        Class,
+        Attribute,
+        Method,
+        Function,
+        Constant
+    }
+
     public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
-        public string ToTypescript(string type)
+        public static string ToTypescriptName(string name, TypeScript type) {
+            var sep = "";
+            var parts = Regex.Split(name, @"(?<!^)(?=[A-Z])|[-_]").Where(p => !String.IsNullOrWhiteSpace(p)).ToArray();
+            switch (type) {
+                case TypeScript.Constant:
+                    parts = parts.Select(p => p.ToUpper()).ToArray();
+                    sep = "_";
+                    break;
+                case TypeScript.Class:
+                    parts = parts.Select(p => p[0].ToString().ToUpper() + p.Substring(1)).ToArray();
+                    break;
+                case TypeScript.Attribute:
+                case TypeScript.Function:
+                case TypeScript.Method:
+                    parts = parts.Select(p => p[0].ToString().ToUpper() + p.Substring(1)).ToArray();
+                    parts[0] = parts[0].ToLower();
+                    break;
+            }
+            return string.Join(sep, parts);
+        }
+            
+        public string ToTypescriptType(string type)
         {
             if (String.IsNullOrEmpty(type)) return "any";
             if (Options.GeoJson && (type.StartsWith("Edm.Geography") || type.StartsWith("Edm.Geometry"))) {

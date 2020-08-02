@@ -1,0 +1,8 @@
+{
+    "Name": "Personium",
+    "Metadata": "https://baas-demo.demo-jp.personium.io/1/odata/$metadata",
+    "Output": "./personium",
+    "Purge": true,
+    "GeoJson": true,
+    "Models": false
+}

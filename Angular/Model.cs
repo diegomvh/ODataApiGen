@@ -23,7 +23,7 @@ namespace ODataApiGen.Angular
         }
 
         public string Type { get {
-            var type = this.Structured.ToTypescript(Value.Type);
+            var type = this.Structured.ToTypescriptType(Value.Type);
             if (this.Value.IsEnumType)
                 return type;
             if (Value.IsCollection)

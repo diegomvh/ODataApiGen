@@ -15,7 +15,7 @@ namespace ODataApiGen.Angular
             Service = service;
         }
         public override string FileName => this.Service.FileName + ".config";
-        public override string Name => this.Service.Name + "Config";
+        public override string Name => AngularRenderable.ToTypescriptName(this.Service.Name, TypeScript.Class) + "Config";
 
         public string Annotations {
             get {

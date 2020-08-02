@@ -63,7 +63,7 @@ namespace ODataApiGen.Angular
 
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
-                var typescriptType = this.ToTypescript(callable.ReturnType);
+                var typescriptType = this.ToTypescriptType(callable.ReturnType);
                 var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
                         $"{typescriptType}" :
                     callable.ReturnsCollection ?
@@ -80,7 +80,7 @@ namespace ODataApiGen.Angular
                 var argumentWithType = new List<string>();
 
                 argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {this.ToTypescript(p.Type)}" +
+                    $"{p.Name}: {this.ToTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : "") +
                     (optionals.Contains(p) ? " = null" : "")
                 ));
@@ -116,7 +116,7 @@ namespace ODataApiGen.Angular
             foreach (var binding in bindings)
             {
                 var nav = binding.NavigationProperty;
-                var type = this.ToTypescript(nav.Type);
+                var type = this.ToTypescriptType(nav.Type);
                 var methodName = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 
                 var methodSetName = $"set{methodName}";

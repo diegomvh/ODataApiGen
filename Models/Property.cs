@@ -14,6 +14,7 @@ namespace ODataApiGen.Models
             IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
             Name = element.Attribute("Name")?.Value;
             MaxLength = element.Attribute("MaxLength")?.Value;
+            DefaultValue = element.Attribute("DefaultValue")?.Value;
             Nullable = !(element.Attribute("Nullable")?.Value == "false");
             Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             SRID = element.Attribute("SRID")?.Value;
@@ -32,6 +33,7 @@ namespace ODataApiGen.Models
         public bool IsCollection { get; set; }
         public bool Nullable { get; set; }
         public string MaxLength { get; set; }
+        public string DefaultValue { get; set; }
         public string DisplayName { get; set; }
         public string SRID { get; set; }
         public string Precision { get; set; }
