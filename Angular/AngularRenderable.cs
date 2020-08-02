@@ -104,7 +104,9 @@ namespace ODataApiGen.Angular
                 case "Edm.Stream": //Binary data stream
                 default:
                     {
-                        return type.Contains(".") && !type.StartsWith("Edm") ? type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : "any";
+                        return type.Contains(".") && !type.StartsWith("Edm") ? 
+                            AngularRenderable.ToTypescriptName(type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)), TypeScriptElement.Class) : 
+                            "any";
                     }
             }
         }

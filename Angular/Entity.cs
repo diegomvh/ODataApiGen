@@ -37,7 +37,7 @@ namespace ODataApiGen.Angular
             }
             else {
                 var entity = pkg.FindEntity(this.Value.Type);
-                return $"{entity.Name}";
+                return $"{entity.Name}" + (Value.IsCollection ? "[]" : "");
             }
         }}
         public object ToLiquid() {
