@@ -65,12 +65,12 @@ namespace ODataApiGen.Angular
                 {
                     service.SetEntity(inter);
                 }
-                var model = models.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
+                var model = models.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
                 if (model != null)
                 {
                     service.SetModel(model);
                 }
-                var collection = collections.FirstOrDefault(m => m.EdmStructuredType.Name == service.EntityName);
+                var collection = collections.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
                 if (collection != null)
                 {
                     service.SetCollection(collection);

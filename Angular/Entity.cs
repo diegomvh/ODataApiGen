@@ -20,7 +20,7 @@ namespace ODataApiGen.Angular
         public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
-                return AngularRenderable.ToTypescriptName(Value.Name, TypeScript.Method) + (!required? "?" : "");
+                return AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method) + (!required? "?" : "");
             }
         }
 
@@ -39,7 +39,7 @@ namespace ODataApiGen.Angular
         }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
-        public override string Name => AngularRenderable.ToTypescriptName(this.EdmStructuredType.Name, TypeScript.Class);
+        public override string Name => AngularRenderable.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class);
         // Exports
 
         public IEnumerable<Angular.EntityProperty> Properties {

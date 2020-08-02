@@ -19,7 +19,7 @@ namespace ODataApiGen.Angular
             this.Value = property;
             this.Config = config;
         }
-        public string Name => AngularRenderable.ToTypescriptName(Value.Name, TypeScript.Method);
+        public string Name => AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method);
 
         public string Type { 
             get {

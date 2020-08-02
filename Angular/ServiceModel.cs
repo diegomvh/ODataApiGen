@@ -40,10 +40,12 @@ namespace ODataApiGen.Angular
 
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string EntitySetName => this.EdmEntitySet.Name;
-        public override string EntityName => EdmEntitySet.EntityType.Split('.').Last();
         public override string EntityType => this.EdmEntitySet.EntityType;
+        public override string EntityName => this.Entity.Name;
+        public string ModelName => this.Model.Name;
+        public string CollectionName => this.Collection.Name;
         public string ServiceType => this.EdmEntitySet.FullName;
-        public override string Name => AngularRenderable.ToTypescriptName(this.EdmEntitySet.Name, TypeScript.Class) + "Service";
+        public override string Name => AngularRenderable.ToTypescriptName(this.EdmEntitySet.Name, TypeScriptElement.Class) + "Service";
         public override string Namespace => this.EdmEntitySet.Namespace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
         public override IEnumerable<Models.Annotation> Annotations => this.EdmEntitySet.Annotations; 

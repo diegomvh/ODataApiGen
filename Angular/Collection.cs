@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
@@ -40,7 +38,7 @@ namespace ODataApiGen.Angular
         }
         // Exports
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
-        public override string Name => this.EdmStructuredType.Name.Substring(0, 1).ToUpper() + this.EdmStructuredType.Name.Substring(1) + "Collection";
+        public override string Name => AngularRenderable.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class) + "Collection";
         public string ModelName => this.Model.Name;
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();

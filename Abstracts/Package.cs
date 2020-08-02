@@ -6,6 +6,7 @@ namespace ODataApiGen.Abstracts
         public ApiOptions Options  {get; set;} 
         public string Name => this.Options.Name;
         public string ServiceRootUrl => this.Options.ServiceRootUrl;
+        public string Version => this.Options.Version;
         public Package(ApiOptions options)
         {
             this.Options = options;

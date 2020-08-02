@@ -7,7 +7,7 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public enum TypeScript {
+    public enum TypeScriptElement {
         Class,
         Attribute,
         Method,
@@ -18,20 +18,20 @@ namespace ODataApiGen.Angular
     public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
-        public static string ToTypescriptName(string name, TypeScript type) {
+        public static string ToTypescriptName(string name, TypeScriptElement type) {
             var sep = "";
             var parts = Regex.Split(name, @"(?<!^)(?=[A-Z])|[-_]").Where(p => !String.IsNullOrWhiteSpace(p)).ToArray();
             switch (type) {
-                case TypeScript.Constant:
+                case TypeScriptElement.Constant:
                     parts = parts.Select(p => p.ToUpper()).ToArray();
                     sep = "_";
                     break;
-                case TypeScript.Class:
+                case TypeScriptElement.Class:
                     parts = parts.Select(p => p[0].ToString().ToUpper() + p.Substring(1)).ToArray();
                     break;
-                case TypeScript.Attribute:
-                case TypeScript.Function:
-                case TypeScript.Method:
+                case TypeScriptElement.Attribute:
+                case TypeScriptElement.Function:
+                case TypeScriptElement.Method:
                     parts = parts.Select(p => p[0].ToString().ToUpper() + p.Substring(1)).ToArray();
                     parts[0] = parts[0].ToLower();
                     break;

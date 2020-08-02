@@ -9,6 +9,7 @@ namespace ODataApiGen.Models
     public class Metadata 
     {
         private static ILogger Logger {get;} = Program.LoggerFactory.CreateLogger<Metadata>();
+        public string Version { get; private set; }
         public List<Schema> Schemas { get; private set; }
         public string Namespace => 
             this.Schemas.Select(s => s.Namespace).OrderBy(n => n.Length).FirstOrDefault();
@@ -47,6 +48,7 @@ namespace ODataApiGen.Models
         #endregion
         public Metadata(XDocument xDoc) 
         {
+            this.Version = xDoc.Descendants().FirstOrDefault(a => a.Name.LocalName == "Edmx").Attribute("Version")?.Value;
             this.Schemas = Metadata.ReadSchemas(xDoc);
             foreach (var schema in this.Schemas) {
                 schema.ResolveFunctions(this.Functions);

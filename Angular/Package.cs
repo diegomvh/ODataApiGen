@@ -137,6 +137,7 @@ namespace ODataApiGen.Angular
             {
                 Name = this.Name,
                 ServiceRootUrl = this.ServiceRootUrl,
+                Version = this.Version,
                 Creation = DateTime.Now,
                 Schemas = this.Schemas
             };

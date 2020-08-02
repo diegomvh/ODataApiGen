@@ -6,6 +6,7 @@ namespace ODataApiGen.Abstracts
 {
     public class ApiOptions {
         public string Name {get; set;}
+        public string Version {get; set;}
         public string ServiceRootUrl {get; set;}
         public bool Models {get; set;}
         public bool GeoJson {get; set;}
