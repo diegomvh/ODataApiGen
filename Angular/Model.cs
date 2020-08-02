@@ -18,7 +18,8 @@ namespace ODataApiGen.Angular
         public string Name {
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
-                return AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method) + (!required? "?" : "");
+                //return AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method) + (!required? "?" : "");
+                return Value.Name + (!required? "?" : "");
             }
         }
 

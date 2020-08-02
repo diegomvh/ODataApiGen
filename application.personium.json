@@ -4,5 +4,5 @@
     "Output": "./personium",
     "Purge": true,
     "GeoJson": true,
-    "Models": false
+    "Models": true
 }

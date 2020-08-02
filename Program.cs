@@ -28,7 +28,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.trippin.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -55,6 +55,7 @@ namespace ODataApiGen
             var options = new ApiOptions() {
                 Name = name,
                 ServiceRootUrl = serviceRootUrl,
+                Version = Metadata.Version,
                 Models = Configuration.GetValue<bool>("Models"),
                 GeoJson = Configuration.GetValue<bool>("GeoJson"),
             };
