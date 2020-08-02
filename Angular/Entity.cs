@@ -25,7 +25,21 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public string Type => this.Structured.ToTypescriptType(Value.Type) + (Value.IsCollection ? "[]" : "");
+        public string Type { get {
+            var pkg = Program.Package as Angular.Package;
+            if (this.Value.IsEnumType){
+                var e = pkg.FindEnum(this.Value.Type);
+                return e.Name;
+            }
+            else if (Value.IsEdmType) {
+                var type = this.Structured.ToTypescriptType(Value.Type);
+                return type + (Value.IsCollection ? "[]" : "");
+            }
+            else {
+                var entity = pkg.FindEntity(this.Value.Type);
+                return $"{entity.Name}";
+            }
+        }}
         public object ToLiquid() {
             return new {
                 Name = this.Name,

@@ -14,6 +14,7 @@ namespace ODataApiGen
         public static ILogger Logger { get; private set; }
         public static IConfiguration Configuration { get; set; }
         public static Metadata Metadata { get; set; }
+        public static Package Package { get; set; }
 
         static void Main(string[] args)
         {
@@ -28,7 +29,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.trippin.json")
+                .AddJsonFile("application.northwind.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -59,18 +60,18 @@ namespace ODataApiGen
                 Models = Configuration.GetValue<bool>("Models"),
                 GeoJson = Configuration.GetValue<bool>("GeoJson"),
             };
-            var package = new Angular.Package(options);
-            package.Build();
-            package.ResolveDependencies();
+            Package = new Angular.Package(options);
+            Package.Build();
+            Package.ResolveDependencies();
 
             Logger.LogInformation("Preparing namespace structure");
-            directories.PrepareFolders(package.GetAllDirectories());
+            directories.PrepareFolders(Package.GetAllDirectories());
 
             Logger.LogInformation("Copy static content");
             directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}Angular", output, true);
 
             Logger.LogInformation("Render");
-            renderer.Render(package);
+            renderer.Render(Package);
         }
     }
 }

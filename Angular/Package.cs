@@ -13,9 +13,21 @@ namespace ODataApiGen.Angular
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Schema> Schemas { get; private set; } = new List<Angular.Schema>();
         public IEnumerable<Angular.Enum> Enums => this.Schemas.SelectMany(s => s.Enums);
+        public Enum FindEnum(string type) {
+            return this.Enums.FirstOrDefault(m => m.EdmEnumType.IsTypeOf(type));
+        }
         public IEnumerable<Angular.Entity> Entities => this.Schemas.SelectMany(s => s.Entities);
+        public Entity FindEntity(string type) {
+            return this.Entities.FirstOrDefault(m => m.EdmStructuredType.IsTypeOf(type));
+        }
         public IEnumerable<Angular.Model> Models => this.Schemas.SelectMany(s => s.Models);
+        public Model FindModel(string type) {
+            return this.Models.FirstOrDefault(m => m.EdmStructuredType.IsTypeOf(type));
+        }
         public IEnumerable<Angular.Collection> Collections => this.Schemas.SelectMany(s => s.Collections);
+        public Collection FindCollection(string type) {
+            return this.Collections.FirstOrDefault(m => m.EdmStructuredType.IsTypeOf(type));
+        }
         public Package(ApiOptions options) : base(options)
         {
             this.Module = new Module(this, options);
@@ -30,7 +42,7 @@ namespace ODataApiGen.Angular
                 this.Schemas.Add(new Angular.Schema(schema, this.Options));
             }
         }
-        public void ResolveDependencies()
+        public override void ResolveDependencies()
         {
             // Enums
             foreach (var enumm in Enums)
@@ -125,7 +137,7 @@ namespace ODataApiGen.Angular
             this.Index.Dependencies.Add(this.Module);
         }
 
-        public IEnumerable<string> GetAllDirectories()
+        public override IEnumerable<string> GetAllDirectories()
         {
             return this.Schemas.SelectMany(s => s.GetAllDirectories())
                 .Distinct();

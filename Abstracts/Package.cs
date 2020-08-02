@@ -13,6 +13,9 @@ namespace ODataApiGen.Abstracts
         }
         public abstract IEnumerable<Renderable> Renderables { get; }
         public abstract void Build();
+        public abstract void ResolveDependencies();
+
+        public abstract IEnumerable<string> GetAllDirectories();
 
     }
 }

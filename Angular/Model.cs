@@ -24,13 +24,26 @@ namespace ODataApiGen.Angular
         }
 
         public string Type { get {
-            var type = this.Structured.ToTypescriptType(Value.Type);
-            if (this.Value.IsEnumType)
-                return type;
-            if (Value.IsCollection)
-                return type + (Value.IsEdmType ? "[]" : $"Collection<{type}, {type}Model<{type}>>");
-            else 
-                return type + (Value.IsEdmType ? "" : $"Model<{type}>");
+            var pkg = Program.Package as Angular.Package;
+            if (this.Value.IsEnumType){
+                var e = pkg.FindEnum(this.Value.Type);
+                return e.Name;
+            }
+            else if (Value.IsEdmType) {
+                var type = this.Structured.ToTypescriptType(Value.Type);
+                return type + (Value.IsCollection ? "[]" : "");
+            }
+            else if (Value.IsCollection) {
+                var entity = pkg.FindEntity(this.Value.Type);
+                var model = pkg.FindModel(this.Value.Type);
+                var collection = pkg.FindCollection(this.Value.Type);
+                return $"{collection.Name}<{entity.Name}, {model.Name}<{entity.Name}>>";
+            }
+            else {
+                var entity = pkg.FindEntity(this.Value.Type);
+                var model = pkg.FindModel(this.Value.Type);
+                return $"{model.Name}<{entity.Name}>";
+            }
         }}
         public object ToLiquid() {
             return new {
