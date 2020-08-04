@@ -12,7 +12,7 @@ namespace ODataApiGen.Models
             this.EntityContainer = container;
             this.Name = xElement.Attribute("Name")?.Value;
             this.EntitySet = xElement.Attribute("EntitySet")?.Value;
-            this.Action = xElement.Attribute("Action").Value;
+            this.Action = xElement.Attribute("Action")?.Value;
         }
 
         public string Name { get; private set; }

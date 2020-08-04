@@ -14,7 +14,7 @@ namespace ODataApiGen.Models
             this.EntitySet = xElement.Attribute("EntitySet")?.Value;
             this.Name = xElement.Attribute("Name")?.Value;
             this.IncludeInServiceDocument = xElement.Attribute("IncludeInServiceDocument")?.Value == "true";
-            this.Function = xElement.Attribute("Function").Value;
+            this.Function = xElement.Attribute("Function")?.Value;
         }
 
         public string Name { get; private set; }

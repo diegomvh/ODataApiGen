@@ -21,12 +21,14 @@ namespace ODataApiGen.Models
         public void ImportActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
             Actions = actionImports
                 .Where(a => a.EntitySet == Name)
-                .Select(ai => actions.FirstOrDefault(a => a.FullName == ai.Action));
+                .Select(ai => actions.FirstOrDefault(a => a.FullName == ai.Action))
+                .Where(a => a != null);
         }
         public void ImportFunctions(IEnumerable<FunctionImport> functionImports, IEnumerable<Function> functions) {
             Functions = functionImports
                 .Where(f => f.EntitySet == Name)
-                .Select(fi => functions.FirstOrDefault(f => f.FullName == fi.Function));
+                .Select(fi => functions.FirstOrDefault(f => f.FullName == fi.Function))
+                .Where(f => f != null);
         }
         public string Name { get; private set; }
         public string Namespace => this.EntityContainer.Namespace; 

@@ -49,6 +49,9 @@ namespace ODataApiGen.Models
         public Metadata(XDocument xDoc) 
         {
             this.Version = xDoc.Descendants().FirstOrDefault(a => a.Name.LocalName == "Edmx").Attribute("Version")?.Value;
+            if (this.Version == "1.0") {
+                this.Version = xDoc.Descendants().FirstOrDefault(a => a.Name.LocalName == "DataServices").Attributes().FirstOrDefault(a => a.Name.LocalName == "DataServiceVersion")?.Value;
+            }
             this.Schemas = Metadata.ReadSchemas(xDoc);
             foreach (var schema in this.Schemas) {
                 schema.ResolveFunctions(this.Functions);
