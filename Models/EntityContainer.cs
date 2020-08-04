@@ -13,6 +13,7 @@ namespace ODataApiGen.Models
         public string Namespace => this.Schema.Namespace; 
         public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
         public IEnumerable<EntitySet> EntitySets { get; private set; }
+        public IEnumerable<AssociationSet> AssociationSets { get; private set; }
         public IEnumerable<Singleton> Singletons { get; private set; }
         public IEnumerable<FunctionImport> FunctionImports { get; private set; }
         public IEnumerable<ActionImport> ActionImports { get; private set; }
@@ -34,6 +35,21 @@ namespace ODataApiGen.Models
             }
 
             return entitySetList;
+        }
+        private static List<AssociationSet> ReadAssociationSets(XElement xDoc, EntityContainer container)
+        {
+            Logger.LogDebug("Parsing entity sets...");
+            var associationSetList = new List<AssociationSet>();
+            var elements = xDoc.Descendants().Where(a => a.Name.LocalName == "AssociationSet");
+
+            foreach (var xElement in elements)
+            {
+                var tContainer = new AssociationSet(xElement, container);
+                associationSetList.Add(tContainer);
+                Logger.LogInformation($"Association set '{tContainer.Name}' parsed");
+            }
+
+            return associationSetList;
         }
 
         private static List<Singleton> ReadSingletons(XElement xDoc, EntityContainer container)
@@ -81,6 +97,7 @@ namespace ODataApiGen.Models
             this.Schema = schema;
             this.Name = element.Attribute("Name").Value;
             this.EntitySets = EntityContainer.ReadEntitySets(element, this);
+            this.AssociationSets = EntityContainer.ReadAssociationSets(element, this);
             this.Singletons = EntityContainer.ReadSingletons(element, this);
             this.ActionImports = EntityContainer.ReadActionImports(element, this);
             this.FunctionImports = EntityContainer.ReadFunctionImports(element, this);

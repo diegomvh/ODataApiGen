@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -16,11 +17,18 @@ namespace ODataApiGen.Models
             Type = xElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             ReferentialConstraint = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value;
             ReferencedProperty = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value;
+            // Version 2 and 3
+            Relationship = xElement.Attribute("Relationship")?.Value;
+            ToRole = xElement.Attribute("ToRole")?.Value;
+            FromRole = xElement.Attribute("FromRole")?.Value;
         }
         public string FullName { get; set; }
         public string Partner { get; set; }
         public bool ContainsTarget {get; set;}
         public string ReferentialConstraint { get; set; }
         public string ReferencedProperty { get; set; }
+        public string Relationship { get; set; }
+        public string ToRole { get; set; }
+        public string FromRole { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 {
     "Name": "cbs",
     "Metadata": "https://www.cbs.nl/odata/v1/$metadata",
-    "Output": "../AngularODataEntity/src/app",
+    "Output": "./cbs",
     "Purge": true,
     "GeoJson": false,
     "Models": false

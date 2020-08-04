@@ -1,7 +1,7 @@
 {
     "Name": "North3",
     "Metadata": "https://services.odata.org/V3/(S(hovbiiwxashh0qaz2p0p5go0))/OData/OData.svc/$metadata",
-    "Output": "../AngularODataEntity/src/app",
+    "Output": "./north3",
     "Purge": true,
     "GeoJson": false,
     "Models": false

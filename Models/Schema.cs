@@ -14,6 +14,7 @@ namespace ODataApiGen.Models
         public List<EnumType> EnumTypes { get; private set; }
         public List<ComplexType> ComplexTypes { get; private set; }
         public List<EntityType> EntityTypes { get; private set; }
+        public List<Association> Associations { get; private set; }
         public List<Function> Functions { get; private set; }
         public List<Action> Actions { get; private set; }
         public List<EntityContainer> EntityContainers { get; private set; }
@@ -62,6 +63,20 @@ namespace ODataApiGen.Models
                 Logger.LogInformation($"Entity Type '{enT.Namespace}.{enT.Name}' parsed");
             }
             return typeList;
+        }
+        private static List<Association> ReadAssociations(XElement xdoc, Schema schema)
+        {
+            Logger.LogDebug("Parsing associations...");
+            var assocList = new List<Association>();
+            var elements = xdoc.Descendants().Where(a => a.Name.LocalName == "Association");
+
+            foreach (var xElement in elements)
+            {
+                var asoc = new Association(xElement, schema);
+                assocList.Add(asoc);
+                Logger.LogInformation($"Association '{asoc.Namespace}.{asoc.Name}' parsed");
+            }
+            return assocList;
         }
 
         private static List<Action> ReadActions(XElement xDoc, Schema schema)
@@ -128,6 +143,7 @@ namespace ODataApiGen.Models
             this.EnumTypes = Schema.ReadEnums(xElement, this);
             this.ComplexTypes = Schema.ReadComplexTypes(xElement, this);
             this.EntityTypes = Schema.ReadEntityTypes(xElement, this);
+            this.Associations = Schema.ReadAssociations(xElement, this);
             this.Actions = Schema.ReadActions(xElement, this);
             this.Functions = Schema.ReadFunctions(xElement, this);
             this.EntityContainers = Schema.ReadEntityContainer(xElement, this);
