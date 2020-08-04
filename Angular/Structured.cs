@@ -11,6 +11,7 @@ namespace ODataApiGen.Angular
 {
     public abstract class Structured : AngularRenderable, DotLiquid.ILiquidizable
     {
+        public Models.EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType; 
         public StructuredType EdmStructuredType { get; private set; }
         public Structured(StructuredType type, ApiOptions options) : base(options)
         {
@@ -29,14 +30,16 @@ namespace ODataApiGen.Angular
             get
             {
                 var types = new List<string>();
-                if (this.EdmStructuredType is EntityType)
-                    types.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
+                if (this.EdmEntityType != null) {
+                    types.AddRange((this.EdmEntityType as EntityType).NavigationProperties.Select(a => a.Type));
+                    types.AddRange((this.EdmEntityType as EntityType).NavigationProperties.Select(a => a.ToEntityType));
+                    types.AddRange(this.EdmEntityType.Actions.Select(a => a.Type));
+                    types.AddRange(this.EdmEntityType.Functions.Select(a => a.Type));
+                }
                 /*For Not-EDM types (e.g. enums with namespaces, complex types*/
                 types.AddRange(this.EdmStructuredType.Properties
                     .Where(a => !a.IsEdmType)
                     .Select(a => a.Type));
-                types.AddRange(this.EdmStructuredType.Actions.Select(a => a.Type));
-                types.AddRange(this.EdmStructuredType.Functions.Select(a => a.Type));
                 if (this.Base != null)
                     types.Add(this.Base.EdmStructuredType.FullName);
                 return types.Distinct();

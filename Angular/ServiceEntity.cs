@@ -31,8 +31,10 @@ namespace ODataApiGen.Angular
                 list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 if (this.Entity != null)
                 {
-                    list.AddRange(this.Entity.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                    list.AddRange(this.Entity.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                    if (this.Entity.EdmEntityType != null) {
+                        list.AddRange(this.Entity.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                        list.AddRange(this.Entity.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                    }
                     list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
                 }
                 list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
@@ -54,10 +56,9 @@ namespace ODataApiGen.Angular
         public override string Name => AngularRenderable.ToTypescriptName(this.EdmEntitySet.Name, TypeScriptElement.Class) + "Service";
         public override string Namespace => this.EdmEntitySet.Namespace;
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
-        public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Entity.EdmStructuredType.Actions));
-        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Entity.EdmStructuredType.Functions));
+        public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Entity.EdmEntityType.Actions));
+        public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Entity.EdmEntityType.Functions));
         public IEnumerable<string> Navigations => this.RenderReferences(this.EdmEntitySet.NavigationPropertyBindings);
-
         public override IEnumerable<Models.Annotation> Annotations => this.EdmEntitySet.Annotations; 
     }
 }

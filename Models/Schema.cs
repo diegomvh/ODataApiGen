@@ -166,6 +166,11 @@ namespace ODataApiGen.Models
                 container.ResolveActionImports(actions);
             }
         }
+        public void ResolveAssociations(IEnumerable<Association> associations) {
+            foreach (var entityType in EntityTypes) {
+                entityType.AddAssociations(associations);
+            }
+        }
         public void ResolveAnnotations(IEnumerable<KeyValuePair<string, List<Annotation>>> annots) {
             foreach (var annot in annots) {
                 var container = this.EntityContainers.Where(c => c.FullName == annot.Key).FirstOrDefault();

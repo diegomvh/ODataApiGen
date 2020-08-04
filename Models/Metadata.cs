@@ -27,6 +27,7 @@ namespace ODataApiGen.Models
         }
         public IEnumerable<Function> Functions => this.Schemas.SelectMany(s => s.Functions);
         public IEnumerable<Action> Actions => this.Schemas.SelectMany(s => s.Actions);
+        public IEnumerable<Association> Associations => this.Schemas.SelectMany(s => s.Associations);
         public IEnumerable<EntitySet> EntitySets => this.Schemas.SelectMany(s => s.EntityContainers.SelectMany(c => c.EntitySets));
         public IEnumerable<KeyValuePair<string, List<Annotation>>> Annotations => this.Schemas.SelectMany(s => s.Annotations);
 
@@ -56,6 +57,7 @@ namespace ODataApiGen.Models
             foreach (var schema in this.Schemas) {
                 schema.ResolveFunctions(this.Functions);
                 schema.ResolveActions(this.Actions);
+                schema.ResolveAssociations(this.Associations);
                 schema.ResolveAnnotations(this.Annotations);
             }
         }

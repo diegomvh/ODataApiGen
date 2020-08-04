@@ -34,13 +34,5 @@ namespace ODataApiGen.Models
         public bool OpenType { get; private set; }
         public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
         public List<Property> Properties { get; private set; }
-        public void AddActions(IEnumerable<Action> actions) {
-            Actions = actions.Where(a => a.IsBound && this.IsTypeOf(a.BindingParameter));
-        }
-        public void AddFunctions(IEnumerable<Function> functions) {
-            Functions = functions.Where(f => f.IsBound && this.IsTypeOf(f.BindingParameter));
-        }
-        public IEnumerable<Action> Actions { get; set; } = Enumerable.Empty<Action>();
-        public IEnumerable<Function> Functions { get; set; } = Enumerable.Empty<Function>();
     }
 }

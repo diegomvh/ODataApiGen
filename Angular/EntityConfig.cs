@@ -27,7 +27,13 @@ namespace ODataApiGen.Angular
                 var values = new Dictionary<string, string>();
                 if (this.Name != this.Value.Name)
                     values.Add("name", $"'{this.Value.Name}'");
-                values.Add("type", $"'{this.Value.Type}'");
+                if (this.Value.Type != null) {
+                    values.Add("type", $"'{this.Value.Type}'");
+                }
+                else if (this.Value is NavigationProperty) {
+                    var nav = this.Value as NavigationProperty;
+                    values.Add("type", $"'{nav.ToEntityType}'");
+                }
                 var key = this.Keys.FirstOrDefault(k => k.Name == this.Value.Name);
                 if (key != null) {
                     values.Add("key", "true");
@@ -48,7 +54,7 @@ namespace ODataApiGen.Angular
                     values.Add("precition", this.Value.Precision);
                 if (!String.IsNullOrEmpty(this.Value.Scale))
                     values.Add("scale", this.Value.Scale);
-                if (this.Value.IsCollection)
+                if (this.Value.IsCollection || this.Value is NavigationProperty && (this.Value as NavigationProperty).Many)
                     values.Add("collection", "true");
                 if (this.Value is NavigationProperty) {
                     // Is Navigation

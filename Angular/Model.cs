@@ -33,17 +33,33 @@ namespace ODataApiGen.Angular
                 var type = this.Structured.ToTypescriptType(Value.Type);
                 return type + (Value.IsCollection ? "[]" : "");
             }
-            else if (Value.IsCollection) {
-                var entity = pkg.FindEntity(this.Value.Type);
-                var model = pkg.FindModel(this.Value.Type);
-                var collection = pkg.FindCollection(this.Value.Type);
-                return $"{collection.Name}<{entity.Name}, {model.Name}<{entity.Name}>>";
+            else if (this.Value.Type != null) {
+                if (Value.IsCollection) {
+                    var entity = pkg.FindEntity(this.Value.Type);
+                    var model = pkg.FindModel(this.Value.Type);
+                    var collection = pkg.FindCollection(this.Value.Type);
+                    return $"{collection.Name}<{entity.Name}, {model.Name}<{entity.Name}>>";
+                }
+                else {
+                    var entity = pkg.FindEntity(this.Value.Type);
+                    var model = pkg.FindModel(this.Value.Type);
+                    return $"{model.Name}<{entity.Name}>";
+                }
+            } else if (this.Value is NavigationProperty) {
+                var nav = this.Value as NavigationProperty;
+                if (nav.Many) {
+                    var entity = pkg.FindEntity(nav.ToEntityType);
+                    var model = pkg.FindModel(nav.ToEntityType);
+                    var collection = pkg.FindCollection(nav.ToEntityType);
+                    return $"{collection.Name}<{entity.Name}, {model.Name}<{entity.Name}>>";
+                }
+                else {
+                    var entity = pkg.FindEntity(nav.ToEntityType);
+                    var model = pkg.FindModel(nav.ToEntityType);
+                    return $"{model.Name}<{entity.Name}>";
+                }
             }
-            else {
-                var entity = pkg.FindEntity(this.Value.Type);
-                var model = pkg.FindModel(this.Value.Type);
-                return $"{model.Name}<{entity.Name}>";
-            }
+            return "any";
         }}
         public object ToLiquid() {
             return new {
@@ -76,10 +92,11 @@ namespace ODataApiGen.Angular
                     this.EdmStructuredType.FullName
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
-                list.AddRange(this.EdmStructuredType.Actions.SelectMany(a => this.CallableNamespaces(a)));
-                list.AddRange(this.EdmStructuredType.Functions.SelectMany(a => this.CallableNamespaces(a)));
-                if (this.EdmStructuredType is EntityType)
-                    list.AddRange((this.EdmStructuredType as EntityType).NavigationProperties.Select(a => a.Type));
+                if (this.EdmStructuredType != null) {
+                    list.AddRange(this.EdmEntityType.NavigationProperties.Select(a => a.Type));
+                    list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
+                    list.AddRange(this.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                }
                 return list;
             }
         }
@@ -95,13 +112,13 @@ namespace ODataApiGen.Angular
         } 
         public IEnumerable<string> Actions {
             get {
-                var modelActions = this.EdmStructuredType.Actions.Where(a => !a.IsCollection);
+                var modelActions = this.EdmEntityType.Actions.Where(a => !a.IsCollection);
                 return modelActions.Count() > 0 ? this.RenderCallables(modelActions, useset: true) : Enumerable.Empty<string>();
             }
         }
         public IEnumerable<string> Functions {
             get {
-                var modelFunctions = this.EdmStructuredType.Functions.Where(a => !a.IsCollection);
+                var modelFunctions = this.EdmEntityType.Functions.Where(a => !a.IsCollection);
                 return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions, useset: true) : Enumerable.Empty<string>();
             }
         }

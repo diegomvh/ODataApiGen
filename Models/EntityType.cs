@@ -39,5 +39,18 @@ namespace ODataApiGen.Models
             }
             throw new Exception($"'{entity.Name}' has not navigation property for {name}");
         }
+        public void AddActions(IEnumerable<Action> actions) {
+            Actions = actions.Where(a => a.IsBound && this.IsTypeOf(a.BindingParameter));
+        }
+        public void AddFunctions(IEnumerable<Function> functions) {
+            Functions = functions.Where(f => f.IsBound && this.IsTypeOf(f.BindingParameter));
+        }
+        public void AddAssociations(IEnumerable<Association> associations) {
+            foreach (var nav in this.NavigationProperties) {
+                nav.Association = associations.FirstOrDefault(a => a.FullName == nav.Relationship);
+            }
+        }
+        public IEnumerable<Action> Actions { get; set; } = Enumerable.Empty<Action>();
+        public IEnumerable<Function> Functions { get; set; } = Enumerable.Empty<Function>();
     }
 }

@@ -35,9 +35,16 @@ namespace ODataApiGen.Angular
                 var type = this.Structured.ToTypescriptType(Value.Type);
                 return type + (Value.IsCollection ? "[]" : "");
             }
-            else {
+            else if (this.Value.Type != null) {
                 var entity = pkg.FindEntity(this.Value.Type);
                 return $"{entity.Name}" + (Value.IsCollection ? "[]" : "");
+            }
+            else if (Value is NavigationProperty) {
+                var nav = Value as NavigationProperty;
+                var entity = pkg.FindEntity(nav.ToEntityType);
+                return $"{entity.Name}" + (nav.Many ? "[]" : "");
+            } else {
+                return "any";
             }
         }}
         public object ToLiquid() {
@@ -50,8 +57,7 @@ namespace ODataApiGen.Angular
     }
     public class Entity : Structured 
     {
-        public Entity(StructuredType type, ApiOptions options) : base(type, options) {
-        }
+        public Entity(StructuredType type, ApiOptions options) : base(type, options) { }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
         public override string Name => AngularRenderable.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class);

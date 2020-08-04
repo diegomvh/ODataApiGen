@@ -30,5 +30,9 @@ namespace ODataApiGen.Models
         public string Relationship { get; set; }
         public string ToRole { get; set; }
         public string FromRole { get; set; }
+        public Association Association { get; set; }
+        public string FromEntityType { get { return this.Association.Ends.FirstOrDefault(e => e.Role == this.FromRole).Type; } }
+        public string ToEntityType { get { return this.Association.Ends.FirstOrDefault(e => e.Role == this.ToRole).Type; } }
+        public bool Many { get { return this.Association.Ends.FirstOrDefault(e => e.Role == this.ToRole).Multiplicity == "*"; }}
     }
 }
