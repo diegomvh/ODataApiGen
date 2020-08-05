@@ -1,4 +1,4 @@
-import { Configuration, EDM_PARSERS } from 'angular-odata';
+import { ApiConfig, EDM_PARSERS } from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -14,4 +14,4 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}
   ],
   parsers: EDM_PARSERS
-} as Configuration;
+} as ApiConfig;

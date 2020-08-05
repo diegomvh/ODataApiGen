@@ -1,4 +1,4 @@
-import { Schema } from 'angular-odata';
+import { SchemaConfig } from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -20,4 +20,4 @@ export const {{Name}} = {
   }{% unless forloop.last %}, {% endunless %}{% endfor %}],
   containers: [{% for container in Containers %}{{container.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}]
-} as Schema;
+} as SchemaConfig;
