@@ -20,7 +20,7 @@ namespace ODataApiGen.Angular
             this.Config = config;
         }
         //public string Name => AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method);
-        public string Name => Value.Name;
+        public string Name => Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
 
         public string Type { 
             get {

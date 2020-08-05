@@ -5,7 +5,7 @@ import { ContainerConfig } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  name: "{{Name}}",
+  name: "{{ContainerName}}",
   annotations: {{Annotations}},
   services: [
     {% for config in ServiceConfigs %}{{config.Name}}{% unless forloop.last %},

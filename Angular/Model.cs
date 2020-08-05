@@ -19,7 +19,8 @@ namespace ODataApiGen.Angular
             get {
                 var required = !(Value is NavigationProperty || Value.Nullable);
                 //return AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method) + (!required? "?" : "");
-                return Value.Name + (!required? "?" : "");
+                var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
+                return name + (!required? "?" : "");
             }
         }
 
@@ -83,7 +84,7 @@ namespace ODataApiGen.Angular
             this.Collection = collection;
         }
         public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
-        public override string Name => AngularRenderable.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class) + "Model";
+        public override string Name => Utils.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class) + "Model";
         public override IEnumerable<string> ImportTypes
         {
             get
