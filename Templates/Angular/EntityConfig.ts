@@ -5,7 +5,7 @@ import { EntityConfig } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  name: "{{EntityName}}",{% if Base != null %}
+  name: "{{EdmEntityName}}",{% if Base != null %}
   base: "{{Base.EntityType}}",{% endif %}{% if OpenType %}
   open: true,{% endif %}{% if Model != null %}
   model: {{Model.Name}},{% endif %}{% if Collection != null %}
@@ -15,4 +15,4 @@ export const {{Name}} = {
     {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as EntityConfig<{{EntityClass}}>;
+} as EntityConfig<{{EntityName}}>;

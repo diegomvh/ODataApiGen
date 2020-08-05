@@ -11,7 +11,7 @@ namespace ODataApiGen.Angular
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
             
-        public string ToTypescriptName(string name, TypeScriptElement e) {
+        public string _ToTypescriptName(string name, TypeScriptElement e) {
             return Utils.ToTypescriptName(name, e);
         }
         public string ToTypescriptType(string type)

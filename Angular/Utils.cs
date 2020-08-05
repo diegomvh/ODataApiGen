@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace ODataApiGen.Angular {
     public enum TypeScriptElement {
+        Enum,
         Class,
         Attribute,
         Method,
@@ -25,6 +26,7 @@ namespace ODataApiGen.Angular {
                     parts = parts.Select(p => p.ToUpper()).ToArray();
                     sep = "_";
                     break;
+                case TypeScriptElement.Enum:
                 case TypeScriptElement.Class:
                     parts = parts.Select(p => p[0].ToString().ToUpper() + p.Substring(1)).ToArray();
                     break;

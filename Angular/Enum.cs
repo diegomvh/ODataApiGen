@@ -16,7 +16,7 @@ namespace ODataApiGen.Angular {
         // Exports
         public override IEnumerable<string> ExportTypes => new string[] {this.Name};
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string Name => this.EdmEnumType.Name.Substring(0, 1).ToUpper() + this.EdmEnumType.Name.Substring(1);
+        public override string Name => Utils.ToTypescriptName(this.EdmEnumType.Name, TypeScriptElement.Enum);
         public string EnumType => this.EdmEnumType.FullName;
         public override string Namespace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";

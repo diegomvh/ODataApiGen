@@ -5,7 +5,7 @@ import { EnumConfig } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  name: "{{EnumName}}",{% if Flags %}
+  name: "{{EdmEnumName}}",{% if Flags %}
   flags: true,{% endif %}
   members: {{EnumName}}
-} as EnumConfig<{{EnumEnum}}>;
+} as EnumConfig<{{EnumName}}>;
