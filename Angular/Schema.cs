@@ -95,6 +95,8 @@ namespace ODataApiGen.Angular
         public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Namespace => this.EdmSchema.Namespace;
+        public bool HasAlias => !String.IsNullOrWhiteSpace(this.EdmSchema.Alias);
+        public string Alias => this.EdmSchema.Alias;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {

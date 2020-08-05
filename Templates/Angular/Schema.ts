@@ -5,7 +5,8 @@ import { SchemaConfig } from 'angular-odata';
 {% endfor %}//#endregion
 
 export const {{Name}} = {
-  namespace: "{{Namespace}}",
+  namespace: "{{Namespace}}",{% if HasAlias %}
+  alias: "{{Alias}}",{% endif %}
   enums: [{% for config in EnumConfigs %}{{config.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}],
   entities: [{% for config in EntityConfigs %}{{config.Name}}{% unless forloop.last %},

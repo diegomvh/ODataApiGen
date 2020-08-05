@@ -8,4 +8,4 @@ export const {{Name}} = {
   name: "{{EnumName}}",{% if Flags %}
   flags: true,{% endif %}
   members: {{EnumName}}
-} as EnumConfig<{{EnumName}}>;
+} as EnumConfig<{{EnumEnum}}>;

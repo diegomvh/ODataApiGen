@@ -15,7 +15,8 @@ namespace ODataApiGen.Angular
         public override string FileName => this.Enum.FileName + ".config";
         public override string Name => this.Enum.Name + "Config";
         public string EnumType => this.Enum.EdmEnumType.FullName;
-        public string EnumName => this.Enum.Name;
+        public string EnumName => this.Enum.EdmEnumType.Name;
+        public string EnumEnum => this.Enum.Name;
 
         public string EnumAnnotations {
             get {
