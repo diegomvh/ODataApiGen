@@ -15,4 +15,4 @@ export const {{Name}} = {
     {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as EntityConfig<{{EntityName}}>;
+} as EntityConfig<{{EntityClass}}>;

@@ -14,7 +14,7 @@ namespace ODataApiGen.Models
             Name = element.Attribute("Name")?.Value;
             IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
             Type = element.Attribute("Type")?.Value;
-            if (Type.StartsWith("Collection("))
+            if (!string.IsNullOrWhiteSpace(Type) && Type.StartsWith("Collection("))
                 Type = Type.Substring(11, Type.Length - 12);
             MaxLength = element.Attribute("MaxLength")?.Value;
             DefaultValue = element.Attribute("DefaultValue")?.Value;

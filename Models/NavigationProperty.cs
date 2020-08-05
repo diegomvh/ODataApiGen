@@ -15,7 +15,7 @@ namespace ODataApiGen.Models
       Partner = xElement.Attribute("Partner")?.Value;
       IsCollection = xElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
       Type = xElement.Attribute("Type")?.Value;
-      if (Type.StartsWith("Collection("))
+      if (!string.IsNullOrWhiteSpace(Type) && Type.StartsWith("Collection("))
           Type = Type.Substring(11, Type.Length - 12);
       ReferentialConstraint = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value;
       ReferencedProperty = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value;
