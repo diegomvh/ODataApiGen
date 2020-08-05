@@ -11,10 +11,12 @@ namespace ODataApiGen.Models
       Name = xElement.Attribute("Name")?.Value.Split(".").Last();
       FullName = xElement.Attribute("Name")?.Value;
       MaxLength = null;
-      IsCollection = xElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
       ContainsTarget = xElement.Attribute("ContainsTarget")?.Value == "true";
       Partner = xElement.Attribute("Partner")?.Value;
-      Type = xElement.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
+      IsCollection = xElement.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
+      Type = xElement.Attribute("Type")?.Value;
+      if (Type.StartsWith("Collection("))
+          Type = Type.Substring(11, Type.Length - 12);
       ReferentialConstraint = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value;
       ReferencedProperty = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value;
       // Version 2 and 3

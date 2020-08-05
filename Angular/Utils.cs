@@ -103,7 +103,7 @@ namespace ODataApiGen.Angular {
                 default:
                     {
                         return type.Contains(".") && !type.StartsWith("Edm") ? 
-                            type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)) : 
+                            Utils.ToTypescriptName(type.Split('.').Last(a => !String.IsNullOrWhiteSpace(a)), TypeScriptElement.Class) : 
                             "any";
                     }
             }

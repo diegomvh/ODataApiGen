@@ -16,6 +16,7 @@ namespace ODataApiGen.Angular
         }
         public string ToTypescriptType(string type)
         {
+            
             return Utils.ToTypescriptType(type, Options.GeoJson);
         }
         public IEnumerable<string> CallableNamespaces(Callable callable)

@@ -11,12 +11,14 @@ namespace ODataApiGen.Models
         public Property(XElement element, StructuredType structured) : base(element)
         {
             this.StructuredType = structured;
-            IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
             Name = element.Attribute("Name")?.Value;
+            IsCollection = element.Attribute("Type")?.Value.StartsWith("Collection(") ?? false;
+            Type = element.Attribute("Type")?.Value;
+            if (Type.StartsWith("Collection("))
+                Type = Type.Substring(11, Type.Length - 12);
             MaxLength = element.Attribute("MaxLength")?.Value;
             DefaultValue = element.Attribute("DefaultValue")?.Value;
             Nullable = !(element.Attribute("Nullable")?.Value == "false");
-            Type = element.Attribute("Type")?.Value.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
             SRID = element.Attribute("SRID")?.Value;
             Scale = element.Attribute("Scale")?.Value;
             Precision = element.Attribute("Precision")?.Value;

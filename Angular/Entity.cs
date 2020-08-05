@@ -36,7 +36,7 @@ namespace ODataApiGen.Angular
                 var type = this.Structured.ToTypescriptType(Value.Type);
                 return type + (Value.IsCollection ? "[]" : "");
             }
-            else if (this.Value.Type != null) {
+            else if (Value.IsEntityType || Value.IsComplexType) {
                 var entity = pkg.FindEntity(this.Value.Type);
                 return $"{entity.Name}" + (Value.IsCollection ? "[]" : "");
             }

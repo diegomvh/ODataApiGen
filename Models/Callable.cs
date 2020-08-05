@@ -16,10 +16,6 @@ namespace ODataApiGen.Models
             IsComposable = xElement.Attribute("IsComposable")?.Value == "true";
             EntitySetPath = xElement.Attribute("EntitySetPath")?.Value;
 
-            BindingParameter = xElement.Descendants()
-                .FirstOrDefault(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value == "bindingParameter")?
-                .Attribute("Type")?.Value;
-
             Parameters = xElement.Descendants().Where(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value != "bindingParameter")
                 .Select(paramElement => new Parameter(paramElement, this)).ToList();
 
@@ -27,13 +23,16 @@ namespace ODataApiGen.Models
             if (!string.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Collection("))
             {
                 ReturnsCollection = true;
-                ReturnType = ReturnType.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
+                ReturnType = ReturnType.Substring(11, ReturnType.Length - 12);
             }
 
+            BindingParameter = xElement.Descendants()
+                .FirstOrDefault(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value == "bindingParameter")?
+                .Attribute("Type")?.Value;
             if (!string.IsNullOrWhiteSpace(BindingParameter) && BindingParameter.StartsWith("Collection("))
             {
                 IsCollection = true;
-                BindingParameter = BindingParameter.TrimStart("Collection(".ToCharArray()).TrimEnd(')');
+                BindingParameter = BindingParameter.Substring(11, BindingParameter.Length - 12);
             }
         }
         public string Name { get; }

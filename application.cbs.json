@@ -1,5 +1,5 @@
 {
-    "Name": "cbs",
+    "Name": "CBS",
     "Metadata": "https://www.cbs.nl/odata/v1/$metadata",
     "Output": "../AngularODataEntity/src/app",
     "Purge": true,
