@@ -5,8 +5,8 @@ import { map } from 'rxjs/operators';
 
 import { 
   ODataClient,
-  ODataService, 
-  ODataSingletonEntity, 
+  ODataSingletonService, 
+  ODataEntity, 
   ODataEntities, 
   ODataProperty, 
   EntityKey,
