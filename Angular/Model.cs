@@ -93,7 +93,7 @@ namespace ODataApiGen.Angular
                     this.EdmStructuredType.FullName
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
-                if (this.EdmStructuredType != null) {
+                if (this.EdmEntityType != null) {
                     list.AddRange(this.EdmEntityType.NavigationProperties.Select(a => a.Type));
                     list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                     list.AddRange(this.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
@@ -113,14 +113,20 @@ namespace ODataApiGen.Angular
         } 
         public IEnumerable<string> Actions {
             get {
-                var modelActions = this.EdmEntityType.Actions.Where(a => !a.IsCollection);
-                return modelActions.Count() > 0 ? this.RenderCallables(modelActions, useset: true) : Enumerable.Empty<string>();
+                if (this.EdmEntityType != null) {
+                    var modelActions = this.EdmEntityType.Actions.Where(a => !a.IsCollection);
+                    return modelActions.Count() > 0 ? this.RenderCallables(modelActions, useset: true) : Enumerable.Empty<string>();
+                }
+                return Enumerable.Empty<string>();
             }
         }
         public IEnumerable<string> Functions {
             get {
-                var modelFunctions = this.EdmEntityType.Functions.Where(a => !a.IsCollection);
-                return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions, useset: true) : Enumerable.Empty<string>();
+                if (this.EdmEntityType != null) {
+                    var modelFunctions = this.EdmEntityType.Functions.Where(a => !a.IsCollection);
+                    return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions, useset: true) : Enumerable.Empty<string>();
+                }
+                return Enumerable.Empty<string>();
             }
         }
         public IEnumerable<string> Navigations {

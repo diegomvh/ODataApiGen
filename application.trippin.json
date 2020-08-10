@@ -4,5 +4,5 @@
     "Output": "../AngularODataEntity/src/app",
     "Purge": true,
     "GeoJson": true,
-    "Models": false
+    "Models": true
 }

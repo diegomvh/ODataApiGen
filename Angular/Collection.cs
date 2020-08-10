@@ -53,14 +53,20 @@ namespace ODataApiGen.Angular
 
         public IEnumerable<string> Actions {
             get {
-                var collectionActions = this.EdmEntityType.Actions.Where(a => a.IsCollection);
-                return collectionActions.Count() > 0 ? this.RenderCallables(collectionActions) : Enumerable.Empty<string>();
+                if (this.EdmEntityType != null) {
+                    var collectionActions = this.EdmEntityType.Actions.Where(a => a.IsCollection);
+                    return collectionActions.Count() > 0 ? this.RenderCallables(collectionActions) : Enumerable.Empty<string>();
+                }
+                return Enumerable.Empty<string>();
             }
         }
         public IEnumerable<string> Functions {
             get {
-                var collectionFunctions = this.EdmEntityType.Functions.Where(a => a.IsCollection);
-                return collectionFunctions.Count() > 0 ? this.RenderCallables(collectionFunctions) : Enumerable.Empty<string>();
+                if (this.EdmEntityType != null) {
+                    var collectionFunctions = this.EdmEntityType.Functions.Where(a => a.IsCollection);
+                    return collectionFunctions.Count() > 0 ? this.RenderCallables(collectionFunctions) : Enumerable.Empty<string>();
+                }
+                return Enumerable.Empty<string>();
             }
         }
     }

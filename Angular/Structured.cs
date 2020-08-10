@@ -126,7 +126,7 @@ namespace ODataApiGen.Angular
                 var returnType = $"ODataEntity<{type}>";
 
                 yield return $@"public {methodSetName}(model: {type}Model<{type}> | null) {{
-    this.setNavigationProperty<{type}, {type}Model<{type}>>('{nav.Name}', model);
+    this.setNavigationProperty<{type}, {type}Model<{type}>>(this._config.field('{nav.Name}'), model);
   }}";
             }
         }
