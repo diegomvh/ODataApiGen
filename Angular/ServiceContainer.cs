@@ -45,7 +45,5 @@ namespace ODataApiGen.Angular
         public override string EntitySetName => "";
 
         public override string EntityType => "";
-
-        public override string EntityName => "";
     }
 }

@@ -43,9 +43,6 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string EntitySetName => this.EdmEntitySet.Name;
         public override string EntityType => this.EdmEntitySet.EntityType;
-        public override string EntityName => this.Entity.Name;
-        public string ModelName => this.Model.Name;
-        public string CollectionName => this.Collection.Name;
         public string ServiceType => this.EdmEntitySet.FullName;
         public override string Name => Utils.ToTypescriptName(this.EdmEntitySet.Name, TypeScriptElement.Class) + "Service";
         public override string Namespace => this.EdmEntitySet.Namespace;
@@ -54,10 +51,5 @@ namespace ODataApiGen.Angular
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.Model.EdmEntityType.Actions));
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.Model.EdmEntityType.Functions));
         public IEnumerable<string> Navigations => this.RenderReferences(this.EdmEntitySet.NavigationPropertyBindings);
-        public string EntitySetAnnotations {
-            get {
-                return JsonConvert.SerializeObject(this.EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
-            }
-        }
     }
 }

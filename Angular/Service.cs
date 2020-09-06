@@ -10,6 +10,9 @@ namespace ODataApiGen.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
     {
+        public Models.EntityType EdmEntityType => this.HasModel ? this.Model.EdmEntityType : 
+            this.HasEntity ? this.Entity.EdmEntityType : 
+            null;
         public Service(ApiOptions options) : base(options) { }
 
         public Angular.Entity Entity { get; private set; }
@@ -17,19 +20,24 @@ namespace ODataApiGen.Angular
         {
             this.Entity = entity;
         }
+        public bool HasEntity => this.Entity != null;
+        public string EntityName => this.HasEntity ? this.Entity.Name : String.Empty;
         public Angular.Model Model { get; private set; }
         public void SetModel(Angular.Model model)
         {
             this.Model = model;
         }
+        public bool HasModel => this.Model != null;
+        public string ModelName => this.HasModel ? this.Model.Name : String.Empty;
         public Angular.Collection Collection { get; private set; }
         public void SetCollection(Angular.Collection collection)
         {
             this.Collection = collection;
         }
+        public bool HasCollection => this.Collection != null;
+        public string CollectionName => this.HasCollection ? this.Collection.Name : String.Empty;
         public abstract string EntitySetName {get;}
         public abstract string EntityType {get;}
-        public abstract string EntityName {get;}
         public abstract IEnumerable<Models.Annotation> Annotations {get;}
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         // Exports
