@@ -29,6 +29,16 @@ export class {{Name}} extends ODataEntityService<{{EntityName}}> {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }
 
+  {% if HasModel %}//#region ODataApi Model
+  {{ModelName | methodcase}}(): {{ModelName}}<{{EntityName}}> {
+    return super.model() as {{ModelName}}<{{EntityName}}>;
+  }
+  //#endregion{% endif %}
+  {% if HasCollection %}//#region ODataApi Collection
+  {{CollectionName | methodcase}}(): {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>> {
+    return super.collection() as {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>;
+  }
+  //#endregion{% endif %}
   //#region ODataApi Actions
   {% for action in Actions %}{{action}}
   {% endfor %}//#endregion

@@ -29,13 +29,18 @@ namespace ODataApiGen.Angular
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.EdmEntitySet.Actions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
+                list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
+                list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
                 if (this.EdmEntityType != null) {
                     list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                     list.AddRange(this.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 }
-                list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
-                list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
-                list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
+                if (this.HasEntity) {
+                    list.AddRange(this.Entity.EdmStructuredType.Properties.Select(a => a.Type));
+                }
+                if (this.HasModel) {
+                    list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
+                }
                 return list;
             }
         }
