@@ -98,6 +98,11 @@ namespace ODataApiGen.Angular
                     list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                     list.AddRange(this.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 }
+                var service = Program.Metadata.EntitySets.FirstOrDefault(s => this.EdmStructuredType.IsTypeOf(s.EntityType));
+                if (service != null) {
+                    list.AddRange(service.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
+                    list.AddRange(service.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
+                }
                 return list;
             }
         }
@@ -133,8 +138,9 @@ namespace ODataApiGen.Angular
             get {
                 var service = Program.Metadata.EntitySets.FirstOrDefault(s => this.EdmStructuredType.IsTypeOf(s.EntityType));
                 if (service != null) {
-                    var bindings = service.NavigationPropertyBindings.Where(binding => !binding.NavigationProperty.IsCollection);
-                    return bindings.Count() > 0 ? this.RenderReferences(bindings) : Enumerable.Empty<string>();
+                    var bindings = service.NavigationPropertyBindings
+                        .Where(binding => this.EdmEntityType.NavigationProperties.All(n => n.Type != binding.NavigationProperty.Type));
+                    return this.RenderReferences(bindings);
                 }
                 return Enumerable.Empty<string>();
             }

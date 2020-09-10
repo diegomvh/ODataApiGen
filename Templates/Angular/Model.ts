@@ -1,4 +1,4 @@
-import { ODataModel, HttpOptions, Duration } from 'angular-odata';
+import { ODataModel, ODataCollection, HttpOptions, Duration } from 'angular-odata';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';

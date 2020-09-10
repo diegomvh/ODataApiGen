@@ -73,61 +73,89 @@ namespace ODataApiGen.Angular
                         $"{typescriptType}Model<{typescriptType}>" ;
 
                 var parameters = new List<Models.Parameter>();
-                foreach (var cal in callables)
-                    parameters.AddRange(cal.Parameters);
-                var optionals = parameters.Where(p =>
-                    !callables.All(c => c.Parameters.Contains(p))).ToList();
+                var optionals = new List<string>();
+                foreach (var cal in callables) {
+                    foreach (var param in cal.Parameters) {
+                        if (parameters.All(p => p.Name != param.Name))
+                            parameters.Add(param);
+                        if (optionals.All(o => o != param.Name) && !callables.All(c => c.Parameters.Any(p => p.Name == param.Name)))
+                            optionals.Add(param.Name);
+                    }
+                }
                 parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
 
-                var argumentWithType = new List<string>();
+                var arguments = parameters.Select(p =>
+                    $"{p.Name}" + 
+                    (optionals.Any(o => o == p.Name) ? "?" : "") + 
+                    $": {this.ToTypescriptType(p.Type)}" +
+                    (p.IsCollection ? "[]" : ""));
 
-                argumentWithType.AddRange(parameters.Select(p =>
-                    $"{p.Name}: {this.ToTypescriptType(p.Type)}" +
-                    (p.IsCollection ? "[]" : "") +
-                    (optionals.Contains(p) ? " = null" : "")
-                ));
-                argumentWithType.Add(@"options?: HttpOptions");
+                var args = new List<string>(arguments);
+                args.Add("options?: HttpOptions");
 
-                var args = "let args = null;";
+                var types = "null";
                 if (parameters.Count() > 0) {
-                    args = "let args = Object.entries({" +
-                        String.Join(", ", parameters.Select(p => p.IsEdmType ? 
-                            $"\n        {p.Name}: {p.Name}":
-                            $"\n        {p.Name}: this._resource.parserForType('{p.Type}').serialize({p.Name})")) +
-                    "\n      })" +
-                    "\n      .filter(pair => pair[1] !== null)" +
-                    "\n      .reduce((acc, val) => (acc[val[0]] = val[1], acc), {});";
+                    types = $"{{{String.Join(", ", arguments)}}}";
                 }
-                var mapTo = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
-                        $"toValue(body)[0] as {callableReturnType}" :
+
+                var values = "null";
+                if (parameters.Count() > 0) {
+                    values = $"{{{String.Join(", ", parameters.Select(p => p.Name))}}}";
+                }
+
+                var responseType = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
+                        $"property" :
                     callable.ReturnsCollection ?
-                        $"toCollection<{callableReturnType}>(body)" :
-                        $"toModel<{callableReturnType}>(body)";
-                yield return $"public {methodName}({String.Join(", ", argumentWithType)}): Observable<{callableReturnType}> {{" +
-                    $"\n    {args}" +
-                    $"\n    var res = this._segment.{callable.Type.ToLower()}<{typescriptType}>('{callableFullName}'" +
-                    (String.IsNullOrWhiteSpace(callable.ReturnType) ? ");" : $", '{callable.ReturnType}');") +
+                        $"collection" :
+                        $"model";
+                yield return $"public {methodName}({String.Join(", ", args)}): Observable<{callableReturnType}> {{" +
+                    $"\n    var res = this._{callable.Type.ToLower()}<{types}, {typescriptType}>('{callableFullName}');" +
                     (useset ? $"\n    res.segment.entitySet('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
-                    $"\n    return res.call(args, 'json', options).pipe(map((body: any) => res.{mapTo}));" +
+                    $"\n    return res.call({values}, '{responseType}', options) as Observable<{callableReturnType}>;" +
                     "\n  }";
             }
         }
         protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationPropertyBinding> bindings)
         {
+            var casts = new List<string>();
             foreach (var binding in bindings)
             {
+                var isCollection = binding.NavigationProperty.IsCollection;
                 var nav = binding.NavigationProperty;
-                var type = this.ToTypescriptType(nav.Type);
-                var methodName = nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+                var navEntity = nav.EntityType;
+                var bindingEntity = binding.EntityType;
+                var propertyEntity = binding.PropertyType;
 
-                var methodSetName = $"set{methodName}";
-
-                var returnType = $"ODataEntity<{type}>";
-
-                yield return $@"public {methodSetName}(model: {type}Model<{type}> | null) {{
-    this.setNavigationProperty<{type}, {type}Model<{type}>>(this._config.field('{nav.Name}'), model);
+                var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
+                var returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
+                var value = isCollection ? "collection([])" : "model({})";
+                if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity)) {
+                    var castName = $"as{propertyEntity.Name}";
+                    if (!casts.Contains(propertyEntity.FullName)) {
+                        // Cast
+                        entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
+                        returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
+                        yield return $@"public {castName}(): {returnType} {{
+    return this._cast<{entity.Name}>('{propertyEntity.FullName}').model(this.toEntity()) as {returnType};
   }}";
+                        casts.Add(propertyEntity.FullName);
+                    }
+                    var methodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+
+                    // Navigation
+                    yield return $@"public {methodName}() {{
+    return this.{castName}().{binding.PropertyName};
+  }}";
+
+                } else {
+                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+
+                    // Navigation
+                    yield return $@"public {methodName}() {{
+    return this._navigationProperty<{entity.Name}>('{binding.Path}').{value} as {returnType};
+  }}";
+                }
             }
         }
         public abstract object ToLiquid();
