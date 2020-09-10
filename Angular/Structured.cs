@@ -128,27 +128,19 @@ namespace ODataApiGen.Angular
                 var propertyEntity = binding.PropertyType;
 
                 var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
-                var returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
-                var value = isCollection ? "collection([])" : "model({})";
                 if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity)) {
                     var castName = $"as{propertyEntity.Name}";
                     if (!casts.Contains(propertyEntity.FullName)) {
                         // Cast
                         entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
-                        returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
-                        yield return $@"public {castName}(): {returnType} {{
-    return this._cast<{entity.Name}>('{propertyEntity.FullName}').model(this.toEntity()) as {returnType};
+                        yield return $@"public {castName}(): {entity.Name}Model<{entity.Name}> {{
+    return this._cast<any>('{propertyEntity.FullName}').asModel(this.toEntity()) as {entity.Name}Model<{entity.Name}>;
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
-                    var methodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
-
-                    // Navigation
-                    yield return $@"public {methodName}() {{
-    return this.{castName}().{binding.PropertyName};
-  }}";
-
                 } else {
+                    var returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
+                    var value = isCollection ? "asCollection()" : "asModel()";
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
                     // Navigation

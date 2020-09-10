@@ -3,6 +3,7 @@ using System.Linq;
 using ODataApiGen.Models;
 using DotLiquid;
 using ODataApiGen.Abstracts;
+using System;
 
 namespace ODataApiGen.Angular
 {
@@ -138,8 +139,16 @@ namespace ODataApiGen.Angular
             get {
                 var service = Program.Metadata.EntitySets.FirstOrDefault(s => this.EdmStructuredType.IsTypeOf(s.EntityType));
                 if (service != null) {
+                    var properties = new List<NavigationProperty>(); 
+                    var entity = this.EdmEntityType;
+                    while (true) {
+                        properties.AddRange(entity.NavigationProperties);
+                        if (String.IsNullOrEmpty(entity.BaseType))
+                            break;
+                        entity = Program.Metadata.FindEntityType(entity.BaseType);
+                    }
                     var bindings = service.NavigationPropertyBindings
-                        .Where(binding => this.EdmEntityType.NavigationProperties.All(n => n.Type != binding.NavigationProperty.Type));
+                        .Where(binding => properties.All(n => n.Name != binding.NavigationProperty.Name));
                     return this.RenderReferences(bindings);
                 }
                 return Enumerable.Empty<string>();
