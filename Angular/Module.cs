@@ -20,7 +20,6 @@ namespace ODataApiGen.Angular
         .Union(this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
         // Imports and Exports
         public override IEnumerable<string> ImportTypes => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)).Select(a => a.EntityType);
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
     }
 }

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using System.IO;
 using DotLiquid;
 using ODataApiGen.Models;
 using ODataApiGen.Abstracts;
@@ -30,7 +28,7 @@ namespace ODataApiGen.Angular
             var pkg = Program.Package as Angular.Package;
             if (this.Value.IsEnumType){
                 var e = pkg.FindEnum(this.Value.Type);
-                return e.Name;
+                return e.ImportedName;
             }
             else if (Value.IsEdmType) {
                 var type = this.Structured.ToTypescriptType(Value.Type);
@@ -38,12 +36,12 @@ namespace ODataApiGen.Angular
             }
             else if (Value.IsEntityType || Value.IsComplexType) {
                 var entity = pkg.FindEntity(this.Value.Type);
-                return $"{entity.Name}" + (Value.IsCollection ? "[]" : "");
+                return $"{entity.ImportedName}" + (Value.IsCollection ? "[]" : "");
             }
             else if (Value is NavigationProperty) {
                 var nav = Value as NavigationProperty;
                 var entity = pkg.FindEntity(nav.ToEntityType);
-                return $"{entity.Name}" + (nav.Many ? "[]" : "");
+                return $"{entity.ImportedName}" + (nav.Many ? "[]" : "");
             } else {
                 return "any";
             }
@@ -77,7 +75,7 @@ namespace ODataApiGen.Angular
         public override object ToLiquid()
         {
             return new {
-                Name = this.Name,
+                Name = this.ImportedName,
                 Type = this.Type,
                 EntityType = this.EdmStructuredType.FullName
             };

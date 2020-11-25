@@ -87,13 +87,13 @@ namespace ODataApiGen.Angular
         public Angular.Collection Collection {get; private set;}
         public EntityConfig(Angular.Entity entity, ApiOptions options) : base(options) {
             this.Entity = entity;
-            this.Dependencies.Add(entity);
+            this.AddDependency(entity);
         }
         public EntityConfig(Angular.Entity entity, Angular.Model model, Angular.Collection collection, ApiOptions options) : this(entity, options) {
             this.Model = model;
             this.Collection = collection;
-            this.Dependencies.Add(model);
-            this.Dependencies.Add(collection);
+            this.AddDependency(model);
+            this.AddDependency(collection);
         }
         public override string FileName => this.Entity.FileName + ".config";
         public override string Name => this.Entity.Name + "Config";
@@ -120,7 +120,6 @@ namespace ODataApiGen.Angular
 
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override string Namespace => this.Entity.EdmStructuredType.Namespace;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<Import> Imports => GetImportRecords();
@@ -129,7 +128,7 @@ namespace ODataApiGen.Angular
         public object ToLiquid()
         {
             return new {
-                Name = this.Name,
+                Name = this.ImportedName,
                 Type = this.Type,
                 EntityName = this.EntityName
             };

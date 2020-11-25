@@ -32,6 +32,7 @@ namespace ODataApiGen
             var templateName = entity.GetType().Name;
             var template = Template.Parse(File.ReadAllText($"{TemplatesPath}{Path.DirectorySeparatorChar}Angular{Path.DirectorySeparatorChar}{templateName}.ts"));
             var content = template.Render(Hash.FromAnonymousObject(entity, true));
+            entity.CleanImportedNames();
 
             var path = $"{Output}{Path.DirectorySeparatorChar}";
             if (!String.IsNullOrWhiteSpace(entity.Directory))

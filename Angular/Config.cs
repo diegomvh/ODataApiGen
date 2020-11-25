@@ -12,7 +12,6 @@ namespace ODataApiGen.Angular {
         // Imports
         public override IEnumerable<string> ImportTypes => Package.Schemas.SelectMany(m => m.ImportTypes);
         // Exports
-        public override IEnumerable<string> ExportTypes => new string[] {this.Name};
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.Package.Name + "Config";
         public override string Namespace => "";

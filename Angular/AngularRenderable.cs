@@ -38,21 +38,31 @@ namespace ODataApiGen.Angular
         }
         public IEnumerable<string> RenderImports()
         {
-            return this.GetImportRecords().Select(r =>
+            return this.GetImportRecords().Select(import =>
             {
-                var path = r.From.ToString();
+                var path = import.From.ToString();
                 if (!path.StartsWith("../"))
                     path = $"./{path}";
-                return $"import {{ {String.Join(", ", r.Names)} }} from '{path}';";
+                return $"import {{ {String.Join(", ", import.Names)} }} from '{path}';";
             });
         }
         public abstract IEnumerable<Import> Imports { get; }
         protected IEnumerable<Import> GetImportRecords()
         {
-            var records = this.Dependencies.Where(a => a.Uri != this.Uri).GroupBy(i => i.Uri).Select(group =>
+            var records = this.Dependencies
+                .Where(a => a.Item2.Uri != this.Uri)
+                .GroupBy(i => i.Item2.Uri).Select(group =>
             {
-                var uri = this.Uri.MakeRelativeUri(group.First().Uri);
-                var names = group.SelectMany(d => d.ExportTypes).Distinct();
+                var uri = this.Uri.MakeRelativeUri(group.First().Item2.Uri);
+                var names = group.Select(d => { 
+                    if (d.Item1 != d.Item2.Name) {
+                        d.Item2.ImportedName = d.Item1;
+                        return $"{d.Item2.Name} as {d.Item1}";
+                    } else {
+                        d.Item2.ImportedName = d.Item2.Name;
+                        return d.Item1;
+                    }
+                    }).Distinct();
                 return new Import(names, uri);
             });
             return records;

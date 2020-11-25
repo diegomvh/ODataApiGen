@@ -55,7 +55,7 @@ namespace ODataApiGen.Angular
                 {
                     var baseEntity = this.Entities.FirstOrDefault(e => e.EdmStructuredType.IsTypeOf(entity.EdmStructuredType.BaseType));
                     entity.SetBase(baseEntity);
-                    entity.Dependencies.Add(baseEntity);
+                    entity.AddDependency(baseEntity);
                 }
             }
             // Models
@@ -65,7 +65,7 @@ namespace ODataApiGen.Angular
                 {
                     var baseModel = this.Models.FirstOrDefault(e => e.EdmStructuredType.IsTypeOf(model.EdmStructuredType.BaseType));
                     model.SetBase(baseModel);
-                    model.Dependencies.Add(baseModel);
+                    model.AddDependency(baseModel);
                 }
                 var collection = this.Collections.FirstOrDefault(m => m.EdmStructuredType.Name == model.EdmStructuredType.Name);
                 if (collection != null)
@@ -80,7 +80,7 @@ namespace ODataApiGen.Angular
                 {
                     var baseCollection = this.Collections.FirstOrDefault(e => e.EdmStructuredType.IsTypeOf(collection.EdmStructuredType.BaseType));
                     collection.SetBase(baseCollection);
-                    collection.Dependencies.Add(baseCollection);
+                    collection.AddDependency(baseCollection);
                 }
             }
 
@@ -99,18 +99,18 @@ namespace ODataApiGen.Angular
                 var types = renderable.ImportTypes;
                 if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
                 {
-                    renderable.Dependencies.AddRange(
+                    renderable.AddDependencies(
     this.Enums.Where(e => e != renderable && types.Any(type => e.EdmEnumType.IsTypeOf(type))));
                     if (renderable is Structured || renderable is Service)
                     {
-                        renderable.Dependencies.AddRange(
+                        renderable.AddDependencies(
         this.Entities.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
                         if (!(renderable is EnumConfig))
                         {
                             {
-                                renderable.Dependencies.AddRange(
+                                renderable.AddDependencies(
                 this.Models.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
-                                renderable.Dependencies.AddRange(
+                                renderable.AddDependencies(
                 this.Collections.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
                             }
                         }
@@ -119,22 +119,22 @@ namespace ODataApiGen.Angular
             }
 
             // Module
-            this.Module.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
-            this.Module.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
+            this.Module.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
+            this.Module.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             // Config
-            this.Config.Dependencies.AddRange(this.Schemas);
+            this.Config.AddDependencies(this.Schemas);
             // Index
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Enums));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.EnumConfigs));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Entities));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Models));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Collections));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.EntityConfigs));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
-            this.Index.Dependencies.AddRange(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.ServiceConfigs)));
-            this.Index.Dependencies.Add(this.Config);
-            this.Index.Dependencies.Add(this.Module);
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Enums));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.EnumConfigs));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Entities));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Models));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Collections));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.EntityConfigs));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.ServiceConfigs)));
+            this.Index.AddDependency(this.Config);
+            this.Index.AddDependency(this.Module);
         }
 
         public override IEnumerable<string> GetAllDirectories()

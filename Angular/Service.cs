@@ -21,28 +21,25 @@ namespace ODataApiGen.Angular
             this.Entity = entity;
         }
         public bool HasEntity => this.Entity != null;
-        public string EntityName => this.HasEntity ? this.Entity.Name : String.Empty;
+        public string EntityName => this.HasEntity ? this.Entity.ImportedName : String.Empty;
         public Angular.Model Model { get; private set; }
         public void SetModel(Angular.Model model)
         {
             this.Model = model;
         }
         public bool HasModel => this.Model != null;
-        public string ModelName => this.HasModel ? this.Model.Name : String.Empty;
+        public string ModelName => this.HasModel ? this.Model.ImportedName : String.Empty;
         public Angular.Collection Collection { get; private set; }
         public void SetCollection(Angular.Collection collection)
         {
             this.Collection = collection;
         }
         public bool HasCollection => this.Collection != null;
-        public string CollectionName => this.HasCollection ? this.Collection.Name : String.Empty;
+        public string CollectionName => this.HasCollection ? this.Collection.ImportedName : String.Empty;
         public abstract string EntitySetName {get;}
         public abstract string EntityType {get;}
         public abstract IEnumerable<Models.Annotation> Annotations {get;}
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
-        // Exports
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables, bool useset = false, bool usename = false)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
@@ -111,31 +108,31 @@ namespace ODataApiGen.Angular
                     if (!casts.Contains(propertyEntity.FullName)) {
                         // Cast
                         entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
-                        yield return $@"public {castName}(): ODataEntitySetResource<{entity.Name}> {{
-    return this.entities().cast<{entity.Name}>('{propertyEntity.FullName}');
+                        yield return $@"public {castName}(): ODataEntitySetResource<{entity.ImportedName}> {{
+    return this.entities().cast<{entity.ImportedName}>('{propertyEntity.FullName}');
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
                     var methodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
 
                     // Navigation
-                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.Name}> {{
-    return this.{castName}().entity(entity).navigationProperty<{entity.Name}>('{binding.PropertyName}');
+                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
+    return this.{castName}().entity(entity).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
   }}";
 
                 } else {
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
                     // Navigation
-                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.Name}> {{
-    return this.entity(entity).navigationProperty<{entity.Name}>('{binding.Path}');
+                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
+    return this.entity(entity).navigationProperty<{entity.ImportedName}>('{binding.Path}');
   }}";
                 }
             }
         }
         public object ToLiquid()
         {
-            return new { Name = this.Name };
+            return new { Name = this.ImportedName };
         }
 
     }

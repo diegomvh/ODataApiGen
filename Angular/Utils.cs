@@ -111,6 +111,7 @@ namespace ODataApiGen.Angular {
             }
         }
     }
+
     public static class Filters
     {
         public static string Parameters(IEnumerable<CallableParameterConfig> parameters) {

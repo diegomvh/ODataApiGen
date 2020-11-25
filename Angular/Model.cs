@@ -29,7 +29,7 @@ namespace ODataApiGen.Angular
             var pkg = Program.Package as Angular.Package;
             if (this.Value.IsEnumType){
                 var e = pkg.FindEnum(this.Value.Type);
-                return e.Name;
+                return e.ImportedName;
             }
             else if (Value.IsEdmType) {
                 var type = this.Structured.ToTypescriptType(Value.Type);
@@ -40,12 +40,12 @@ namespace ODataApiGen.Angular
                     var entity = pkg.FindEntity(this.Value.Type);
                     var model = pkg.FindModel(this.Value.Type);
                     var collection = pkg.FindCollection(this.Value.Type);
-                    return $"{collection.Name}<{entity.Name}, {model.Name}<{entity.Name}>>";
+                    return $"{collection.ImportedName}<{entity.ImportedName}, {model.ImportedName}<{entity.ImportedName}>>";
                 }
                 else {
                     var entity = pkg.FindEntity(this.Value.Type);
                     var model = pkg.FindModel(this.Value.Type);
-                    return $"{model.Name}<{entity.Name}>";
+                    return $"{model.ImportedName}<{entity.ImportedName}>";
                 }
             } else if (this.Value is NavigationProperty) {
                 var nav = this.Value as NavigationProperty;
@@ -53,12 +53,12 @@ namespace ODataApiGen.Angular
                     var entity = pkg.FindEntity(nav.ToEntityType);
                     var model = pkg.FindModel(nav.ToEntityType);
                     var collection = pkg.FindCollection(nav.ToEntityType);
-                    return $"{collection.Name}<{entity.Name}, {model.Name}<{entity.Name}>>";
+                    return $"{collection.ImportedName}<{entity.ImportedName}, {model.ImportedName}<{entity.ImportedName}>>";
                 }
                 else {
                     var entity = pkg.FindEntity(nav.ToEntityType);
                     var model = pkg.FindModel(nav.ToEntityType);
-                    return $"{model.Name}<{entity.Name}>";
+                    return $"{model.ImportedName}<{entity.ImportedName}>";
                 }
             }
             return "any";
@@ -107,8 +107,6 @@ namespace ODataApiGen.Angular
                 return list;
             }
         }
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
-
         public IEnumerable<Angular.ModelProperty> Properties {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
@@ -159,10 +157,10 @@ namespace ODataApiGen.Angular
         public override object ToLiquid()
         {
             return new {
-                Name = this.Name,
+                Name = this.ImportedName,
                 Type = this.Type,
                 Entity = new {
-                    Name = this.Entity.Name
+                    Name = this.Entity.ImportedName
                 }
             };
         }

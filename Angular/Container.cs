@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using ODataApiGen.Models;
 using Newtonsoft.Json;
 using System.IO;
@@ -44,7 +43,6 @@ namespace ODataApiGen.Angular
         public string ApiName => this.EdmEntityContainer.Name;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.ContainerType };
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Namespace => this.EdmEntityContainer.Namespace;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
@@ -56,20 +54,23 @@ namespace ODataApiGen.Angular
                 if (inter != null)
                 {
                     service.SetEntity(inter);
+                    //service.AddDependency(inter);
                 }
                 var model = models.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
                 if (model != null)
                 {
                     service.SetModel(model);
+                    //service.AddDependency(model);
                 }
                 var collection = collections.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
                 if (collection != null)
                 {
                     service.SetCollection(collection);
+                    //service.AddDependency(collection);
                 }
             }
 
-            this.Dependencies.AddRange(this.ServiceConfigs);
+            this.AddDependencies(this.ServiceConfigs);
         }
         public IEnumerable<string> GetAllDirectories()
         {
@@ -91,7 +92,7 @@ namespace ODataApiGen.Angular
         public object ToLiquid()
         {
             return new {
-                Name = this.Name,
+                Name = this.ImportedName,
                 Type = this.Type,
                 ContainerName = this.ContainerName,
                 ContainerType = this.ContainerType

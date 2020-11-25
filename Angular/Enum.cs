@@ -14,7 +14,6 @@ namespace ODataApiGen.Angular {
         // Imports
         public override IEnumerable<string> ImportTypes => Enumerable.Empty<string>();
         // Exports
-        public override IEnumerable<string> ExportTypes => new string[] {this.Name};
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => Utils.ToTypescriptName(this.EdmEnumType.Name, TypeScriptElement.Enum);
         public string EnumType => this.EdmEnumType.FullName;
@@ -26,7 +25,7 @@ namespace ODataApiGen.Angular {
         public object ToLiquid()
         {
             return new { 
-                Name = this.Name,
+                Name = this.ImportedName,
                 EnumType = this.EnumType
             };
         }

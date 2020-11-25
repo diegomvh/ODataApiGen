@@ -26,7 +26,6 @@ namespace ODataApiGen.Angular
 
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.EnumType };
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Namespace => this.Enum.EdmEnumType.Namespace;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
@@ -35,7 +34,7 @@ namespace ODataApiGen.Angular
         public object ToLiquid()
         {
             return new {
-                Name = this.Name,
+                Name = this.ImportedName,
                 Type = this.Type,
                 EnumName = this.EnumName
             };

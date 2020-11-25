@@ -49,8 +49,6 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.FullName)?.Name;
         public bool OpenType => this.EdmStructuredType.OpenType; 
-        // Exports
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
 
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables, bool useset = true, bool usename = false)

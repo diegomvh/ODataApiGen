@@ -15,7 +15,6 @@ namespace ODataApiGen.Angular
         // Imports
         public override IEnumerable<string> ImportTypes => Enumerable.Empty<string>();
         // Exports
-        public override IEnumerable<string> ExportTypes => Enumerable.Empty<string>();
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.Package.Name;
         public override string Namespace => "";

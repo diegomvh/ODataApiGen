@@ -92,7 +92,6 @@ namespace ODataApiGen.Angular
         }
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
-        public override IEnumerable<string> ExportTypes => new string[] { this.Name };
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Namespace => this.EdmSchema.Namespace;
         public bool HasAlias => !String.IsNullOrWhiteSpace(this.EdmSchema.Alias);
@@ -100,9 +99,9 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {
-            this.Dependencies.AddRange(this.EnumConfigs);
-            this.Dependencies.AddRange(this.EntityConfigs);
-            this.Dependencies.AddRange(this.Containers);
+            this.AddDependencies(this.EnumConfigs);
+            this.AddDependencies(this.EntityConfigs);
+            this.AddDependencies(this.Containers);
         }
         public IEnumerable<string> GetAllDirectories()
         {
@@ -134,7 +133,7 @@ namespace ODataApiGen.Angular
         {
             return new
             {
-                Name = this.Name,
+                Name = this.ImportedName,
                 Namespace = this.Namespace,
                 Type = this.Type
             };
