@@ -1,4 +1,4 @@
-import { EntityConfig } from 'angular-odata';
+import { StructuredTypeConfig } from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -15,4 +15,4 @@ export const {{Name}} = {
     {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as EntityConfig<{{EntityName}}>;
+} as StructuredTypeConfig<{{EntityName}}>;

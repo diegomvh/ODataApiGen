@@ -58,7 +58,8 @@ namespace ODataApiGen.Angular
     {
         public Entity(StructuredType type, ApiOptions options) : base(type, options) { }
 
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".entity";
+        public override string FileName => this.EdmStructuredType.Name.ToLower() + 
+        ((this.EdmStructuredType is ComplexType) ? ".complex" : ".entity");
         public override string Name => Utils.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class);
         // Exports
 

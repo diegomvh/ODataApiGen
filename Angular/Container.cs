@@ -12,7 +12,7 @@ namespace ODataApiGen.Angular
         public Models.EntityContainer EdmEntityContainer {get; private set;}
         public Angular.ServiceContainer Service { get; private set; }
         public ICollection<Angular.Service> Services { get; } = new List<Angular.Service>();
-        public ICollection<Angular.ServiceConfig> ServiceConfigs { get; } = new List<Angular.ServiceConfig>();
+        public ICollection<Angular.EntitySetConfig> ServiceConfigs { get; } = new List<Angular.EntitySetConfig>();
         public Container(EntityContainer container, ApiOptions options) : base(options) {
             this.EdmEntityContainer = container;
             this.Service = new Angular.ServiceContainer(this, options);
@@ -20,14 +20,14 @@ namespace ODataApiGen.Angular
             {
                 Service service = new Angular.ServiceEntity(eset, options);
                 this.Services.Add(service);
-                var config = new Angular.ServiceConfig(service, options);
+                var config = new Angular.EntitySetConfig(service, options);
                 this.ServiceConfigs.Add(config);
             }
             foreach (var s in container.Singletons)
             {
                 var service = new Angular.ServiceSingleton(s, options);
                 this.Services.Add(service);
-                var config = new Angular.ServiceConfig(service, options);
+                var config = new Angular.EntitySetConfig(service, options);
                 this.ServiceConfigs.Add(config);
             }
         }

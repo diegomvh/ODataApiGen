@@ -39,13 +39,9 @@ namespace ODataApiGen.Abstracts
         public void AddDependency(Renderable renderable) {
             if (this.Dependencies.All(d => d.Item2 != renderable)) {
                 var alias = renderable.Name;
-                var other = this.Dependencies.Where(d => d.Item1 == alias).FirstOrDefault();
-                var take = 1;
-                while (other != null) {
-                    var similar = string.Join("", renderable.Namespace.TakeWhile((ch, i) => i < other.Item2.Namespace.Length && other.Item2.Namespace[i] == ch));
-                    alias = String.Join("", renderable.Namespace.Substring(similar.Length).Split('.').Take(take)) + alias;
-                    other = this.Dependencies.Where(d => d.Item1 == alias).FirstOrDefault();
-                    take++;
+                while (this.Dependencies.Any(d => d.Item1 == alias)) {
+                    alias = NameGenerator.GetRandomName();
+                    Console.WriteLine(alias);
                 }
                 this.Dependencies.Add(Tuple.Create<string, Renderable>(alias, renderable));
             }

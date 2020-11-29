@@ -13,11 +13,11 @@ namespace ODataApiGen.Angular
         //TODO: Create nice schema names
         public override string Name => Utils.ToTypescriptName(this.Namespace.Split('.').Last(), TypeScriptElement.Class) + "Schema";
         public ICollection<Angular.Enum> Enums { get; } = new List<Angular.Enum>();
-        public ICollection<Angular.EnumConfig> EnumConfigs { get; } = new List<Angular.EnumConfig>();
+        public ICollection<Angular.EnumTypeConfig> EnumConfigs { get; } = new List<Angular.EnumTypeConfig>();
         public ICollection<Angular.Entity> Entities { get; } = new List<Angular.Entity>();
         public ICollection<Angular.Model> Models { get; } = new List<Angular.Model>();
         public ICollection<Angular.Collection> Collections { get; } = new List<Angular.Collection>();
-        public ICollection<Angular.EntityConfig> EntityConfigs { get; } = new List<Angular.EntityConfig>();
+        public ICollection<Angular.StructuredTypeConfig> EntityConfigs { get; } = new List<Angular.StructuredTypeConfig>();
         public ICollection<Angular.CallableConfig> CallablesConfigs { get; } = new List<Angular.CallableConfig>();
         public ICollection<Angular.Container> Containers { get; } = new List<Angular.Container>();
         public Schema(Models.Schema schema, ApiOptions options) : base(options)
@@ -39,7 +39,7 @@ namespace ODataApiGen.Angular
             {
                 var enu = new Angular.Enum(e, this.Options);
                 this.Enums.Add(enu);
-                var config = new Angular.EnumConfig(enu, this.Options);
+                var config = new Angular.EnumTypeConfig(enu, this.Options);
                 this.EnumConfigs.Add(config);
             }
         }
@@ -47,7 +47,7 @@ namespace ODataApiGen.Angular
         {
             foreach (var cmplx in complexes)
             {
-                Angular.EntityConfig config;
+                Angular.StructuredTypeConfig config;
                 var entity = new Angular.Entity(cmplx, this.Options);
                 this.Entities.Add(entity);
                 if (this.Options.Models)
@@ -56,9 +56,9 @@ namespace ODataApiGen.Angular
                     this.Models.Add(model);
                     var collection = new Angular.Collection(cmplx, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Angular.EntityConfig(entity, model, collection, this.Options);
+                    config = new Angular.StructuredTypeConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Angular.EntityConfig(entity, this.Options);
+                    config = new Angular.StructuredTypeConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
             }
@@ -67,7 +67,7 @@ namespace ODataApiGen.Angular
         {
             foreach (var enty in entities)
             {
-                Angular.EntityConfig config;
+                Angular.StructuredTypeConfig config;
                 var entity = new Angular.Entity(enty, this.Options);
                 this.Entities.Add(entity);
                 if (this.Options.Models)
@@ -76,9 +76,9 @@ namespace ODataApiGen.Angular
                     this.Models.Add(model);
                     var collection = new Angular.Collection(enty, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Angular.EntityConfig(entity, model, collection, this.Options);
+                    config = new Angular.StructuredTypeConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Angular.EntityConfig(entity, this.Options);
+                    config = new Angular.StructuredTypeConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
             }

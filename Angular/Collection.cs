@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ODataApiGen.Abstracts;
@@ -24,7 +25,9 @@ namespace ODataApiGen.Angular
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 if (this.EdmEntityType != null) {
+                    list.AddRange(this.EdmEntityType.Properties.Select(a => a.Type));
                     list.AddRange(this.EdmEntityType.NavigationProperties.Select(a => a.Type));
+                    list.AddRange(this.EdmEntityType.NavigationProperties.Select(a => a.ToEntityType));
                     list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                     list.AddRange(this.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                     foreach (var cal in this.EdmEntityType.Actions)
@@ -33,7 +36,7 @@ namespace ODataApiGen.Angular
                         parameters.AddRange(cal.Parameters);
                     list.AddRange(parameters.Select(p => p.Type));
                 }
-                return list;
+                return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
             }
         }
         // Exports

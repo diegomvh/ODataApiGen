@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular {
-    public class Config : AngularRenderable {
+    public class ApiConfig : AngularRenderable {
         public Angular.Package Package {get; private set;}
-        public Config(Package package, ApiOptions options) : base(options){
+        public ApiConfig(Package package, ApiOptions options) : base(options){
             this.Package = package;
         }
         // Imports

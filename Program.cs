@@ -29,7 +29,7 @@ namespace ODataApiGen
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("application.json")
+                .AddJsonFile("application.trippin.json")
                 .AddCommandLine(args, new Dictionary<string, string>() {
                     {"-Name", "Name"},
                     {"-Metadata", "Metadata"},
@@ -44,7 +44,7 @@ namespace ODataApiGen
             var output = Configuration.GetValue<string>("Output");
             output = $"{output}{Path.DirectorySeparatorChar}{name.ToLower()}";
             var directories = new DirectoryManager(output);
-            var renderer = new Renderer(output);
+          var renderer = new Renderer(output);
 
             var metadata = Configuration.GetValue<string>("Metadata");
             var serviceRootUrl = metadata.StartsWith("http") ? metadata.TrimEnd("$metadata".ToCharArray()) : "";

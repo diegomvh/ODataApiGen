@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace ODataApiGen.Angular
                 list.AddRange(parameters.Select(p => p.Type));
                 list.AddRange(this.Container.EdmEntityContainer.UnboundActions.SelectMany(a => this.CallableNamespaces(a)));
                 list.AddRange(this.Container.EdmEntityContainer.UnboundFunctions.SelectMany(f => this.CallableNamespaces(f)));
-                return list;
+                return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
             }
         }
 

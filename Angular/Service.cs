@@ -132,7 +132,9 @@ namespace ODataApiGen.Angular
         }
         public object ToLiquid()
         {
-            return new { Name = this.ImportedName };
+            return new { 
+                Name = this.ImportedName 
+            };
         }
 
     }

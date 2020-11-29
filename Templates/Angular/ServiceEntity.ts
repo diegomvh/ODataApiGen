@@ -35,7 +35,7 @@ export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   }
   //#endregion{% endif %}
   {% if HasCollection %}//#region ODataApi Collection
-  {{CollectionName | methodcase}}(): {{EntityName}}Collection<{{EntityName}}, {{EntityName}}Model<{{EntityName}}>> {
+  {{CollectionName | methodcase}}(): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
     return this.entities().asCollection() as {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>;
   }
   //#endregion{% endif %}

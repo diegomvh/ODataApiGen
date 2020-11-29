@@ -41,7 +41,7 @@ namespace ODataApiGen.Angular
                 if (this.HasModel) {
                     list.AddRange(this.Model.EdmStructuredType.Properties.Select(a => a.Type));
                 }
-                return list;
+                return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
             }
         }
 

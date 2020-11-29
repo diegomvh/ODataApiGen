@@ -6,10 +6,10 @@ using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
-    public class EnumConfig: AngularRenderable, DotLiquid.ILiquidizable 
+    public class EnumTypeConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Angular.Enum Enum {get; private set;}
-        public EnumConfig(Angular.Enum enu, ApiOptions options) : base(options) {
+        public EnumTypeConfig(Angular.Enum enu, ApiOptions options) : base(options) {
             this.Enum = enu;
         }
         public override string FileName => this.Enum.FileName + ".config";

@@ -9,7 +9,7 @@ namespace ODataApiGen.Angular
     public class Package : ODataApiGen.Abstracts.Package, ILiquidizable
     {
         public Angular.Module Module { get; private set; }
-        public Angular.Config Config { get; private set; }
+        public Angular.ApiConfig Config { get; private set; }
         public Angular.Index Index { get; private set; }
         public ICollection<Angular.Schema> Schemas { get; private set; } = new List<Angular.Schema>();
         public IEnumerable<Angular.Enum> Enums => this.Schemas.SelectMany(s => s.Enums);
@@ -31,7 +31,7 @@ namespace ODataApiGen.Angular
         public Package(ApiOptions options) : base(options)
         {
             this.Module = new Module(this, options);
-            Config = new Angular.Config(this, options);
+            Config = new Angular.ApiConfig(this, options);
             Index = new Angular.Index(this, options);
         }
 
@@ -71,6 +71,7 @@ namespace ODataApiGen.Angular
                 if (collection != null)
                 {
                     model.SetCollection(collection);
+                    //model.AddDependency(collection);
                 }
             }
             // Collections
@@ -97,15 +98,15 @@ namespace ODataApiGen.Angular
             foreach (var renderable in this.Renderables)
             {
                 var types = renderable.ImportTypes;
-                if (renderable is Enum || renderable is EnumConfig || renderable is Structured || renderable is Service)
+                if (renderable is Enum || renderable is EnumTypeConfig || renderable is Entity || renderable is Model || renderable is Collection || renderable is Service)
                 {
                     renderable.AddDependencies(
     this.Enums.Where(e => e != renderable && types.Any(type => e.EdmEnumType.IsTypeOf(type))));
-                    if (renderable is Structured || renderable is Service)
+                    if (renderable is Entity || renderable is Model || renderable is Collection || renderable is Service)
                     {
                         renderable.AddDependencies(
         this.Entities.Where(e => e != renderable && types.Any(type => e.EdmStructuredType.IsTypeOf(type))));
-                        if (!(renderable is EnumConfig))
+                        if (!(renderable is EnumTypeConfig))
                         {
                             {
                                 renderable.AddDependencies(

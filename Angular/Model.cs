@@ -95,7 +95,9 @@ namespace ODataApiGen.Angular
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 if (this.EdmEntityType != null) {
+                    list.AddRange(this.EdmEntityType.Properties.Select(a => a.Type));
                     list.AddRange(this.EdmEntityType.NavigationProperties.Select(a => a.Type));
+                    list.AddRange(this.EdmEntityType.NavigationProperties.Select(a => a.ToEntityType));
                     list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
                     list.AddRange(this.EdmEntityType.Functions.SelectMany(a => this.CallableNamespaces(a)));
                 }
@@ -104,7 +106,8 @@ namespace ODataApiGen.Angular
                     list.AddRange(service.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
                     list.AddRange(service.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
                 }
-                return list;
+                
+                return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
             }
         }
         public IEnumerable<Angular.ModelProperty> Properties {

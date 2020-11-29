@@ -13,8 +13,8 @@ namespace ODataApiGen.Angular
     {
         protected Models.Property Value { get; set; }
         protected IEnumerable<PropertyRef> Keys { get; set; }
-        protected Angular.EntityConfig Config { get; set; }
-        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys, Angular.EntityConfig config) {
+        protected Angular.StructuredTypeConfig Config { get; set; }
+        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys, Angular.StructuredTypeConfig config) {
             this.Keys = keys;
             this.Value = property;
             this.Config = config;
@@ -80,16 +80,16 @@ namespace ODataApiGen.Angular
             };
         }
     }
-    public class EntityConfig : AngularRenderable, DotLiquid.ILiquidizable
+    public class StructuredTypeConfig : AngularRenderable, DotLiquid.ILiquidizable
     {
         public Angular.Entity Entity {get; private set;}
         public Angular.Model Model {get; private set;}
         public Angular.Collection Collection {get; private set;}
-        public EntityConfig(Angular.Entity entity, ApiOptions options) : base(options) {
+        public StructuredTypeConfig(Angular.Entity entity, ApiOptions options) : base(options) {
             this.Entity = entity;
             this.AddDependency(entity);
         }
-        public EntityConfig(Angular.Entity entity, Angular.Model model, Angular.Collection collection, ApiOptions options) : this(entity, options) {
+        public StructuredTypeConfig(Angular.Entity entity, Angular.Model model, Angular.Collection collection, ApiOptions options) : this(entity, options) {
             this.Model = model;
             this.Collection = collection;
             this.AddDependency(model);

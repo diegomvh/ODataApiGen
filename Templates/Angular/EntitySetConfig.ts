@@ -1,4 +1,4 @@
-import { ServiceConfig } from 'angular-odata';
+import { EntitySetConfig } from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
@@ -7,4 +7,4 @@ import { ServiceConfig } from 'angular-odata';
 export const {{Name}} = {
   name: "{{ServiceName}}",
   annotations: {{Annotations}}
-} as ServiceConfig;
+} as EntitySetConfig;

@@ -8,10 +8,10 @@ using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
-    public class ServiceConfig: AngularRenderable, DotLiquid.ILiquidizable 
+    public class EntitySetConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Angular.Service Service { get; private set; }
-        public ServiceConfig(Angular.Service service, ApiOptions options) : base(options) {
+        public EntitySetConfig(Angular.Service service, ApiOptions options) : base(options) {
             Service = service;
         }
         public override string FileName => this.Service.FileName + ".config";
