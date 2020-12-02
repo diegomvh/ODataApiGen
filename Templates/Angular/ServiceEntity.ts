@@ -30,13 +30,13 @@ export class {{Name}} extends ODataEntityService<{{EntityName}}> {
   }
 
   {% if HasModel %}//#region ODataApi Model
-  {{ModelName | methodcase}}(): {{ModelName}}<{{EntityName}}> {
-    return this.entity().asModel() as {{ModelName}}<{{EntityName}}>;
+  {{ModelName | methodcase}}(attrs?: Partial<{{EntityName}}>): {{ModelName}}<{{EntityName}}> {
+    return this.entity().asModel(attrs || {}) as {{ModelName}}<{{EntityName}}>;
   }
   //#endregion{% endif %}
   {% if HasCollection %}//#region ODataApi Collection
-  {{CollectionName | methodcase}}(): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
-    return this.entities().asCollection() as {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>;
+  {{CollectionName | methodcase}}(models?: Partial<{{EntityName}}>[]): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
+    return this.entities().asCollection(models || []) as {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>;
   }
   //#endregion{% endif %}
   //#region ODataApi Actions
