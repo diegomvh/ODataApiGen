@@ -139,7 +139,7 @@ namespace ODataApiGen.Angular
                     }
                 } else {
                     var returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
-                    var value = isCollection ? "asCollection()" : "asModel()";
+                    var value = isCollection ? "asCollection([])" : "asModel({})";
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
                     // Navigation
