@@ -7,8 +7,10 @@ import { ApiConfig, EDM_PARSERS } from 'angular-odata';
 export const {{Name}} = {
   name: '{{Package.Name}}',
   serviceRootUrl: '{{Package.ServiceRootUrl}}',
-  version: '{{Package.Version}}',
   creation: new Date('{{Package.Creation | date: "o"}}'),
+  options: {
+    version: '{{Package.Version}}'
+  },
   schemas: [
     {% for schema in Package.Schemas %}{{schema.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
