@@ -7,5 +7,10 @@ import { EnumTypeConfig } from 'angular-odata';
 export const {{Name}} = {
   name: "{{EdmEnumName}}",{% if Flags %}
   flags: true,{% endif %}
-  members: {{EnumName}}
+  enum: {{EnumName}},
+  annotations: {{Annotations}},
+  members: {
+    {% for member in Members %}{{member.Name}}: {{member.Type}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}
+  }
 } as EnumTypeConfig<{{EnumName}}>;

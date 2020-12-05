@@ -64,6 +64,18 @@ Org.OData.Capabilities.V1.FilterFunctions
         {         
             var result = new Dictionary<string, object>();
             result.Add("type", this.Term);
+            try {
+                if (!String.IsNullOrEmpty(this.Value.String))
+                    result.Add("string", this.Value.String);
+            } catch {}
+            try {
+                if (!String.IsNullOrEmpty(this.Value.Bool))
+                    result.Add("bool", this.Value.Bool.ToLower() == "true");
+            } catch {}
+            try {
+                if (!String.IsNullOrEmpty(this.Value.Int))
+                    result.Add("int", Convert.ToInt32(this.Value.Int));
+            } catch {}
             return result;
         }
     }

@@ -3,9 +3,42 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using ODataApiGen.Abstracts;
+using DotLiquid;
+using System;
 
 namespace ODataApiGen.Angular
 {
+    public class EnumMemberConfig : ILiquidizable
+    {
+        protected Models.EnumMember Value { get; set; }
+        protected Angular.EnumTypeConfig Config { get; set; }
+        public EnumMemberConfig(Models.EnumMember member, Angular.EnumTypeConfig config) {
+            this.Value = member;
+            this.Config = config;
+        }
+        public string Name => Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
+
+        public string Type { 
+            get {
+                var values = new Dictionary<string, string>();
+                values.Add("value", $"{this.Value.Value}");
+                if (this.Name != this.Value.Name)
+                    values.Add("name", $"'{this.Value.Name}'");
+                var annots = this.Value.Annotations;
+                if (annots.Count > 0) {
+                    var json = JsonConvert.SerializeObject(annots.Select(annot => annot.ToDictionary()));
+                    values.Add("annotations", $"{json}");
+                }
+                return $"{{{String.Join(", ", values.Select(p => $"{p.Key}: {p.Value}"))}}}";
+            }
+        } 
+        public object ToLiquid() {
+            return new {
+                Name = this.Name,
+                Type = this.Type
+            };
+        }
+    }
     public class EnumTypeConfig: AngularRenderable, DotLiquid.ILiquidizable 
     {
         public Angular.Enum Enum {get; private set;}
@@ -18,9 +51,14 @@ namespace ODataApiGen.Angular
         public string EdmEnumName => this.Enum.EdmEnumType.Name;
         public string EnumName => this.Enum.Name;
 
-        public string EnumAnnotations {
+        public string Annotations {
             get {
                 return JsonConvert.SerializeObject(this.Enum.EdmEnumType.Annotations.Select(annot => annot.ToDictionary()));
+            }
+        }
+        public IEnumerable<Angular.EnumMemberConfig> Members {
+            get {
+                return this.Enum.EdmEnumType.Members.Select(member => new EnumMemberConfig(member, this));
             }
         }
 
