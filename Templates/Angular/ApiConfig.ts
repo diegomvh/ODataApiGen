@@ -10,8 +10,9 @@ export const {{Name}} = {
   version: '{{Package.Version}}',
   creation: new Date('{{Package.Creation | date: "o"}}'),
   schemas: [
+//#region Schemas
     {% for schema in Package.Schemas %}{{schema.Name}}{% unless forloop.last %},
-    {% endunless %}{% endfor %}
+    {% endunless %}{% endfor %}//#endregion
   ],
   parsers: EDM_PARSERS
 } as ApiConfig;
