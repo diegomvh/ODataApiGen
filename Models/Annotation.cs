@@ -65,16 +65,21 @@ Org.OData.Capabilities.V1.FilterFunctions
             var result = new Dictionary<string, object>();
             result.Add("type", this.Term);
             try {
-                if (!String.IsNullOrEmpty(this.Value.String))
+                if (!result.ContainsKey("string") && !String.IsNullOrEmpty(this.Value.String))
                     result.Add("string", this.Value.String);
             } catch {}
             try {
-                if (!String.IsNullOrEmpty(this.Value.Bool))
+                if (!result.ContainsKey("bool") && !String.IsNullOrEmpty(this.Value.Bool))
                     result.Add("bool", this.Value.Bool.ToLower() == "true");
             } catch {}
             try {
-                if (!String.IsNullOrEmpty(this.Value.Int))
+                if (!result.ContainsKey("int") && !String.IsNullOrEmpty(this.Value.Int))
                     result.Add("int", Convert.ToInt32(this.Value.Int));
+            } catch {}
+            try {
+                var els = this.Value.Elements();
+                if (!result.ContainsKey("values") && els.Count() > 1)
+                    result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             } catch {}
             return result;
         }
@@ -87,7 +92,8 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
-            result.Add("string", this.String);
+            if (!result.ContainsKey("string"))
+                result.Add("string", this.String);
             return result;
         }
     }
@@ -100,7 +106,8 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
-            result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
+            if (!result.ContainsKey("values") && els != null)
+                result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
     }
@@ -112,6 +119,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("bool"))
             result.Add("bool", this.Bool);
             return result;
         }
@@ -124,6 +132,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("bool"))
             result.Add("bool", this.Bool);
             return result;
         }
@@ -136,6 +145,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("permissions"))
             result.Add("permissions", this.Permissions);
             return result;
         }
@@ -148,6 +158,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("bool"))
             result.Add("bool", this.Bool);
             return result;
         }
@@ -160,6 +171,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("bool"))
             result.Add("bool", this.Bool);
             return result;
         }
@@ -172,6 +184,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("string"))
             result.Add("string", this.String);
             return result;
         }
@@ -184,6 +197,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("string"))
             result.Add("string", this.String);
             return result;
         }
@@ -196,6 +210,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("int"))
             result.Add("int", this.Int);
             return result;
         }
@@ -209,6 +224,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
+            if (!result.ContainsKey("values") && els != null)
             result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
@@ -221,6 +237,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
+            if (!result.ContainsKey("values") && els != null)
             result.Add("values", ((IEnumerable<dynamic>)els).Select(e => e.Value).ToList());
             return result;
         }
@@ -233,6 +250,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
+            if (!result.ContainsKey("values") && els != null)
             result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
@@ -246,6 +264,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("bool"))
             result.Add("bool", this.Bool);
             return result;
         }
@@ -258,6 +277,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         }
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
+            if (!result.ContainsKey("bool"))
             result.Add("bool", this.Bool);
             return result;
         }
@@ -270,6 +290,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
+            if (!result.ContainsKey("values") && els != null)
             result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
@@ -282,6 +303,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
+            if (!result.ContainsKey("values") && els != null)
             result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
@@ -294,6 +316,7 @@ Org.OData.Capabilities.V1.FilterFunctions
         public override IDictionary<string, object> ToDictionary() {
             var result = base.ToDictionary();
             var els = this.Value.Elements();
+            if (!result.ContainsKey("values") && els != null)
             result.Add("values", ((IEnumerable<dynamic>)els).SelectMany(e => (IEnumerable<dynamic>)e.Elements()).Select(s => s.Value).ToList());
             return result;
         }
