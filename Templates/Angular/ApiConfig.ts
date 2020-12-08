@@ -10,7 +10,7 @@ export const {{Name}} = {
   version: '{{Package.Version}}',
   creation: new Date('{{Package.Creation | date: "o"}}'),
   schemas: [
-//#region Schemas
+//#region ODataApi Schemas
     {% for schema in Package.Schemas %}{{schema.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}//#endregion
   ],
