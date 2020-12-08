@@ -4,6 +4,7 @@ import { EntityContainerConfig } from 'angular-odata';
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
+//#region ODataApi EntityContainerConfig
 export const {{Name}} = {
   name: "{{ContainerName}}",
   annotations: {{Annotations}},
@@ -12,3 +13,4 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}
   ]
 } as EntityContainerConfig;
+//#endregion

@@ -4,6 +4,7 @@ import { EnumTypeConfig } from 'angular-odata';
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
+//#region ODataApi EnumTypeConfig
 export const {{Name}} = {
   name: "{{EdmEnumName}}",{% if Flags %}
   flags: true,{% endif %}
@@ -14,3 +15,4 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}
   }
 } as EnumTypeConfig<{{EnumName}}>;
+//#endregion
