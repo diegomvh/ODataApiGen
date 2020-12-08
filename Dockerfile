@@ -1,4 +1,3 @@
-FROM mcr.microsoft.com/dotnet/runtime:3.1 as base
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["ODataApiGen.csproj", "."]
@@ -20,7 +19,10 @@ RUN dotnet build "ODataApiGen.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ODataApiGen.csproj" -c Release -o /app/publish
 
+FROM mcr.microsoft.com/dotnet/runtime:3.1 as base
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish ["/app/publish", "."]
+COPY --from=publish ["/src/Templates", "Templates/"]
+COPY --from=publish ["/src/Static", "Static/"]
 ENTRYPOINT ["dotnet", "ODataApiGen.dll"]
