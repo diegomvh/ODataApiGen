@@ -133,7 +133,7 @@ namespace ODataApiGen.Angular
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.EntityConfigs));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
-            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.ServiceConfigs)));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs)));
             this.Index.AddDependency(this.Config);
             this.Index.AddDependency(this.Module);
         }

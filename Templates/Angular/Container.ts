@@ -8,8 +8,8 @@ import { EntityContainerConfig } from 'angular-odata';
 export const {{Name}} = {
   name: "{{ContainerName}}",
   annotations: {{Annotations}},
-  services: [
-    {% for config in ServiceConfigs %}{{config.Name}}{% unless forloop.last %},
+  entitySets: [
+    {% for config in EntitySetConfigs %}{{config.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   ]
 } as EntityContainerConfig;

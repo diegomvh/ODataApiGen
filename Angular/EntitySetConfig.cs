@@ -25,6 +25,7 @@ namespace ODataApiGen.Angular
             }
         }
         public string EntitySetName => this.Service.EntitySetName;
+        public string EntityType => this.Service.EntityType;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<Import> Imports => GetImportRecords();
@@ -36,6 +37,7 @@ namespace ODataApiGen.Angular
                 Name = this.ImportedName,
                 Type = this.Type,
                 EntitySetName = this.EntitySetName,
+                EntityType = this.EntityType,
                 Service = new {
                     Name = this.Service.Name,
                 }
