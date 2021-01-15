@@ -13,9 +13,10 @@ namespace ODataApiGen.Angular
         public Angular.Service Service { get; private set; }
         public EntitySetConfig(Angular.Service service, ApiOptions options) : base(options) {
             Service = service;
+            this.AddDependency(service);
         }
         public override string FileName => this.Service.FileName + ".config";
-        public override string Name => Utils.ToTypescriptName(this.Service.Name, TypeScriptElement.Class) + "Config";
+        public override string Name => Utils.ToTypescriptName(this.Service.EntitySetName, TypeScriptElement.Class) + "Config";
 
         public string Annotations {
             get {
@@ -23,7 +24,7 @@ namespace ODataApiGen.Angular
                 return JsonConvert.SerializeObject(annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
             }
         }
-        public string ServiceName => this.Service.EntitySetName;
+        public string EntitySetName => this.Service.EntitySetName;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<Import> Imports => GetImportRecords();
@@ -34,7 +35,10 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.ImportedName,
                 Type = this.Type,
-                ServiceName = this.ServiceName
+                EntitySetName = this.EntitySetName,
+                Service = new {
+                    Name = this.Service.Name,
+                }
             };
         }
     }

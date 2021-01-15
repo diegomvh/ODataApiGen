@@ -18,7 +18,7 @@ namespace ODataApiGen.Angular
             this.Service = new Angular.ServiceContainer(this, options);
             foreach (var eset in container.EntitySets)
             {
-                Service service = new Angular.ServiceEntity(eset, options);
+                Service service = new Angular.ServiceEntitySet(eset, options);
                 this.Services.Add(service);
                 var config = new Angular.EntitySetConfig(service, options);
                 this.ServiceConfigs.Add(config);

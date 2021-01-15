@@ -7,10 +7,10 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class ServiceEntity : Service
+    public class ServiceEntitySet : Service
     {
         public Models.EntitySet EdmEntitySet { get; private set; }
-        public ServiceEntity(EntitySet type, ApiOptions options) : base(options) {
+        public ServiceEntitySet(EntitySet type, ApiOptions options) : base(options) {
             EdmEntitySet = type;
         }
         public override IEnumerable<string> ImportTypes
