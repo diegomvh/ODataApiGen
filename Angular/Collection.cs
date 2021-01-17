@@ -6,10 +6,10 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public class Collection : Structured
+    public class Collection : StructuredType
     {
         public Angular.Model Model { get; private set; }
-        public Collection(StructuredType type, Angular.Model model, ApiOptions options) : base(type, options)
+        public Collection(Models.StructuredType type, Angular.Model model, ApiOptions options) : base(type, options)
         {
             this.Model = model;
         }

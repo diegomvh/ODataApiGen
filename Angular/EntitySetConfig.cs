@@ -16,7 +16,7 @@ namespace ODataApiGen.Angular
             this.AddDependency(service);
         }
         public override string FileName => this.Service.FileName + ".config";
-        public override string Name => Utils.ToTypescriptName(this.Service.EntitySetName, TypeScriptElement.Class) + "Config";
+        public override string Name => this.Service.Name + "EntitySetConfig";
 
         public string Annotations {
             get {

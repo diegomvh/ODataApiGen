@@ -9,8 +9,8 @@ namespace ODataApiGen.Angular
     public class EntityProperty : ILiquidizable
     {
         protected Models.Property Value { get; set; }
-        protected Angular.Structured Structured { get; set; }
-        public EntityProperty(ODataApiGen.Models.Property prop, Angular.Structured structured)
+        protected Angular.StructuredType Structured { get; set; }
+        public EntityProperty(ODataApiGen.Models.Property prop, Angular.StructuredType structured)
         {
             this.Structured = structured;
             this.Value = prop;
@@ -54,9 +54,9 @@ namespace ODataApiGen.Angular
         }
         public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
     }
-    public class Entity : Structured 
+    public class Entity : StructuredType 
     {
-        public Entity(StructuredType type, ApiOptions options) : base(type, options) { }
+        public Entity(Models.StructuredType type, ApiOptions options) : base(type, options) { }
 
         public override string FileName => this.EdmStructuredType.Name.ToLower() + 
         ((this.EdmStructuredType is ComplexType) ? ".complex" : ".entity");

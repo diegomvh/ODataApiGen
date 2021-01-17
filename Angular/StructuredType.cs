@@ -9,17 +9,17 @@ using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
-    public abstract class Structured : AngularRenderable, DotLiquid.ILiquidizable
+    public abstract class StructuredType : AngularRenderable, DotLiquid.ILiquidizable
     {
         public Models.EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType; 
-        public StructuredType EdmStructuredType { get; private set; }
-        public Structured(StructuredType type, ApiOptions options) : base(options)
+        public Models.StructuredType EdmStructuredType { get; private set; }
+        public StructuredType(Models.StructuredType type, ApiOptions options) : base(options)
         {
             EdmStructuredType = type;
         }
 
-        public Angular.Structured Base { get; private set; }
-        public void SetBase(Structured b)
+        public Angular.StructuredType Base { get; private set; }
+        public void SetBase(StructuredType b)
         {
             this.Base = b;
         }

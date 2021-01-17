@@ -96,7 +96,8 @@ namespace ODataApiGen.Angular
             this.AddDependency(collection);
         }
         public override string FileName => this.Entity.FileName + ".config";
-        public override string Name => this.Entity.Name + "Config";
+        public override string Name => this.Entity.Name + 
+        ((this.Entity.EdmStructuredType is ComplexType) ? "ComplexConfig" : "EntityConfig");
         public string EntityType => this.Entity.EdmStructuredType.FullName;
         public string EdmEntityName => this.Entity.EdmStructuredType.Name;
         public string EntityName => this.Entity.Name;
@@ -124,7 +125,7 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        public Angular.Structured Base => this.Entity.Base;
+        public Angular.StructuredType Base => this.Entity.Base;
         public object ToLiquid()
         {
             return new {
