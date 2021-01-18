@@ -103,7 +103,7 @@ namespace ODataApiGen.Angular
                 var propertyEntity = binding.PropertyType;
 
                 var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
-                if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity)) {
+                if (bindingEntity.IsBaseOf(propertyEntity)) {
                     var castName = $"as{propertyEntity.Name}";
                     if (!casts.Contains(propertyEntity.FullName)) {
                         // Cast
@@ -122,10 +122,11 @@ namespace ODataApiGen.Angular
 
                 } else {
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+                    var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
                     yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
-    return this.entity(entity).navigationProperty<{entity.ImportedName}>('{binding.Path}');
+    return this.entity(entity).cast<{castEntity.ImportedName}>('{propertyEntity.FullName}').navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
   }}";
                 }
             }
