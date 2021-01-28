@@ -87,7 +87,7 @@ namespace ODataApiGen.Angular
                 }
                 yield return $"public {methodName}({key}): OData{callable.Type}Resource<{args}, {typescriptType}> {{" +
                     $"\n    const resource = this.{baseMethodName}<{args}, {typescriptType}>('{callableFullName}');" +
-          (useset ? $"\n    resource.segment.entitySet('{EntitySetName}');" : "") +
+          (useset ? $"\n    resource.segment.entitySet().path('{EntitySetName}');" : "") +
                      "\n    return resource;\n  }";
             }
         }
@@ -120,13 +120,20 @@ namespace ODataApiGen.Angular
     return this.{castName}().entity(entity).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
   }}";
 
-                } else {
+                } else if (bindingEntity != propertyEntity) {
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
                     yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
     return this.entity(entity).cast<{castEntity.ImportedName}>('{propertyEntity.FullName}').navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
+  }}";
+                } else {
+                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+
+                    // Navigation
+                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
+    return this.entity(entity).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
   }}";
                 }
             }

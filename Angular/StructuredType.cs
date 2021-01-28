@@ -109,7 +109,7 @@ namespace ODataApiGen.Angular
                         $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}): Observable<{callableReturnType}> {{" +
                     $"\n    var res = this._{callable.Type.ToLower()}<{types}, {typescriptType}>('{callableFullName}');" +
-                    (useset ? $"\n    res.segment.entitySet('{this.EntitySetName}');" : "") +
+                    (useset ? $"\n    res.segment.entitySet().path('{this.EntitySetName}');" : "") +
                     (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
                     $"\n    return res.call({values}, '{responseType}', options) as Observable<{callableReturnType}>;" +
                     "\n  }";
@@ -132,19 +132,29 @@ namespace ODataApiGen.Angular
                     if (!casts.Contains(propertyEntity.FullName)) {
                         // Cast
                         entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
-                        yield return $@"public {castName}(): {entity.Name}Model<{entity.Name}> {{
-    return this._cast<any>('{propertyEntity.FullName}').asModel(this.toEntity()) as {entity.Name}Model<{entity.Name}>;
+                        yield return $@"public {castName}() {{
+    return this._cast<any>('{propertyEntity.FullName}').asModel<{entity.Name}Model<{entity.ImportedName}>>(this.toEntity());
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
+                } else if (bindingEntity != propertyEntity) {
+                    var returnType = isCollection ? $"ODataCollection<{entity.ImportedName}, ODataModel<{entity.ImportedName}>>" : $"ODataModel<{entity.ImportedName}>";
+                    var value = isCollection ? $"asCollection<{returnType}>([])" : $"asModel<{returnType}>({{}})";
+                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+                    var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
+
+                    // Navigation
+                    yield return $@"public {methodName}() {{
+    return this._cast<{castEntity.ImportedName}>('{propertyEntity.FullName}').navigationProperty<{entity.ImportedName}>('{binding.PropertyName}').{value};
+  }}";
                 } else {
-                    var returnType = isCollection ? $"ODataCollection<{entity.Name}, ODataModel<{entity.Name}>>" : $"ODataModel<{entity.Name}>";
-                    var value = isCollection ? "asCollection([])" : "asModel({})";
+                    var returnType = isCollection ? $"ODataCollection<{entity.ImportedName}, ODataModel<{entity.ImportedName}>>" : $"ODataModel<{entity.ImportedName}>";
+                    var value = isCollection ? $"asCollection<{returnType}>([])" : $"asModel<{returnType}>({{}})";
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
 
                     // Navigation
                     yield return $@"public {methodName}() {{
-    return this._navigationProperty<{entity.Name}>('{binding.Path}').{value} as {returnType};
+    return this._navigationProperty<{entity.ImportedName}>('{binding.PropertyName}').{value};
   }}";
                 }
             }

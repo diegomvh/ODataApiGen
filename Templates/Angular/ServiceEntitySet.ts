@@ -31,12 +31,12 @@ export class {{Name}} extends ODataEntitySetService<{{EntityName}}> {
 
   {% if HasModel %}//#region ODataApi Model
   {{ModelName | methodcase}}(attrs?: Partial<{{EntityName}}>): {{ModelName}}<{{EntityName}}> {
-    return this.entity().asModel(attrs || {}) as {{ModelName}}<{{EntityName}}>;
+    return this.entity().asModel<{{ModelName}}<{{EntityName}}>>(attrs || {});
   }
   //#endregion{% endif %}
   {% if HasCollection %}//#region ODataApi Collection
   {{CollectionName | methodcase}}(models?: Partial<{{EntityName}}>[]): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
-    return this.entities().asCollection(models || []) as {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>;
+    return this.entities().asCollection<{{ModelName}}<{{EntityName}}>, {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>>(models || []);
   }
   //#endregion{% endif %}
   //#region ODataApi Actions
