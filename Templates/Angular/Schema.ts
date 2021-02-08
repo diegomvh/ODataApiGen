@@ -14,11 +14,11 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}],
   callables: [{% for config in CallablesConfigs %}{
     name: '{{config.Name}}',{% if config.HasPath %}
-    path: "{{config.Path}}",{% endif %}
+    entitySetPath: "{{config.EntitySetPath}}",{% endif %}
     bound: {{config.Bound}},
     composable: {{config.Composable}},{% if config.HasParameters %}
-    parameters: { {{ config.Parameters | parameters }} },{% endif %}{% if config.Return != null %}
-    return: "{{config.Return}}"{% endif %}
+    parameters: { {{ config.Parameters | parameters }} },{% endif %}{% if config.ReturnType != null %}
+    return: { type: "{{config.ReturnType}}", collection: {{config.ReturnsCollection}} }{% endif %}
   }{% unless forloop.last %}, {% endunless %}{% endfor %}],
   containers: [{% for container in Containers %}{{container.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}]

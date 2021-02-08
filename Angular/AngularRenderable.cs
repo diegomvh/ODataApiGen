@@ -26,9 +26,9 @@ namespace ODataApiGen.Angular
             {
                 uriList.Add(callable.ReturnType);
             }
-            if (!string.IsNullOrWhiteSpace(callable.BindingParameter))
+            if (!string.IsNullOrWhiteSpace(callable.BindingParameter?.Type))
             {
-                uriList.Add(callable.BindingParameter);
+                uriList.Add(callable.BindingParameter.Type);
             }
             foreach (var param in callable.Parameters)
             {

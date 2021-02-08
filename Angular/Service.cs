@@ -40,7 +40,7 @@ namespace ODataApiGen.Angular
         public abstract string EntityType {get;}
         public abstract IEnumerable<Models.Annotation> Annotations {get;}
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
-        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables, bool useset = false, bool usename = false)
+        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)
@@ -64,7 +64,7 @@ namespace ODataApiGen.Angular
                             optionals.Add(param.Name);
                     }
                 }
-                parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
+                parameters = parameters.Where(p => !p.IsBinding).GroupBy(p => p.Name).Select(g => g.First()).ToList();
 
                 var baseMethodName = !callable.IsBound ?
                     $"client.{callable.Type.ToLower()}" : 
@@ -86,9 +86,8 @@ namespace ODataApiGen.Angular
                     args = $"{{{String.Join(", ", arguments)}}}";
                 }
                 yield return $"public {methodName}({key}): OData{callable.Type}Resource<{args}, {typescriptType}> {{" +
-                    $"\n    const resource = this.{baseMethodName}<{args}, {typescriptType}>('{callableFullName}');" +
-          (useset ? $"\n    resource.segment.entitySet().path('{EntitySetName}');" : "") +
-                     "\n    return resource;\n  }";
+                    $"\n    return this.{baseMethodName}<{args}, {typescriptType}>('{callableFullName}');" +
+                     "\n  }";
             }
         }
 

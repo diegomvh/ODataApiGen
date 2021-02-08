@@ -40,10 +40,10 @@ namespace ODataApiGen.Models
             throw new Exception($"'{entity.Name}' has not navigation property for {name}");
         }
         public void AddActions(IEnumerable<Action> actions) {
-            Actions = actions.Where(a => a.IsBound && this.IsTypeOf(a.BindingParameter));
+            Actions = actions.Where(a => a.IsBound && a.BindingParameter != null && this.IsTypeOf(a.BindingParameter.Type));
         }
         public void AddFunctions(IEnumerable<Function> functions) {
-            Functions = functions.Where(f => f.IsBound && this.IsTypeOf(f.BindingParameter));
+            Functions = functions.Where(f => f.IsBound && f.BindingParameter != null && this.IsTypeOf(f.BindingParameter.Type));
         }
         public void AddAssociations(IEnumerable<Association> associations) {
             foreach (var nav in this.NavigationProperties) {

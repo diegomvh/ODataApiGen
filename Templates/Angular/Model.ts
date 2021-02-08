@@ -12,6 +12,8 @@ export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{
   //#region ODataApi Properties
   {% for property in Properties %}{{property.Name}}: {{property.Type}};
   {% endfor %}//#endregion
+  //#region ODataApi Setters
+  {% for property in SetterProperties %}{{property.Setter}}{% endfor %}//#endregion
   //#region ODataApi Actions
   {% for action in Actions %}{{action}}
   {% endfor %}//#endregion

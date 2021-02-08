@@ -50,12 +50,13 @@ namespace ODataApiGen.Angular
         return new {
             Name = this.Name,
             HasPath = !String.IsNullOrWhiteSpace(this.Callable.EntitySetPath),
-            Path = this.Callable.EntitySetPath,
+            EntitySetPath = this.Callable.EntitySetPath,
             HasParameters = this.Parameters.Count() > 0,
             Parameters = this.Parameters,
             Bound = this.Callable.IsBound,
             Composable = this.Callable.IsComposable,
-            Return = this.Callable.ReturnType
+            ReturnType = this.Callable.ReturnType,
+            ReturnsCollection = this.Callable.ReturnsCollection
         };
     }
   }

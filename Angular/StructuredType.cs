@@ -52,7 +52,7 @@ namespace ODataApiGen.Angular
         public bool OpenType => this.EdmStructuredType.OpenType; 
         public override IEnumerable<Import> Imports => GetImportRecords();
 
-        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables, bool useset = true, bool usename = false)
+        protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)
@@ -81,7 +81,7 @@ namespace ODataApiGen.Angular
                             optionals.Add(param.Name);
                     }
                 }
-                parameters = parameters.GroupBy(p => p.Name).Select(g => g.First()).ToList();
+                parameters = parameters.Where(p => !p.IsBinding).GroupBy(p => p.Name).Select(g => g.First()).ToList();
 
                 var arguments = parameters.Select(p =>
                     $"{p.Name}" + 
@@ -108,10 +108,8 @@ namespace ODataApiGen.Angular
                         $"collection" :
                         $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}): Observable<{callableReturnType}> {{" +
-                    $"\n    var res = this._{callable.Type.ToLower()}<{types}, {typescriptType}>('{callableFullName}');" +
-                    (useset ? $"\n    res.segment.entitySet().path('{this.EntitySetName}');" : "") +
-                    (usename ? $"\n    options = Object.assign({{config: '{this.Options.Name}'}}, options || {{}});" : "") +
-                    $"\n    return res.call({values}, '{responseType}', options) as Observable<{callableReturnType}>;" +
+                    $"\n    return this._{callable.Type.ToLower()}<{types}, {typescriptType}>('{callableFullName}')" +
+                    $"\n      .call({values}, '{responseType}', options) as Observable<{callableReturnType}>;" +
                     "\n  }";
             }
         }

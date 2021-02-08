@@ -16,6 +16,7 @@ namespace ODataApiGen.Models
         }
         public string Name { get; set; }
         public bool IsEdmType => !System.String.IsNullOrWhiteSpace(Type) && Type.StartsWith("Edm.");
+        public bool IsBinding => this.Name == "bindingParameter";
         public string Type { get; set; }
         public bool Nullable { get; set; }
         public bool IsCollection { get; set; }

@@ -16,7 +16,7 @@ namespace ODataApiGen.Models
             IsComposable = xElement.Attribute("IsComposable")?.Value == "true";
             EntitySetPath = xElement.Attribute("EntitySetPath")?.Value;
 
-            Parameters = xElement.Descendants().Where(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value != "bindingParameter")
+            Parameters = xElement.Descendants().Where(a => a.Name.LocalName == "Parameter")
                 .Select(paramElement => new Parameter(paramElement, this)).ToList();
 
             ReturnType = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReturnType")?.Attribute("Type")?.Value;
@@ -26,6 +26,7 @@ namespace ODataApiGen.Models
                 ReturnType = ReturnType.Substring(11, ReturnType.Length - 12);
             }
 
+            /*
             BindingParameter = xElement.Descendants()
                 .FirstOrDefault(a => a.Name.LocalName == "Parameter" && a.Attribute("Name").Value == "bindingParameter")?
                 .Attribute("Type")?.Value;
@@ -34,6 +35,7 @@ namespace ODataApiGen.Models
                 IsCollection = true;
                 BindingParameter = BindingParameter.Substring(11, BindingParameter.Length - 12);
             }
+            */
         }
         public string Name { get; }
         public string Namespace => this.Schema.Namespace; 
@@ -41,10 +43,10 @@ namespace ODataApiGen.Models
         public string Type { get; protected set; }
         public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }
         public string ReturnType { get; }
-        public string BindingParameter { get; }
+        public Parameter BindingParameter => this.Parameters.FirstOrDefault(p => p.Name == "bindingParameter");
         public IEnumerable<Parameter> Parameters { get; }
         public string EntitySetPath { get; }
-        public bool IsCollection { get; }
+        public bool IsCollection => this.BindingParameter != null ? this.BindingParameter.IsCollection : false;
         public bool IsBound { get; }
         public bool IsComposable { get; }
         public bool ReturnsCollection { get; }

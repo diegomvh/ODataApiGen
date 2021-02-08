@@ -63,13 +63,26 @@ namespace ODataApiGen.Angular
             }
             return "any";
         }}
+        public string Setter(){
+            var pkg = Program.Package as Angular.Package;
+            var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
+            var setterName = $"set{name}";
+            var entity = pkg.FindEntity(this.Value.Type);
+            // setter
+            return $@"public {setterName}(model: {this.Type} | null, options?: HttpOptions) {{
+    return this._setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
+  }}";
+        }
         public object ToLiquid() {
             return new {
                 Name = this.Name,
-                Type = this.Type
+                Type = this.Type,
+                Setter = this.NeedSetter ? this.Setter() : ""
             };
         }
         public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
+        public bool NeedSetter => 
+                this.Value is NavigationProperty && !this.Value.IsCollection;
     }
     public class Model : StructuredType 
     {
@@ -122,7 +135,7 @@ namespace ODataApiGen.Angular
             get {
                 if (this.EdmEntityType != null) {
                     var modelActions = this.EdmEntityType.Actions.Where(a => !a.IsCollection);
-                    return modelActions.Count() > 0 ? this.RenderCallables(modelActions, useset: true) : Enumerable.Empty<string>();
+                    return modelActions.Count() > 0 ? this.RenderCallables(modelActions) : Enumerable.Empty<string>();
                 }
                 return Enumerable.Empty<string>();
             }
@@ -131,7 +144,7 @@ namespace ODataApiGen.Angular
             get {
                 if (this.EdmEntityType != null) {
                     var modelFunctions = this.EdmEntityType.Functions.Where(a => !a.IsCollection);
-                    return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions, useset: true) : Enumerable.Empty<string>();
+                    return modelFunctions.Count() > 0 ? this.RenderCallables(modelFunctions) : Enumerable.Empty<string>();
                 }
                 return Enumerable.Empty<string>();
             }
@@ -156,6 +169,7 @@ namespace ODataApiGen.Angular
             }
         }
         public IEnumerable<Angular.ModelProperty> GeoProperties => this.Properties.Where(p => p.IsGeo);
+        public IEnumerable<Angular.ModelProperty> SetterProperties => this.Properties.Where(p => p.NeedSetter);
         public bool HasGeoFields => this.Options.GeoJson && this.GeoProperties.Count() > 0;
         public override object ToLiquid()
         {
