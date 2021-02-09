@@ -65,11 +65,13 @@ namespace ODataApiGen.Angular
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
                 var typescriptType = this.ToTypescriptType(callable.ReturnType);
-                var callableReturnType = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
-                        $"{typescriptType}" :
-                    callable.ReturnsCollection ?
-                        $"{typescriptType}Collection<{typescriptType}, {typescriptType}Model<{typescriptType}>>" :
-                        $"{typescriptType}Model<{typescriptType}>" ;
+                var callableReturnType = String.IsNullOrEmpty(callable.ReturnType)?
+                    "" :
+                callable.IsEdmReturnType ?
+                    $" as Observable<{typescriptType}>" :
+                callable.ReturnsCollection ?
+                    $" as Observable<{typescriptType}Collection<{typescriptType}, {typescriptType}Model<{typescriptType}>>>" :
+                    $" as Observable<{typescriptType}Model<{typescriptType}>>" ;
 
                 var parameters = new List<Models.Parameter>();
                 var optionals = new List<string>();
@@ -102,14 +104,15 @@ namespace ODataApiGen.Angular
                     values = $"{{{String.Join(", ", parameters.Select(p => p.Name))}}}";
                 }
 
-                var responseType = (callable.IsEdmReturnType || String.IsNullOrEmpty(callable.ReturnType)) ?
-                        $"property" :
-                    callable.ReturnsCollection ?
-                        $"collection" :
-                        $"model";
-                yield return $"public {methodName}({String.Join(", ", args)}): Observable<{callableReturnType}> {{" +
-                    $"\n    return this._{callable.Type.ToLower()}<{types}, {typescriptType}>('{callableFullName}')" +
-                    $"\n      .call({values}, '{responseType}', options) as Observable<{callableReturnType}>;" +
+                var responseType = String.IsNullOrEmpty(callable.ReturnType) ? 
+                    "none" : 
+                callable.IsEdmReturnType ?
+                    $"property" :
+                callable.ReturnsCollection ?
+                    $"collection" :
+                    $"model";
+                yield return $"public {methodName}({String.Join(", ", args)}) {{" +
+                    $"\n    return this._call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', options){callableReturnType};" +
                     "\n  }";
             }
         }

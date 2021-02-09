@@ -53,6 +53,13 @@ namespace ODataApiGen.Angular
                 var callableFullName = $"{callable.Namespace}.{callable.Name}";
 
                 var typescriptType = this.ToTypescriptType(callable.ReturnType);
+                var callableReturnType = String.IsNullOrEmpty(callable.ReturnType)?
+                    "" :
+                callable.IsEdmReturnType ?
+                    $" as Observable<{typescriptType} | null>" :
+                callable.ReturnsCollection ?
+                    $" as Observable<{typescriptType}[] | null>" :
+                    $" as Observable<{typescriptType} | null>" ;
 
                 var parameters = new List<Models.Parameter>();
                 var optionals = new List<string>();
@@ -70,10 +77,11 @@ namespace ODataApiGen.Angular
                     $"client.{callable.Type.ToLower()}" : 
                     callable.IsCollection
                     ? $"entities().{callable.Type.ToLower()}"
-                    : $"entity(entity).{callable.Type.ToLower()}";
+                    : $"entity(key).{callable.Type.ToLower()}";
 
-                var key = (callable.IsBound && !callable.IsCollection) ?
-                    $"entity: EntityKey<{EntityName}>" :  "";
+                var args = new List<string>();
+                if (callable.IsBound && !callable.IsCollection)
+                    args.Add($"key: EntityKey<{EntityName}>");
 
                 var arguments = parameters.Select(p =>
                     $"{p.Name}" + 
@@ -81,12 +89,30 @@ namespace ODataApiGen.Angular
                     $": {this.ToTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : ""));
 
-                var args = "null";
+                args.AddRange(arguments);
+                args.Add("options?: HttpOptions");
+
+                var type = "null";
                 if (parameters.Count() > 0) {
-                    args = $"{{{String.Join(", ", arguments)}}}";
+                    type = $"{{{String.Join(", ", arguments)}}}";
                 }
-                yield return $"public {methodName}({key}): OData{callable.Type}Resource<{args}, {typescriptType}> {{" +
-                    $"\n    return this.{baseMethodName}<{args}, {typescriptType}>('{callableFullName}');" +
+
+                var values = "null";
+                if (parameters.Count() > 0) {
+                    values = $"{{{String.Join(", ", parameters.Select(p => p.Name))}}}";
+                }
+
+                var responseType = String.IsNullOrEmpty(callable.ReturnType) ? 
+                    "exec" : 
+                callable.IsEdmReturnType ?
+                    $"execProperty" :
+                callable.ReturnsCollection ?
+                    $"execEntities" :
+                    $"execEntity";
+
+                yield return $"public {methodName}({String.Join(", ", args)}) {{" +
+                    $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}')" +
+                    $"\n      .{responseType}({values}, options){callableReturnType};" +
                      "\n  }";
             }
         }
