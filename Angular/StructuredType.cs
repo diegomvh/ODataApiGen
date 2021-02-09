@@ -131,7 +131,7 @@ namespace ODataApiGen.Angular
                         // Cast
                         entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
                         yield return $@"public {castName}() {{
-    return this._cast<any>('{propertyEntity.FullName}').asModel<{entity.Name}Model<{entity.ImportedName}>>(this.toEntity());
+    return this._asDerived<{entity.ImportedName}>('{propertyEntity.FullName}') as {entity.Name}Model<{entity.ImportedName}>;
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
