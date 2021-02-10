@@ -59,7 +59,7 @@ namespace ODataApiGen.Angular
         public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmEntitySet.Actions.Union(this.EdmEntityType.Actions));
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.EdmEntityType.Functions));
-        public IEnumerable<string> Navigations => this.RenderReferences(this.EdmEntitySet.NavigationPropertyBindings);
+        public IEnumerable<string> Navigations => this.RenderNavigationPropertyBindings(this.EdmEntitySet.NavigationPropertyBindings);
         public override IEnumerable<Models.Annotation> Annotations => this.EdmEntitySet.Annotations; 
     }
 }

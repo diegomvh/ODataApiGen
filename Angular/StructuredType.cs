@@ -116,7 +116,7 @@ namespace ODataApiGen.Angular
                     "\n  }";
             }
         }
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationPropertyBinding> bindings)
+        protected IEnumerable<string> RenderNavigationPropertyBindings(IEnumerable<Models.NavigationPropertyBinding> bindings)
         {
             var casts = new List<string>();
             foreach (var binding in bindings)
@@ -138,27 +138,18 @@ namespace ODataApiGen.Angular
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
-                } else if (bindingEntity != propertyEntity) {
+                } else {
+                    //TODO collection and model name
                     var returnType = isCollection ? $"ODataCollection<{entity.ImportedName}, ODataModel<{entity.ImportedName}>>" : $"ODataModel<{entity.ImportedName}>";
-                    var value = isCollection ? $"asCollection<{returnType}>([])" : $"asModel<{returnType}>({{}})";
+                    var responseType = isCollection ? $"collection" : $"model";
                     var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
                     yield return $@"public {methodName}() {{
-    return this._cast<{castEntity.ImportedName}>('{propertyEntity.FullName}').navigationProperty<{entity.ImportedName}>('{binding.PropertyName}').{value};
+    return this._getBinding<{entity.ImportedName}>('{binding.Path}', '{responseType}') as Observable<{returnType}>;
   }}";
-                } else {
-                    var returnType = isCollection ? $"ODataCollection<{entity.ImportedName}, ODataModel<{entity.ImportedName}>>" : $"ODataModel<{entity.ImportedName}>";
-                    var value = isCollection ? $"asCollection<{returnType}>([])" : $"asModel<{returnType}>({{}})";
-                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
-
-                    // Navigation
-                    yield return $@"public {methodName}() {{
-    return this._navigationProperty<{entity.ImportedName}>('{binding.PropertyName}').{value};
-  }}";
-                }
-            }
+                }             }
         }
         public abstract object ToLiquid();
     }

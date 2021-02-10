@@ -117,7 +117,7 @@ namespace ODataApiGen.Angular
             }
         }
 
-        protected IEnumerable<string> RenderReferences(IEnumerable<Models.NavigationPropertyBinding> bindings)
+        protected IEnumerable<string> RenderNavigationPropertyBindings(IEnumerable<Models.NavigationPropertyBinding> bindings)
         {
             var casts = new List<string>();
             foreach (var binding in bindings)

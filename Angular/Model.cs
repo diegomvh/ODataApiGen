@@ -65,9 +65,12 @@ namespace ODataApiGen.Angular
         }}
         public string Setter(){
             var pkg = Program.Package as Angular.Package;
+            var nav = this.Value as NavigationProperty;
             var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
             var setterName = $"set{name}";
-            var entity = pkg.FindEntity(this.Value.Type);
+            var entity = (this.Value.Type != null) ? 
+                pkg.FindEntity(this.Value.Type) :
+                pkg.FindEntity(nav.ToEntityType);
             // setter
             return $@"public {setterName}(model: {this.Type} | null, options?: HttpOptions) {{
     return this._setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
@@ -82,7 +85,7 @@ namespace ODataApiGen.Angular
         }
         public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
         public bool NeedSetter => 
-                this.Value is NavigationProperty && !this.Value.IsCollection;
+                this.Value is NavigationProperty && !this.Value.IsCollection && !(this.Value as NavigationProperty).Many;
     }
     public class Model : StructuredType 
     {
@@ -163,7 +166,7 @@ namespace ODataApiGen.Angular
                     }
                     var bindings = service.NavigationPropertyBindings
                         .Where(binding => properties.All(n => n.Name != binding.NavigationProperty.Name));
-                    return this.RenderReferences(bindings);
+                    return this.RenderNavigationPropertyBindings(bindings);
                 }
                 return Enumerable.Empty<string>();
             }
