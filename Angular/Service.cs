@@ -103,12 +103,12 @@ namespace ODataApiGen.Angular
                 }
 
                 var responseType = String.IsNullOrEmpty(callable.ReturnType) ? 
-                    "exec" : 
+                    "call" : 
                 callable.IsEdmReturnType ?
-                    $"execProperty" :
+                    $"callProperty" :
                 callable.ReturnsCollection ?
-                    $"execEntities" :
-                    $"execEntity";
+                    $"callEntities" :
+                    $"callEntity";
 
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
                     $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}')" +
