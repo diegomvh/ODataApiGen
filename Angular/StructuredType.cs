@@ -112,7 +112,7 @@ namespace ODataApiGen.Angular
                     $"collection" :
                     $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this._call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', options){callableReturnType};" +
+                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', options){callableReturnType};" +
                     "\n  }";
             }
         }
@@ -134,7 +134,7 @@ namespace ODataApiGen.Angular
                         // Cast
                         entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
                         yield return $@"public {castName}() {{
-    return this._asDerived<{entity.ImportedName}>('{propertyEntity.FullName}') as {entity.Name}Model<{entity.ImportedName}>;
+    return this.asDerived<{entity.ImportedName}>('{propertyEntity.FullName}') as {entity.Name}Model<{entity.ImportedName}>;
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
@@ -147,7 +147,7 @@ namespace ODataApiGen.Angular
 
                     // Navigation
                     yield return $@"public {methodName}() {{
-    return this._getBinding<{entity.ImportedName}>('{binding.Path}', '{responseType}') as Observable<{returnType}>;
+    return this.getBinding<{entity.ImportedName}>('{binding.Path}', '{responseType}') as Observable<{returnType}>;
   }}";
                 }             }
         }

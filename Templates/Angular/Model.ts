@@ -1,4 +1,4 @@
-import { ODataModel, ODataCollection, HttpOptions, Duration } from 'angular-odata';
+import { ODataModel, ODataModelField, ODataCollection, HttpOptions, Duration } from 'angular-odata';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -10,7 +10,8 @@ import { map } from 'rxjs/operators';
 
 export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{Base.Name}}<E>{% else %}ODataModel<E>{% endif %} {
   //#region ODataApi Properties
-  {% for property in Properties %}{{property.Name}}: {{property.Type}};
+  {% for property in Properties %}@ODataModelField
+  {{property.Name}}: {{property.Type}};
   {% endfor %}//#endregion
   //#region ODataApi Setters
   {% for property in SetterProperties %}{{property.Setter}}{% endfor %}//#endregion

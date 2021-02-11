@@ -73,7 +73,7 @@ namespace ODataApiGen.Angular
                 pkg.FindEntity(nav.ToEntityType);
             // setter
             return $@"public {setterName}(model: {this.Type} | null, options?: HttpOptions) {{
-    return this._setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
+    return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
   }}";
         }
         public object ToLiquid() {
