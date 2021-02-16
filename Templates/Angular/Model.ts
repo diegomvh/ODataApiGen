@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 
 export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{Base.Name}}<E>{% else %}ODataModel<E>{% endif %} {
   //#region ODataApi Properties
-  {% for property in Properties %}@ODataModelField
+  {% for property in Properties %}@ODataModelField()
   {{property.Name}}: {{property.Type}};
   {% endfor %}//#endregion
   //#region ODataApi Setters
