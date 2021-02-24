@@ -92,7 +92,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 var args = new List<string>(arguments);
-                args.Add("options?: ODataCallableHttpOptions");
+                args.Add($"options?: ODataCallableHttpOptions<{typescriptType}>");
 
                 var types = "null";
                 if (parameters.Count() > 0) {
