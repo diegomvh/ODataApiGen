@@ -90,7 +90,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 args.AddRange(arguments);
-                args.Add("options?: HttpOptions");
+                args.Add("options?: HttpCallableOptions");
 
                 var type = "null";
                 if (parameters.Count() > 0) {
