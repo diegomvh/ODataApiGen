@@ -90,7 +90,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 args.AddRange(arguments);
-                args.Add("options?: HttpCallableOptions");
+                args.Add($"options?: HttpCallableOptions<{typescriptType}>");
 
                 var type = "null";
                 if (parameters.Count() > 0) {
@@ -103,16 +103,18 @@ namespace ODataApiGen.Angular
                 }
 
                 var responseType = String.IsNullOrEmpty(callable.ReturnType) ? 
-                    "call" : 
+                    "none" : 
                 callable.IsEdmReturnType ?
-                    $"callProperty" :
+                    $"property" :
                 callable.ReturnsCollection ?
-                    $"callEntities" :
-                    $"callEntity";
+                    $"entities" :
+                    $"entity";
 
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}')" +
-                    $"\n      .{responseType}({values}, options){callableReturnType};" +
+                    $"\n    return this.call<{type}, {typescriptType}>(" +
+                    $"\n      {values}, " +
+                    $"\n      this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}'), " +
+                    $"\n      '{responseType}', options){callableReturnType};" +
                      "\n  }";
             }
         }
