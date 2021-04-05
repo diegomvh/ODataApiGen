@@ -16,7 +16,8 @@ import {
   ODataActionResource,
   ODataFunctionResource,
   HttpOptions,
-  HttpCallableOptions
+  HttpCallableOptions,
+  ODataBaseService
 } from 'angular-odata';
 
 //#region ODataApi Imports
@@ -24,9 +25,11 @@ import {
 {% endfor %}//#endregion
 
 @Injectable()
-export class {{Name}} {
- 
-  constructor(protected client: ODataClient) { }
+export class {{Name}} extends ODataBaseService {
+
+  constructor(protected client: ODataClient) {
+    super(client, '{{EntitySetName}}', '{{ApiName}}');
+  }
 
   //#region ODataApi Actions
   {% for action in Actions %}{{action}}
