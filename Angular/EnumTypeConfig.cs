@@ -51,11 +51,8 @@ namespace ODataApiGen.Angular
         public string EdmEnumName => this.Enum.EdmEnumType.Name;
         public string EnumName => this.Enum.Name;
 
-        public string Annotations {
-            get {
-                return JsonConvert.SerializeObject(this.Enum.EdmEnumType.Annotations.Select(annot => annot.ToDictionary()));
-            }
-        }
+        public bool HasAnnotations => this.Enum.EdmEnumType.Annotations.Count() > 0; 
+        public string Annotations => JsonConvert.SerializeObject(this.Enum.EdmEnumType.Annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
         public IEnumerable<Angular.EnumMemberConfig> Members {
             get {
                 return this.Enum.EdmEnumType.Members.Select(member => new EnumMemberConfig(member, this));

@@ -6,8 +6,8 @@ import { EntityContainerConfig } from 'angular-odata';
 
 //#region ODataApi EntityContainerConfig
 export const {{Name}} = {
-  name: "{{ContainerName}}",
-  annotations: {{Annotations}},
+  name: "{{ContainerName}}",{% if HasAnnotations %}
+  annotations: {{Annotations}},{% endif %}
   entitySets: [
     {% for config in EntitySetConfigs %}{{config.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}

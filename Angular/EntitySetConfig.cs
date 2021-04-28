@@ -17,13 +17,8 @@ namespace ODataApiGen.Angular
         }
         public override string FileName => this.Service.FileName + ".config";
         public override string Name => this.Service.Name + "EntitySetConfig";
-
-        public string Annotations {
-            get {
-                var annotations = this.Service.Annotations;
-                return JsonConvert.SerializeObject(annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
-            }
-        }
+        public bool HasAnnotations => this.Service.Annotations.Count() > 0; 
+        public string Annotations => JsonConvert.SerializeObject(this.Service.Annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
         public string EntitySetName => this.Service.EntitySetName;
         public string EntityType => this.Service.EntityType;
         // Imports

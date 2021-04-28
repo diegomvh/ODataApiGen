@@ -9,13 +9,35 @@ using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
+    public class EntityKeyConfig : ILiquidizable
+    {
+        protected Models.PropertyRef Value { get; set; }
+        protected Angular.StructuredTypeConfig Config { get; set; }
+        public EntityKeyConfig(Models.PropertyRef property, Angular.StructuredTypeConfig config) {
+            this.Value = property;
+            this.Config = config;
+        }
+
+        public override string ToString()
+        {
+            var values = new Dictionary<string, string>();
+            values.Add("ref", $"'{Value.Name}'");
+            if (!String.IsNullOrWhiteSpace(Value.Alias)) {
+                values.Add("alias", $"'{Value.Alias}'");
+            }
+            return $"{{{String.Join(", ", values.Select(p => $"{p.Key}: {p.Value}"))}}}";
+        }
+        public object ToLiquid() {
+            return new {
+                Value = this.ToString(),
+            };
+        }
+    }
     public class EntityFieldConfig : ILiquidizable
     {
         protected Models.Property Value { get; set; }
-        protected IEnumerable<PropertyRef> Keys { get; set; }
         protected Angular.StructuredTypeConfig Config { get; set; }
-        public EntityFieldConfig(Models.Property property, IEnumerable<PropertyRef> keys, Angular.StructuredTypeConfig config) {
-            this.Keys = keys;
+        public EntityFieldConfig(Models.Property property, Angular.StructuredTypeConfig config) {
             this.Value = property;
             this.Config = config;
         }
@@ -33,14 +55,6 @@ namespace ODataApiGen.Angular
                 else if (this.Value is NavigationProperty) {
                     var nav = this.Value as NavigationProperty;
                     values.Add("type", $"'{nav.ToEntityType}'");
-                }
-                var key = this.Keys.FirstOrDefault(k => k.Name == this.Value.Name);
-                if (key != null) {
-                    values.Add("key", "true");
-                    values.Add("ref", $"'{this.Name}'");
-                    if (!String.IsNullOrWhiteSpace(key.Alias)) {
-                        values.Add("alias", $"'{key.Alias}'");
-                    }
                 }
                 if (!(this.Value is NavigationProperty) && !this.Value.Nullable)
                     values.Add("nullable", "false");
@@ -103,19 +117,21 @@ namespace ODataApiGen.Angular
         public string EntityName => this.Entity.Name;
         public bool OpenType => this.Entity.OpenType; 
 
-        public string Annotations {
+        public bool HasAnnotations => this.Entity.EdmStructuredType.Annotations.Count() > 0; 
+        public string Annotations => JsonConvert.SerializeObject(this.Entity.EdmStructuredType.Annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
+        public bool HasKey => this.Entity.EdmStructuredType is EntityType && (this.Entity.EdmStructuredType as EntityType).Keys.Count() > 0; 
+        public IEnumerable<Angular.EntityKeyConfig> Keys {
             get {
-                return JsonConvert.SerializeObject(this.Entity.EdmStructuredType.Annotations.Select(annot => annot.ToDictionary()));
+                var keys = (this.Entity.EdmStructuredType is EntityType) ? (this.Entity.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
+                return keys.Select(prop => new EntityKeyConfig(prop, this));
             }
         }
-
         public IEnumerable<Angular.EntityFieldConfig> Properties {
             get {
                 var props = this.Entity.EdmStructuredType.Properties.ToList();
                 if (this.Entity.EdmStructuredType is EntityType) 
                     props.AddRange((this.Entity.EdmStructuredType as EntityType).NavigationProperties);
-                var keys = (this.Entity.EdmStructuredType is EntityType) ? (this.Entity.EdmStructuredType as EntityType).Keys : new List<PropertyRef>();
-                return props.Select(prop => new EntityFieldConfig(prop, keys, this));
+                return props.Select(prop => new EntityFieldConfig(prop, this));
             }
         }
 

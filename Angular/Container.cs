@@ -31,16 +31,12 @@ namespace ODataApiGen.Angular
                 this.EntitySetConfigs.Add(config);
             }
         }
-        public string Annotations {
-            get {
-                return JsonConvert.SerializeObject(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
-            }
-        }
+        public bool HasAnnotations => this.EdmEntityContainer.Annotations.Count() > 0; 
+        public string Annotations => JsonConvert.SerializeObject(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), Formatting.Indented);
         public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
         public override string Name => Utils.ToTypescriptName(this.EdmEntityContainer.Name, TypeScriptElement.Class) + "Container";
         public string ContainerType => this.EdmEntityContainer.FullName;
         public string ContainerName => this.EdmEntityContainer.Name;
-        public string ApiName => this.EdmEntityContainer.Name;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.ContainerType };
         public override IEnumerable<Import> Imports => GetImportRecords();

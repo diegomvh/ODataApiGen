@@ -60,10 +60,5 @@ namespace ODataApiGen.Angular
         public string ServiceType => this.EdmSingleton.FullName;
         public IEnumerable<string> Actions =>  this.RenderCallables(this.EdmSingleton.Actions);
         public IEnumerable<string> Functions => this.RenderCallables(this.EdmSingleton.Functions);
-        public string EntitySetAnnotations {
-            get {
-                return JsonConvert.SerializeObject(this.EdmSingleton.Annotations.Select(annot => annot.ToDictionary()));
-            }
-        }
     }
 }

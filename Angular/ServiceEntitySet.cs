@@ -45,11 +45,6 @@ namespace ODataApiGen.Angular
             }
         }
 
-        public string EntitySetAnnotations {
-            get {
-                return JsonConvert.SerializeObject(this.EdmEntitySet.Annotations.Select(annot => annot.ToDictionary()));
-            }
-        }
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string EntitySetName => this.EdmEntitySet.Name;
         public override string EntityType => this.EdmEntitySet.EntityType;
