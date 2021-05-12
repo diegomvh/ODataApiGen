@@ -7,11 +7,11 @@ using System;
 
 namespace ODataApiGen.Angular
 {
-    public class ModelProperty : ILiquidizable
+    public class ModelField : ILiquidizable
     {
         protected Models.Property Value { get; set; }
         protected Angular.StructuredType Structured { get; set; }
-        public ModelProperty(ODataApiGen.Models.Property prop, Angular.StructuredType structured)
+        public ModelField(ODataApiGen.Models.Property prop, Angular.StructuredType structured)
         {
             this.Value = prop;
             this.Structured = structured;
@@ -126,12 +126,12 @@ namespace ODataApiGen.Angular
                 return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
             }
         }
-        public IEnumerable<Angular.ModelProperty> Properties {
+        public IEnumerable<Angular.ModelField> Fields {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
                 if (this.EdmStructuredType is EntityType) 
                     props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
-                return props.Select(prop => new Angular.ModelProperty(prop, this));
+                return props.Select(prop => new Angular.ModelField(prop, this));
             }
         } 
         public IEnumerable<string> Actions {
@@ -171,9 +171,9 @@ namespace ODataApiGen.Angular
                 return Enumerable.Empty<string>();
             }
         }
-        public IEnumerable<Angular.ModelProperty> GeoProperties => this.Properties.Where(p => p.IsGeo);
-        public IEnumerable<Angular.ModelProperty> SetterProperties => this.Properties.Where(p => p.NeedSetter);
-        public bool HasGeoFields => this.Options.GeoJson && this.GeoProperties.Count() > 0;
+        public IEnumerable<Angular.ModelField> GeoFields => this.Fields.Where(p => p.IsGeo);
+        public IEnumerable<Angular.ModelField> SetterFields => this.Fields.Where(p => p.NeedSetter);
+        public bool HasGeoFields => this.Options.GeoJson && this.GeoFields.Count() > 0;
         public override object ToLiquid()
         {
             return new {
