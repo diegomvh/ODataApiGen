@@ -74,10 +74,10 @@ namespace ODataApiGen.Angular
                     // Is Navigation
                     values.Add("navigation", "true");
                     var nav = this.Value as NavigationProperty;
-                    if (!String.IsNullOrEmpty(nav.ReferentialConstraint))
-                        values.Add("field", $"'{nav.ReferentialConstraint}'");
+                    if (!String.IsNullOrEmpty(nav.ReferentialProperty))
+                        values.Add("referential", $"'{nav.ReferentialProperty}'");
                     if (!String.IsNullOrEmpty(nav.ReferencedProperty))
-                        values.Add("ref", $"'{nav.ReferencedProperty}'");
+                        values.Add("referenced", $"'{nav.ReferencedProperty}'");
                 }
                 var annots = this.Value.Annotations;
                 if (annots.Count > 0) {

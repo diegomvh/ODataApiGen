@@ -76,15 +76,29 @@ namespace ODataApiGen.Angular
     return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
   }}";
         }
+        public string Getter(){
+            var pkg = Program.Package as Angular.Package;
+            var nav = this.Value as NavigationProperty;
+            var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
+            var getterName = $"get{name}";
+            var entity = (this.Value.Type != null) ? 
+                pkg.FindEntity(this.Value.Type) :
+                pkg.FindEntity(nav.ToEntityType);
+            // setter
+            return $@"public {getterName}(options?: HttpOptions) {{
+    return this.getReference<{entity.ImportedName}>('{this.Value.Name}', options) as Observable<{this.Type}>;
+  }}";
+        }
         public object ToLiquid() {
             return new {
                 Name = this.Name,
                 Type = this.Type,
-                Setter = this.NeedSetter ? this.Setter() : ""
+                Setter = this.NeedReference ? this.Setter() : "",
+                Getter = this.NeedReference ? this.Getter() : ""
             };
         }
         public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
-        public bool NeedSetter => 
+        public bool NeedReference => 
                 this.Value is NavigationProperty && !this.Value.IsCollection && !(this.Value as NavigationProperty).Many;
     }
     public class Model : StructuredType 
@@ -172,7 +186,8 @@ namespace ODataApiGen.Angular
             }
         }
         public IEnumerable<Angular.ModelField> GeoFields => this.Fields.Where(p => p.IsGeo);
-        public IEnumerable<Angular.ModelField> SetterFields => this.Fields.Where(p => p.NeedSetter);
+        public IEnumerable<Angular.ModelField> SetterFields => this.Fields.Where(p => p.NeedReference);
+        public IEnumerable<Angular.ModelField> GetterFields => this.Fields.Where(p => p.NeedReference);
         public bool HasGeoFields => this.Options.GeoJson && this.GeoFields.Count() > 0;
         public override object ToLiquid()
         {
