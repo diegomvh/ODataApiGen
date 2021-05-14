@@ -91,8 +91,9 @@ namespace ODataApiGen.Angular
                     $": {this.ToTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : ""));
 
+                var entityParam = callable.IsCollection ? "asEntitySet" : "asEntity";
                 var args = new List<string>(arguments);
-                args.Add($"options?: HttpCallableOptions<{typescriptType}>");
+                args.Add($"{{{entityParam}, ...options}}: {{{entityParam}?: boolean}} & HttpCallableOptions<{typescriptType}> = {{}}");
 
                 var types = "null";
                 if (parameters.Count() > 0) {
@@ -112,7 +113,7 @@ namespace ODataApiGen.Angular
                     $"collection" :
                     $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', options){callableReturnType};" +
+                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', {{{entityParam}, ...options}}){callableReturnType};" +
                     "\n  }";
             }
         }
@@ -146,8 +147,8 @@ namespace ODataApiGen.Angular
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
-                    yield return $@"public {methodName}() {{
-    return this.getBinding<{entity.ImportedName}>('{binding.Path}', '{responseType}') as Observable<{returnType}>;
+                    yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
+    return this.getBinding<{entity.ImportedName}>('{binding.Path}', '{responseType}', {{asEntity, ...options}}) as Observable<{returnType}>;
   }}";
                 }             }
         }

@@ -72,8 +72,8 @@ namespace ODataApiGen.Angular
                 pkg.FindEntity(this.Value.Type) :
                 pkg.FindEntity(nav.ToEntityType);
             // setter
-            return $@"public {setterName}(model: {this.Type} | null, options?: HttpOptions) {{
-    return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
+            return $@"public {setterName}(model: {this.Type} | null, {{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
+    return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, {{asEntity, ...options}});
   }}";
         }
         public string Getter(){
@@ -85,8 +85,8 @@ namespace ODataApiGen.Angular
                 pkg.FindEntity(this.Value.Type) :
                 pkg.FindEntity(nav.ToEntityType);
             // setter
-            return $@"public {getterName}(options?: HttpOptions) {{
-    return this.getReference<{entity.ImportedName}>('{this.Value.Name}', options) as Observable<{this.Type}>;
+            return $@"public {getterName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
+    return this.getReference<{entity.ImportedName}>('{this.Value.Name}', {{asEntity, ...options}}) as Observable<{this.Type}>;
   }}";
         }
         public object ToLiquid() {
