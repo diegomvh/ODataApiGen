@@ -16,7 +16,8 @@ import {
   ODataActionResource,
   ODataFunctionResource,
   HttpOptions,
-  HttpCallableOptions,
+  Expand,
+  Select,
   ODataBaseService
 } from 'angular-odata';
 

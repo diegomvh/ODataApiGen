@@ -90,7 +90,10 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 args.AddRange(arguments);
-                args.Add($"options?: HttpCallableOptions<{typescriptType}>");
+                if (callable.Type == "Function")
+                    args.Add($"{{alias, ...options}}: {{alias?: boolean}} & HttpOptions = {{}}");
+                else 
+                    args.Add($"options?: HttpOptions");
 
                 var type = "null";
                 if (parameters.Count() > 0) {
@@ -111,10 +114,12 @@ namespace ODataApiGen.Angular
                     $"entity";
 
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this.call<{type}, {typescriptType}>(" +
+                    $"\n    return this.call{callable.Type}<{type}, {typescriptType}>(" +
                     $"\n      {values}, " +
                     $"\n      this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}'), " +
-                    $"\n      '{responseType}', options){callableReturnType};" +
+                    (callable.Type == "Function" ?
+                    $"\n      '{responseType}', {{alias, ...options}}){callableReturnType};" :
+                    $"\n      '{responseType}', options){callableReturnType};") +
                      "\n  }";
             }
         }

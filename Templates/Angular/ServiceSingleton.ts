@@ -16,9 +16,9 @@ import {
   ODataNavigationPropertyResource,
   ODataActionResource,
   ODataFunctionResource,
-  HttpOptions,
-  HttpCallableOptions
-} from 'angular-odata';
+  Expand,
+  Select,
+  HttpOptions} from 'angular-odata';
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';

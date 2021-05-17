@@ -93,8 +93,11 @@ namespace ODataApiGen.Angular
 
                 var entityParam = callable.IsCollection ? "asEntitySet" : "asEntity";
                 var args = new List<string>(arguments);
-                args.Add($"{{{entityParam}, ...options}}: {{{entityParam}?: boolean}} & HttpCallableOptions<{typescriptType}> = {{}}");
-
+                if (callable.Type == "Function")
+                    args.Add($"{{{entityParam}, alias, expand, select, ...options}}: {{{entityParam}?: boolean, alias?: boolean, expand?: Expand<{typescriptType}>, select: Select<{typescriptType}>}} & HttpOptions = {{}}");
+                else 
+                    args.Add($"{{{entityParam}, expand, select, ...options}}: {{{entityParam}?: boolean, expand?: Expand<{typescriptType}>, select: Select<{typescriptType}>}} & HttpOptions = {{}}");
+                
                 var types = "null";
                 if (parameters.Count() > 0) {
                     types = $"{{{String.Join(", ", arguments)}}}";
@@ -113,7 +116,7 @@ namespace ODataApiGen.Angular
                     $"collection" :
                     $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', {{{entityParam}, ...options}}){callableReturnType};" +
+                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', {{{entityParam}, {(callable.Type == "Function" ? "alias, " : "")}expand, select, ...options}}){callableReturnType};" +
                     "\n  }";
             }
         }
