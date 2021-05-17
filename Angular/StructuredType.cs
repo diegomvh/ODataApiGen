@@ -94,9 +94,9 @@ namespace ODataApiGen.Angular
                 var entityParam = callable.IsCollection ? "asEntitySet" : "asEntity";
                 var args = new List<string>(arguments);
                 if (callable.Type == "Function")
-                    args.Add($"{{{entityParam}, alias, expand, select, ...options}}: {{{entityParam}?: boolean, alias?: boolean, expand?: Expand<{typescriptType}>, select: Select<{typescriptType}>}} & HttpOptions = {{}}");
+                    args.Add($"{{{entityParam}, alias, expand, select, ...options}}: {{{entityParam}?: boolean, alias?: boolean, expand?: Expand<{typescriptType}>, select?: Select<{typescriptType}>}} & HttpOptions = {{}}");
                 else 
-                    args.Add($"{{{entityParam}, expand, select, ...options}}: {{{entityParam}?: boolean, expand?: Expand<{typescriptType}>, select: Select<{typescriptType}>}} & HttpOptions = {{}}");
+                    args.Add($"{{{entityParam}, expand, select, ...options}}: {{{entityParam}?: boolean, expand?: Expand<{typescriptType}>, select?: Select<{typescriptType}>}} & HttpOptions = {{}}");
                 
                 var types = "null";
                 if (parameters.Count() > 0) {
