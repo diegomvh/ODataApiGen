@@ -41,8 +41,14 @@ namespace ODataApiGen.Models
         public string Namespace => this.Schema.Namespace; 
         public string FullName => $"{this.Namespace}.{this.Name}";
         public string Type { get; protected set; }
-        public bool IsEdmReturnType { get { return !String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm."); } }
         public string ReturnType { get; }
+        public bool IsEdmReturnType => !System.String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm.");
+        public EnumType EnumReturnType => Program.Metadata.FindEnumType(this.ReturnType);
+        public bool IsEnumReturnType => this.EnumReturnType != null;
+        public ComplexType ComplexReturnType => Program.Metadata.FindComplexType(this.ReturnType);
+        public bool IsComplexReturnType => this.ComplexReturnType != null;
+        public EntityType EntityReturnType => Program.Metadata.FindEntityType(this.ReturnType);
+        public bool IsEntityReturnType => this.EntityReturnType != null;
         public Parameter BindingParameter => this.Parameters.FirstOrDefault(p => p.Name == "bindingParameter");
         public IEnumerable<Parameter> Parameters { get; }
         public string EntitySetPath { get; }

@@ -65,9 +65,11 @@ namespace ODataApiGen.Angular
                 var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
                 var typescriptType = this.ToTypescriptType(callable.ReturnType);
-                var callableReturnType = String.IsNullOrEmpty(callable.ReturnType)?
+                var callableReturnType = String.IsNullOrEmpty(callable.ReturnType) ?
                     "" :
                 callable.IsEdmReturnType ?
+                    $" as Observable<{typescriptType}>" :
+                callable.IsEnumReturnType ?
                     $" as Observable<{typescriptType}>" :
                 callable.ReturnsCollection ?
                     $" as Observable<{typescriptType}Collection<{typescriptType}, {typescriptType}Model<{typescriptType}>>>" :
