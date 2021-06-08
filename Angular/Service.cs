@@ -90,10 +90,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 args.AddRange(arguments);
-                if (callable.Type == "Function")
-                    args.Add($"{{alias, ...options}}: {{alias?: boolean}} & HttpOptions = {{}}");
-                else 
-                    args.Add($"options?: HttpOptions");
+                args.Add($"options?: Http{callable.Type}Options");
 
                 var type = "null";
                 if (parameters.Count() > 0) {
@@ -117,9 +114,7 @@ namespace ODataApiGen.Angular
                     $"\n    return this.call{callable.Type}<{type}, {typescriptType}>(" +
                     $"\n      {values}, " +
                     $"\n      this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}'), " +
-                    (callable.Type == "Function" ?
-                    $"\n      '{responseType}', {{alias, ...options}}){callableReturnType};" :
-                    $"\n      '{responseType}', options){callableReturnType};") +
+                    $"\n      '{responseType}', options){callableReturnType};" +
                      "\n  }";
             }
         }

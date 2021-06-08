@@ -95,10 +95,7 @@ namespace ODataApiGen.Angular
 
                 var entityParam = callable.IsCollection ? "asEntitySet" : "asEntity";
                 var args = new List<string>(arguments);
-                if (callable.Type == "Function")
-                    args.Add($"{{{entityParam}, alias, expand, select, ...options}}: {{{entityParam}?: boolean, alias?: boolean, expand?: Expand<{typescriptType}>, select?: Select<{typescriptType}>}} & HttpOptions = {{}}");
-                else 
-                    args.Add($"{{{entityParam}, expand, select, ...options}}: {{{entityParam}?: boolean, expand?: Expand<{typescriptType}>, select?: Select<{typescriptType}>}} & HttpOptions = {{}}");
+                args.Add($"{{{entityParam}, ...options}}: {{{entityParam}?: boolean}} & Http{callable.Type}Options = {{}}");
                 
                 var types = "null";
                 if (parameters.Count() > 0) {
@@ -118,7 +115,7 @@ namespace ODataApiGen.Angular
                     $"collection" :
                     $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', {{{entityParam}, {(callable.Type == "Function" ? "alias, " : "")}expand, select, ...options}}){callableReturnType};" +
+                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', {{{entityParam}, ...options}}){callableReturnType};" +
                     "\n  }";
             }
         }
@@ -153,7 +150,7 @@ namespace ODataApiGen.Angular
 
                     // Navigation
                     yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
-    return this.getBinding<{entity.ImportedName}>('{binding.Path}', '{responseType}', {{asEntity, ...options}}) as Observable<{returnType}>;
+    return this.fetchNavigationProperty<{entity.ImportedName}>('{binding.Path}', '{responseType}', {{asEntity, ...options}}) as Observable<{returnType}>;
   }}";
                 }             }
         }
