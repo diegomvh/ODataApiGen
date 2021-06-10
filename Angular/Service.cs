@@ -109,6 +109,8 @@ namespace ODataApiGen.Angular
                     "none" : 
                 callable.IsEdmReturnType ?
                     $"property" :
+                callable.IsEnumReturnType ?
+                    $"property" :
                 callable.ReturnsCollection ?
                     $"entities" :
                     $"entity";
