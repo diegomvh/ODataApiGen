@@ -49,6 +49,7 @@ namespace ODataApiGen.Angular
                 var overload = callables.Count() > 1;
                 var callable = callables.FirstOrDefault();
                 var methodName = name[0].ToString().ToLower() + name.Substring(1);
+                var callMethodName = "call" + name[0].ToString().ToUpper() + name.Substring(1);
 
                 var callableFullName = $"{callable.Namespace}.{callable.Name}";
 
@@ -56,10 +57,10 @@ namespace ODataApiGen.Angular
                 var callableReturnType = String.IsNullOrEmpty(callable.ReturnType)?
                     "" :
                 callable.IsEdmReturnType ?
-                    $" as Observable<{typescriptType} | null>" :
+                    $" as Observable<ODataProperty<{typescriptType}>>" :
                 callable.ReturnsCollection ?
-                    $" as Observable<{typescriptType}[] | null>" :
-                    $" as Observable<{typescriptType} | null>" ;
+                    $" as Observable<ODataEntities<{typescriptType}>>" :
+                    $" as Observable<ODataEntity<{typescriptType}>>" ;
 
                 var parameters = new List<Models.Parameter>();
                 var optionals = new List<string>();
@@ -79,9 +80,11 @@ namespace ODataApiGen.Angular
                     ? $"entities().{callable.Type.ToLower()}"
                     : $"entity(key).{callable.Type.ToLower()}";
 
-                var args = new List<string>();
+                var boundArgs = new List<string>();
                 if (callable.IsBound && !callable.IsCollection)
-                    args.Add($"key: EntityKey<{EntityName}>");
+                    boundArgs.Add($"key: EntityKey<{EntityName}>");
+
+                var args = new List<string>(boundArgs);
 
                 var arguments = parameters.Select(p =>
                     $"{p.Name}" + 
@@ -90,7 +93,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 args.AddRange(arguments);
-                args.Add($"options?: Http{callable.Type}Options");
+                args.Add($"options?: Http{callable.Type}Options<{typescriptType}>");
 
                 var type = "null";
                 if (parameters.Count() > 0) {
@@ -110,10 +113,16 @@ namespace ODataApiGen.Angular
                     $"entities" :
                     $"entity";
 
-                yield return $"public {methodName}({String.Join(", ", args)}) {{" +
+                // Function
+                yield return $"public {methodName}({String.Join(", ", boundArgs)}): OData{callable.Type}Resource<{type}, {typescriptType}> {{ " +
+                    $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}');" +
+                    "\n  }";
+
+                // Call
+                yield return $"public {callMethodName}({String.Join(", ", args)}) {{" +
                     $"\n    return this.call{callable.Type}<{type}, {typescriptType}>(" +
                     $"\n      {values}, " +
-                    $"\n      this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}'), " +
+                    $"\n      this.{methodName}({(callable.IsBound && !callable.IsCollection ? "key" : "")}), " +
                     $"\n      '{responseType}', options){callableReturnType};" +
                      "\n  }";
             }
@@ -124,13 +133,14 @@ namespace ODataApiGen.Angular
             var casts = new List<string>();
             foreach (var binding in bindings)
             {
+                var isCollection = binding.NavigationProperty.IsCollection;
                 var nav = binding.NavigationProperty;
                 var navEntity = nav.EntityType;
                 var bindingEntity = binding.EntityType;
                 var propertyEntity = binding.PropertyType;
 
                 var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
-                if (bindingEntity.IsBaseOf(propertyEntity)) {
+                if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity)) {
                     var castName = $"as{propertyEntity.Name}";
                     if (!casts.Contains(propertyEntity.FullName)) {
                         // Cast
@@ -140,28 +150,40 @@ namespace ODataApiGen.Angular
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
-                    var methodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+                } else {
+                    //TODO collection and model name
+                    var returnType = isCollection ? $"ODataEntities<{entity.ImportedName}>" : $"ODataEntity<{entity.ImportedName}>";
+                    var responseType = isCollection ? $"entities" : $"entity";
+                    var navMethodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+                    var fetchMethodName = "fetch" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+                    var createMethodName = isCollection ? $"add{entity.Name}To{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : $"set{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
+                    var deleteMethodName = isCollection ? $"remove{entity.Name}From{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : $"unset{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
 
-                    // Navigation
-                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
-    return this.{castName}().entity(entity).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
-  }}";
-
-                } else if (bindingEntity != propertyEntity) {
-                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
-                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
-    return this.entity(entity).cast<{castEntity.ImportedName}>('{propertyEntity.FullName}').navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
-  }}";
-                } else {
-                    var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+                    yield return $"public {navMethodName}(key: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{ " +
+                        $"\n    return this.entity(key).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}'); " +
+                        "\n  }";
 
-                    // Navigation
-                    yield return $@"public {methodName}(entity: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{
-    return this.entity(entity).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}');
-  }}";
+                    // Fetch
+                    yield return $"public {fetchMethodName}(key: EntityKey<{EntityName}>, options?: HttpNavigationPropertyOptions<{entity.ImportedName}>) {{" +
+                        $"\n    return this.fetchNavigationProperty<{entity.ImportedName}>(" +
+                        $"\n      this.{navMethodName}(key), " +
+                        $"\n      '{responseType}', options) as Observable<{returnType}>;" +
+                         "\n  }";
+
+                    // Link
+                    yield return $"public {createMethodName}(key: EntityKey<{EntityName}>, target: ODataEntityResource<{returnType}>, {{etag}}: {{etag?: string}} = {{}}): Observable<any> {{" +
+                        $"\n    return this.{navMethodName}(key).reference()" +
+                        $"\n      .{(isCollection ? "add" : "set")}(target{(isCollection ? "" : ", {etag}")});" +
+                         "\n  }";
+
+                    // Unlink
+                    yield return $@"public {deleteMethodName}(key: EntityKey<{EntityName}>, {{target, etag}}: {{target?: ODataEntityResource<{returnType}>, etag?: string}} = {{}}): Observable<any> {{" +
+                    $"\n    return this.{navMethodName}(key).reference()" +
+                    $"\n      .{(isCollection ? "remove(target)" : "unset({etag})")};" +
+                     "\n  }";
                 }
             }
         }

@@ -95,7 +95,7 @@ namespace ODataApiGen.Angular
 
                 var entityParam = callable.IsCollection ? "asEntitySet" : "asEntity";
                 var args = new List<string>(arguments);
-                args.Add($"{{{entityParam}, ...options}}: {{{entityParam}?: boolean}} & Http{callable.Type}Options = {{}}");
+                args.Add($"{{{entityParam}, ...options}}: {{{entityParam}?: boolean}} & Http{callable.Type}Options<{typescriptType}> = {{}}");
                 
                 var types = "null";
                 if (parameters.Count() > 0) {
@@ -149,7 +149,7 @@ namespace ODataApiGen.Angular
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
-                    yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
+                    yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpNavigationPropertyOptions = {{}}) {{
     return this.fetchNavigationProperty<{entity.ImportedName}>('{binding.Path}', '{responseType}', {{asEntity, ...options}}) as Observable<{returnType}>;
   }}";
                 }             }
