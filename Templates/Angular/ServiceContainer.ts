@@ -3,6 +3,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+//#region AngularOData Imports
 import { 
   ODataClient,
   ODataEntity, 
@@ -16,10 +17,10 @@ import {
   ODataActionResource,
   ODataFunctionResource,
   HttpOptions,
-  Expand,
-  Select,
+  HttpActionOptions,
+  HttpFunctionOptions,
   ODataBaseService
-} from 'angular-odata';
+} from 'angular-odata';//#endregion
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';

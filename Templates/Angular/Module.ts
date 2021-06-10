@@ -1,4 +1,7 @@
-import { NgModule } from '@angular/core';
+//#region AngularOData Imports
+import { 
+  NgModule 
+} from '@angular/core';//#endregion
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';

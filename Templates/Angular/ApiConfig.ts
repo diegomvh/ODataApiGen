@@ -1,4 +1,8 @@
-import { ApiConfig, EDM_PARSERS } from 'angular-odata';
+//#region AngularOData Imports
+import { 
+  ApiConfig, 
+  EDM_PARSERS 
+} from 'angular-odata';//#endregion
 
 //#region ODataApi Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';

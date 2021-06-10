@@ -1,4 +1,7 @@
-import { Duration } from 'angular-odata';
+//#region AngularOData Imports
+import { 
+  Duration 
+} from 'angular-odata';//#endregion
 
 //#region ODataApi Imports
 {% if HasGeoFields %}import { {% for p in GeoProperties %}{{p.Type}}{% unless forloop.last %},{% endunless %}{% endfor %} } from 'geojson';

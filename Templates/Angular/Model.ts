@@ -1,7 +1,19 @@
-import { Model, ModelField, ODataModel, ODataCollection, HttpOptions, HttpFunctionOptions, HttpActionOptions, Duration, Expand, Select } from 'angular-odata';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+//#region AngularOData Imports
+import { 
+  Model, 
+  ModelField, 
+  ODataModel, 
+  ODataCollection, 
+  HttpOptions, 
+  HttpActionOptions, 
+  HttpFunctionOptions, 
+  HttpNavigationPropertyOptions, 
+  Duration, 
+} from 'angular-odata';//#endregion
 
 //#region ODataApi Imports
 {% if HasGeoFields %}import { {% for p in GeoFields %}{{p.Type}}{% unless forloop.last %},{% endunless %}{% endfor %} } from 'geojson';
