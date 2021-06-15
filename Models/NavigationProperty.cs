@@ -18,9 +18,15 @@ namespace ODataApiGen.Models
       Type = xElement.Attribute("Type")?.Value;
       if (!string.IsNullOrWhiteSpace(Type) && Type.StartsWith("Collection("))
           Type = Type.Substring(11, Type.Length - 12);
-      // TODO: Can be more than one
-      ReferentialProperty = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("Property")?.Value;
-      ReferencedProperty = xElement.Descendants().SingleOrDefault(a => a.Name.LocalName == "ReferentialConstraint")?.Attribute("ReferencedProperty")?.Value;
+
+      Referentials = xElement.Descendants()
+              .Where(a => a.Name.LocalName == "ReferentialConstraint")
+              .Select(key => new ReferentialConstraint() {
+                  Property = key.Attribute("Property")?.Value,
+                  ReferencedProperty = key.Attribute("ReferencedProperty")?.Value
+              })
+              .ToList();
+              
       // Version 2 and 3
       Relationship = xElement.Attribute("Relationship")?.Value;
       ToRole = xElement.Attribute("ToRole")?.Value;
@@ -29,8 +35,7 @@ namespace ODataApiGen.Models
     public string FullName { get; set; }
     public string Partner { get; set; }
     public bool ContainsTarget { get; set; }
-    public string ReferentialProperty { get; set; }
-    public string ReferencedProperty { get; set; }
+    public IEnumerable<ReferentialConstraint> Referentials { get; set; }
     public string Relationship { get; set; }
     public string ToRole { get; set; }
     public string FromRole { get; set; }
@@ -61,4 +66,9 @@ namespace ODataApiGen.Models
       }
     }
   }
+    public class ReferentialConstraint
+    {
+        public string Property { get; set; }
+        public string ReferencedProperty { get; set; }
+    }
 }

@@ -21,7 +21,7 @@ namespace ODataApiGen.Angular
         public override string ToString()
         {
             var values = new Dictionary<string, string>();
-            values.Add("ref", $"'{Value.Name}'");
+            values.Add("name", $"'{Value.Name}'");
             if (!String.IsNullOrWhiteSpace(Value.Alias)) {
                 values.Add("alias", $"'{Value.Alias}'");
             }
@@ -74,10 +74,9 @@ namespace ODataApiGen.Angular
                     // Is Navigation
                     values.Add("navigation", "true");
                     var nav = this.Value as NavigationProperty;
-                    if (!String.IsNullOrEmpty(nav.ReferentialProperty))
-                        values.Add("referential", $"'{nav.ReferentialProperty}'");
-                    if (!String.IsNullOrEmpty(nav.ReferencedProperty))
-                        values.Add("referenced", $"'{nav.ReferencedProperty}'");
+                    if (nav.Referentials.Count() > 0) {
+                        values.Add("referentials", $"[{String.Join(", ", nav.Referentials.Select(p => $"{{property: '{p.Property}', referencedProperty: '{p.ReferencedProperty}'}}"))}]");
+                    }
                 }
                 var annots = this.Value.Annotations;
                 if (annots.Count > 0) {
