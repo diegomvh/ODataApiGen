@@ -58,6 +58,8 @@ namespace ODataApiGen.Angular
                     "" :
                 callable.IsEdmReturnType ?
                     $" as Observable<ODataProperty<{typescriptType}>>" :
+                callable.IsEnumReturnType ?
+                    $" as Observable<ODataProperty<{typescriptType}>>" :
                 callable.ReturnsCollection ?
                     $" as Observable<ODataEntities<{typescriptType}>>" :
                     $" as Observable<ODataEntity<{typescriptType}>>" ;
