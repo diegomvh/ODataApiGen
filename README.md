@@ -16,11 +16,11 @@ The OData Angular Generator image acts as a standalone executable.
 
 To generate code with this image, you'll need to mount a local location as a volume.
 
-Example One:
+### Example One:
 
 If metadata are in the web like [TripPin](https://services.odata.org/v4/TripPinService/$metadata)
 
-```sh
+```bash
   docker run -it --rm -v ${PWD}:/local diegomvh/odataapigen \
     Name=TripPin \
     Metadata=https://services.odata.org/v4/TripPinService/$metadata \
@@ -29,11 +29,11 @@ If metadata are in the web like [TripPin](https://services.odata.org/v4/TripPinS
 
 The generated code will be located under `./trippin` in the current directory.
 
-Example Two:
+### Example Two:
 
 If metadata are in the local file system. Put the `trippin.xml` file on the directory and then run docker on the same directory.
 
-```sh
+```bash
   docker run -it --rm -v ${PWD}:/local diegomvh/odataapigen \
     Name=TripPin \
     Metadata=file:///local/trippin.xml \
@@ -42,11 +42,11 @@ If metadata are in the local file system. Put the `trippin.xml` file on the dire
 
 The generated code will be located under `./trippin` in the current directory.
 
-Example Three:
+### Example Three:
 
 If metadata are served by yourself on a localhost application. Thanks to [Norm-Cota](https://github.com/diegomvh/ODataApiGen/issues/7)
 
-```sh
+```bash
   docker run -it --rm -v ${PWD}:/local diegomvh/odataapigen \
     Name=TripPin \
     Metadata=http://host.docker.internal/$metadata \
