@@ -98,8 +98,7 @@ namespace ODataApiGen.Angular
             };
         }
         public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
-        public bool NeedReference => 
-                this.Value is NavigationProperty && !this.Value.IsCollection && !(this.Value as NavigationProperty).Many;
+        public bool NeedReference => this.Value is NavigationProperty;
     }
     public class Model : StructuredType 
     {
