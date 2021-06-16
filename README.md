@@ -42,7 +42,7 @@ If metadata are in the local file system. Put the `trippin.xml` file on the dire
 
 The generated code will be located under `./trippin` in the current directory.
 
-Example Tree:
+Example Three:
 
 If metadata are served by yourself on a localhost application. Thanks to [Norm-Cota](https://github.com/diegomvh/ODataApiGen/issues/7)
 
