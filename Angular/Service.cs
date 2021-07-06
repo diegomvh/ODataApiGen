@@ -119,7 +119,7 @@ namespace ODataApiGen.Angular
 
                 // Function
                 yield return $"public {methodName}({String.Join(", ", boundArgs)}): OData{callable.Type}Resource<{type}, {typescriptType}> {{ " +
-                    $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}');" +
+                    $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}'{(!callable.IsBound? ", this.apiNameOrEntityType" : "")});" +
                     "\n  }";
 
                 // Call
