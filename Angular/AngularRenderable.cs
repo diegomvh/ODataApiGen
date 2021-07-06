@@ -67,6 +67,5 @@ namespace ODataApiGen.Angular
             });
             return records;
         }
-        public string ApiName => this.Options.Name;
     }
 }

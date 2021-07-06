@@ -37,6 +37,7 @@ namespace ODataApiGen.Angular
         public override string Name => Utils.ToTypescriptName(this.EdmEntityContainer.Name, TypeScriptElement.Class) + "Container";
         public string ContainerType => this.EdmEntityContainer.FullName;
         public string ContainerName => this.EdmEntityContainer.Name;
+        public string ApiName => this.Options.Name;
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { this.ContainerType };
         public override IEnumerable<Import> Imports => GetImportRecords();

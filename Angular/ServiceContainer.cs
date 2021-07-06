@@ -43,5 +43,6 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Models.Annotation> Annotations => Enumerable.Empty<Models.Annotation>(); 
         public override string EntitySetName => this.Container.Name;
         public override string EntityType => "";
+        public string ApiName => this.Options.Name;
     }
 }
