@@ -42,6 +42,7 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
         {
+            //TODO: Function with the same name in different namespaces
             var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);
             foreach (var name in names)
             {
