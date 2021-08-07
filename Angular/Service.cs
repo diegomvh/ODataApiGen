@@ -95,7 +95,7 @@ namespace ODataApiGen.Angular
                     (p.IsCollection ? "[]" : ""));
 
                 args.AddRange(arguments);
-                args.Add($"options?: Http{callable.Type}Options<{typescriptType}>");
+                args.Add($"options?: HttpQueryOptions<{typescriptType}>");
 
                 var type = "null";
                 if (parameters.Count() > 0) {
