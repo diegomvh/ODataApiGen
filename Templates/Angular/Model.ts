@@ -9,9 +9,7 @@ import {
   ODataModel, 
   ODataCollection, 
   HttpOptions, 
-  HttpActionOptions, 
-  HttpFunctionOptions, 
-  HttpNavigationPropertyOptions, 
+  HttpQueryOptions, 
   Duration, 
 } from 'angular-odata';//#endregion
 

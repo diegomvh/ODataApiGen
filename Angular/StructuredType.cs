@@ -149,7 +149,7 @@ namespace ODataApiGen.Angular
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
-                    yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpNavigationPropertyOptions<{entity.ImportedName}> = {{}}) {{
+                    yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpQueryOptions<{entity.ImportedName}> = {{}}) {{
     return this.fetchNavigationProperty<{entity.ImportedName}>('{binding.Path}', '{responseType}', {{asEntity, ...options}}) as Observable<{returnType}>;
   }}";
                 }             }

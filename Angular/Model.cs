@@ -85,7 +85,7 @@ namespace ODataApiGen.Angular
                 pkg.FindEntity(this.Value.Type) :
                 pkg.FindEntity(nav.ToEntityType);
             // setter
-            return $@"public {getterName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
+            return $@"public {getterName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpQueryOptions<{entity.ImportedName}> = {{}}) {{
     return this.getReference<{entity.ImportedName}>('{this.Value.Name}', {{asEntity, ...options}}) as Observable<{this.Type}>;
   }}";
         }

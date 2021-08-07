@@ -7,9 +7,7 @@ import {
   ODataModel, 
   ODataCollection, 
   HttpOptions, 
-  HttpActionOptions, 
-  HttpFunctionOptions, 
-  HttpNavigationPropertyOptions
+  HttpQueryOptions
 } from 'angular-odata';//#endregion
 
 //#region ODataApi Imports

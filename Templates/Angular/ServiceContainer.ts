@@ -17,8 +17,7 @@ import {
   ODataActionResource,
   ODataFunctionResource,
   HttpOptions,
-  HttpActionOptions,
-  HttpFunctionOptions,
+  HttpQueryOptions,
   ODataBaseService
 } from 'angular-odata';//#endregion
 
