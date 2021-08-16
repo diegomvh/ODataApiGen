@@ -63,6 +63,27 @@ namespace ODataApiGen.Angular
             }
             return "any";
         }}
+        public string Resource(){
+            var pkg = Program.Package as Angular.Package;
+            var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
+            var resourceName = $"${name}";
+            if (this.Value is NavigationProperty) {
+                var nav = this.Value as NavigationProperty;
+                var entity = (this.Value.Type != null) ? 
+                    pkg.FindEntity(this.Value.Type) :
+                    pkg.FindEntity(nav.ToEntityType);
+                // resource
+                return $@"public {resourceName}({{asEntity}}: {{asEntity?: boolean}} = {{}}) {{
+    return this.navigationProperty<{entity.ImportedName}>('{this.Value.Name}', {{asEntity}});
+  }}"; 
+            } else {
+                var prop = this.Value;
+                // resource
+                return $@"public {resourceName}({{asEntity}}: {{asEntity?: boolean}} = {{}}) {{
+    return this.property<{this.Type}>('{this.Value.Name}', {{asEntity}});
+  }}"; 
+            }
+        }
         public string Setter(){
             var pkg = Program.Package as Angular.Package;
             var nav = this.Value as NavigationProperty;
@@ -93,6 +114,7 @@ namespace ODataApiGen.Angular
             return new {
                 Name = this.Name,
                 Type = this.Type,
+                Resource = this.Resource(),
                 Setter = this.NeedReference ? this.Setter() : "",
                 Getter = this.NeedReference ? this.Getter() : ""
             };

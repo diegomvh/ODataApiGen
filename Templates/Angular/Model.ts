@@ -23,6 +23,7 @@ export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{
   //#region ODataApi Properties
   {% for field in Fields %}@ModelField()
   {{field.Name}}: {{field.Type}};
+  {{field.Resource}}
   {{field.Getter}}
   {{field.Setter}}
   {% endfor %}//#endregion
