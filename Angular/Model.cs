@@ -65,8 +65,7 @@ namespace ODataApiGen.Angular
         }}
         public string Resource(){
             var pkg = Program.Package as Angular.Package;
-            var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
-            var resourceName = $"${name}";
+            var resourceName = $"${this.Value.Name}";
             if (this.Value is NavigationProperty) {
                 var nav = this.Value as NavigationProperty;
                 var entity = (this.Value.Type != null) ? 

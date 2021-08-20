@@ -66,7 +66,7 @@ namespace ODataApiGen.Models
         public virtual IDictionary<string, object> ToDictionary()
         {
             var result = new Dictionary<string, object>();
-            result.Add("type", this.Term);
+            result.Add("term", this.Term);
             try
             {
                 if (!result.ContainsKey("string") && !String.IsNullOrEmpty(this.Value.String))
