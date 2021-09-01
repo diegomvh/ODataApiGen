@@ -11,7 +11,7 @@ namespace ODataApiGen.Angular
 {
     public abstract class StructuredType : AngularRenderable, DotLiquid.ILiquidizable
     {
-        public Models.EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType; 
+        public Models.EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType;
         public Models.StructuredType EdmStructuredType { get; private set; }
         public StructuredType(Models.StructuredType type, ApiOptions options) : base(options)
         {
@@ -49,7 +49,7 @@ namespace ODataApiGen.Angular
         public override string Namespace => this.EdmStructuredType.Namespace;
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.FullName)?.Name;
-        public bool OpenType => this.EdmStructuredType.OpenType; 
+        public bool OpenType => this.EdmStructuredType.OpenType;
         public override IEnumerable<Import> Imports => GetImportRecords();
 
         protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
@@ -88,15 +88,14 @@ namespace ODataApiGen.Angular
                 parameters = parameters.Where(p => !p.IsBinding).GroupBy(p => p.Name).Select(g => g.First()).ToList();
 
                 var arguments = parameters.Select(p =>
-                    $"{p.Name}" + 
-                    (optionals.Any(o => o == p.Name) ? "?" : "") + 
+                    $"{p.Name}" +
+                    (optionals.Any(o => o == p.Name) ? "?" : "") +
                     $": {this.ToTypescriptType(p.Type)}" +
                     (p.IsCollection ? "[]" : ""));
 
-                var entityParam = callable.IsCollection ? "asEntitySet" : "asEntity";
                 var args = new List<string>(arguments);
-                args.Add($"{{{entityParam}, ...options}}: {{{entityParam}?: boolean}} & HttpQueryOptions<{typescriptType}> = {{}}");
-                
+                args.Add($"options?: HttpQueryOptions<{typescriptType}>");
+
                 var types = "null";
                 if (parameters.Count() > 0) {
                     types = $"{{{String.Join(", ", arguments)}}}";
@@ -107,15 +106,15 @@ namespace ODataApiGen.Angular
                     values = $"{{{String.Join(", ", parameters.Select(p => p.Name))}}}";
                 }
 
-                var responseType = String.IsNullOrEmpty(callable.ReturnType) ? 
-                    "none" : 
+                var responseType = String.IsNullOrEmpty(callable.ReturnType) ?
+                    "none" :
                 callable.IsEdmReturnType ?
                     $"property" :
                 callable.ReturnsCollection ?
                     $"collection" :
                     $"model";
                 yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', {{{entityParam}, ...options}}){callableReturnType};" +
+                    $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', options){callableReturnType};" +
                     "\n  }";
             }
         }
@@ -137,7 +136,7 @@ namespace ODataApiGen.Angular
                         // Cast
                         entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
                         yield return $@"public {castName}() {{
-    return this.asDerived<{entity.ImportedName}>('{propertyEntity.FullName}') as {entity.Name}Model<{entity.ImportedName}>;
+    return this.cast<{entity.ImportedName}>('{propertyEntity.FullName}') as {entity.Name}Model<{entity.ImportedName}>;
   }}";
                         casts.Add(propertyEntity.FullName);
                     }
@@ -149,8 +148,8 @@ namespace ODataApiGen.Angular
                     var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
                     // Navigation
-                    yield return $@"public {methodName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpQueryOptions<{entity.ImportedName}> = {{}}) {{
-    return this.fetchNavigationProperty<{entity.ImportedName}>('{binding.Path}', '{responseType}', {{asEntity, ...options}}) as Observable<{returnType}>;
+                    yield return $@"public {methodName}(options?: HttpQueryOptions<{entity.ImportedName}>) {{
+    return this.fetchNavigationProperty<{entity.ImportedName}>('{binding.Path}', '{responseType}', options) as Observable<{returnType}>;
   }}";
                 }             }
         }

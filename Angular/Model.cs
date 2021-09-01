@@ -68,45 +68,55 @@ namespace ODataApiGen.Angular
             var resourceName = $"${this.Value.Name}";
             if (this.Value is NavigationProperty) {
                 var nav = this.Value as NavigationProperty;
-                var entity = (this.Value.Type != null) ? 
+                var entity = (this.Value.Type != null) ?
                     pkg.FindEntity(this.Value.Type) :
                     pkg.FindEntity(nav.ToEntityType);
                 // resource
-                return $@"public {resourceName}({{asEntity}}: {{asEntity?: boolean}} = {{}}) {{
-    return this.navigationProperty<{entity.ImportedName}>('{this.Value.Name}', {{asEntity}});
-  }}"; 
+                return $@"public {resourceName}() {{
+    return this.navigationProperty<{entity.ImportedName}>('{this.Value.Name}');
+  }}";
             } else {
                 var prop = this.Value;
                 // resource
-                return $@"public {resourceName}({{asEntity}}: {{asEntity?: boolean}} = {{}}) {{
-    return this.property<{this.Type}>('{this.Value.Name}', {{asEntity}});
-  }}"; 
+                return $@"public {resourceName}() {{
+    return this.property<{this.Type}>('{this.Value.Name}');
+  }}";
             }
         }
-        public string Setter(){
+        public string SetterReference(){
             var pkg = Program.Package as Angular.Package;
             var nav = this.Value as NavigationProperty;
             var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
             var setterName = $"set{name}";
-            var entity = (this.Value.Type != null) ? 
+            var entity = (this.Value.Type != null) ?
                 pkg.FindEntity(this.Value.Type) :
                 pkg.FindEntity(nav.ToEntityType);
             // setter
-            return $@"public {setterName}(model: {this.Type} | null, {{asEntity, ...options}}: {{asEntity?: boolean}} & HttpOptions = {{}}) {{
-    return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, {{asEntity, ...options}});
+            return $@"public {setterName}(model: {this.Type} | null, options?: HttpOptions) {{
+    return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
   }}";
         }
-        public string Getter(){
+        public string GetterReference(){
             var pkg = Program.Package as Angular.Package;
             var nav = this.Value as NavigationProperty;
             var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
             var getterName = $"get{name}";
-            var entity = (this.Value.Type != null) ? 
+            var entity = (this.Value.Type != null) ?
                 pkg.FindEntity(this.Value.Type) :
                 pkg.FindEntity(nav.ToEntityType);
             // setter
-            return $@"public {getterName}({{asEntity, ...options}}: {{asEntity?: boolean}} & HttpQueryOptions<{entity.ImportedName}> = {{}}) {{
-    return this.getReference<{entity.ImportedName}>('{this.Value.Name}', {{asEntity, ...options}}) as Observable<{this.Type}>;
+            return $@"public {getterName}() {{
+    return this.getReference<{entity.ImportedName}>('{this.Value.Name}') as {this.Type};
+  }}";
+        }
+        public string GetterValue(){
+            var pkg = Program.Package as Angular.Package;
+            var prop = this.Value as Property;
+            var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
+            var getterName = $"get{name}";
+            // getter
+            return $@"public {getterName}(options?: HttpOptions) {{
+    return this.getValue<{this.Type}>('{this.Value.Name}', options) as Observable<{this.Type}>;
   }}";
         }
         public object ToLiquid() {
@@ -114,14 +124,14 @@ namespace ODataApiGen.Angular
                 Name = this.Name,
                 Type = this.Type,
                 Resource = this.Resource(),
-                Setter = this.NeedReference ? this.Setter() : "",
-                Getter = this.NeedReference ? this.Getter() : ""
+                Setter = this.NeedReference ? this.SetterReference() : "",
+                Getter = this.NeedReference ? this.GetterReference() : this.GetterValue()
             };
         }
         public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
         public bool NeedReference => this.Value is NavigationProperty;
     }
-    public class Model : StructuredType 
+    public class Model : StructuredType
     {
         public Angular.Entity Entity { get; private set; }
 
@@ -156,18 +166,18 @@ namespace ODataApiGen.Angular
                     list.AddRange(service.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
                     list.AddRange(service.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
                 }
-                
+
                 return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
             }
         }
         public IEnumerable<Angular.ModelField> Fields {
             get {
                 var props = this.EdmStructuredType.Properties.ToList();
-                if (this.EdmStructuredType is EntityType) 
+                if (this.EdmStructuredType is EntityType)
                     props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
                 return props.Select(prop => new Angular.ModelField(prop, this));
             }
-        } 
+        }
         public IEnumerable<string> Actions {
             get {
                 if (this.EdmEntityType != null) {
@@ -190,7 +200,7 @@ namespace ODataApiGen.Angular
             get {
                 var service = Program.Metadata.EntitySets.FirstOrDefault(s => this.EdmStructuredType.IsTypeOf(s.EntityType));
                 if (service != null) {
-                    var properties = new List<NavigationProperty>(); 
+                    var properties = new List<NavigationProperty>();
                     var entity = this.EdmEntityType;
                     while (true) {
                         properties.AddRange(entity.NavigationProperties);
