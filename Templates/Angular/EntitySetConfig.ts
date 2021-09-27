@@ -1,13 +1,13 @@
-//#region AngularOData Imports
-import { 
-  EntitySetConfig 
+//#region ODataApiGen Imports
+import {
+  EntitySetConfig
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApi EntitySetConfig
+//#region ODataApiGen EntitySetConfig
 export const {{Name}} = {
   name: "{{EntitySetName}}",
   entityType: "{{EntityType}}",{% if HasAnnotations %}

@@ -3,7 +3,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-//#region AngularOData Imports
+//#region ODataApiGen Imports
 import {
   ODataClient,
   ODataSingletonService,
@@ -20,7 +20,7 @@ import {
   ODataQueryArgumentsOptions
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
@@ -30,13 +30,13 @@ export class {{Name}} extends ODataSingletonService<{{EntityName}}> {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }
 
-  //#region ODataApi Actions
+  //#region ODataApiGen Actions
   {% for action in Actions %}{{action}}
   {% endfor %}//#endregion
-  //#region ODataApi Functions
+  //#region ODataApiGen Functions
   {% for func in Functions %}{{func}}
   {% endfor %}//#endregion
-  //#region ODataApi Navigations
+  //#region ODataApiGen Navigations
   {% for nav in Navigations %}{{nav}}
   {% endfor %}//#endregion
 }

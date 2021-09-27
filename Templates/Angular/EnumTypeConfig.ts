@@ -1,13 +1,13 @@
-//#region AngularOData Imports
-import { 
-  EnumTypeConfig 
+//#region ODataApiGen Imports
+import {
+  EnumTypeConfig
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApi EnumTypeConfig
+//#region ODataApiGen EnumTypeConfig
 export const {{Name}} = {
   name: "{{EdmEnumName}}",{% if Flags %}
   flags: true,{% endif %}

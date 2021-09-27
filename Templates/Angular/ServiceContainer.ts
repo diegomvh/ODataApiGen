@@ -3,7 +3,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-//#region AngularOData Imports
+//#region ODataApiGen Imports
 import {
   ODataClient,
   ODataEntity,
@@ -21,7 +21,7 @@ import {
   ODataBaseService
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
@@ -32,10 +32,10 @@ export class {{Name}} extends ODataBaseService {
     super(client, '{{EntitySetName}}', '{{ApiName}}');
   }
 
-  //#region ODataApi Actions
+  //#region ODataApiGen Actions
   {% for action in Actions %}{{action}}
   {% endfor %}//#endregion
-  //#region ODataApi Functions
+  //#region ODataApiGen Functions
   {% for func in Functions %}{{func}}
   {% endfor %}//#endregion
 }

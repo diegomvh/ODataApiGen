@@ -3,7 +3,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-//#region AngularOData Imports
+//#region ODataApiGen Imports
 import {
   ODataClient,
   ODataEntitySetService,
@@ -21,7 +21,7 @@ import {
   ODataQueryArgumentsOptions
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
@@ -30,21 +30,21 @@ export class {{Name}} extends ODataEntitySetService<{{EntityName}}> {
   constructor(protected client: ODataClient) {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }{% if HasModel %}
-  //#region ODataApi Model
+  //#region ODataApiGen Model
   {{ModelName | methodcase}}(attrs?: Partial<{{EntityName}}>): {{ModelName}}<{{EntityName}}> {
     return this.entity().asModel<{{ModelName}}<{{EntityName}}>>(attrs || {});
   }//#endregion{% endif %}{% if HasCollection %}
-  //#region ODataApi Collection
+  //#region ODataApiGen Collection
   {{CollectionName | methodcase}}(models?: Partial<{{EntityName}}>[]): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
     return this.entities().asCollection<{{ModelName}}<{{EntityName}}>, {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>>(models || []);
   }//#endregion{% endif %}
-  //#region ODataApi Actions
+  //#region ODataApiGen Actions
   {% for action in Actions %}{{action}}
   {% endfor %}//#endregion
-  //#region ODataApi Functions
+  //#region ODataApiGen Functions
   {% for func in Functions %}{{func}}
   {% endfor %}//#endregion
-  //#region ODataApi Navigations
+  //#region ODataApiGen Navigations
   {% for nav in Navigations %}{{nav}}
   {% endfor %}//#endregion
 }

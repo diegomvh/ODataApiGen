@@ -1,14 +1,14 @@
-//#region AngularOData Imports
-import { 
-  ApiConfig, 
-  EDM_PARSERS 
+//#region ODataApiGen Imports
+import {
+  ApiConfig,
+  EDM_PARSERS
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApi ApiConfig
+//#region ODataApiGen ApiConfig
 export const {{Name}} = {
   serviceRootUrl: '{{Package.ServiceRootUrl}}',
   name: '{{Package.Name}}',

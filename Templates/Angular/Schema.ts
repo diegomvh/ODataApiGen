@@ -1,13 +1,13 @@
-//#region AngularOData Imports
-import { 
-  SchemaConfig 
+//#region ODataApiGen Imports
+import {
+  SchemaConfig
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApi SchemaConfig
+//#region ODataApiGen SchemaConfig
 export const {{Name}} = {
   namespace: "{{Namespace}}",{% if HasAlias %}
   alias: "{{Alias}}",{% endif %}

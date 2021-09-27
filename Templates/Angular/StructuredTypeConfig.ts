@@ -1,13 +1,13 @@
-//#region AngularOData Imports
-import { 
-  StructuredTypeConfig 
+//#region ODataApiGen Imports
+import {
+  StructuredTypeConfig
 } from 'angular-odata';//#endregion
 
-//#region ODataApi Imports
+//#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApi StrucutredTypeConfig
+//#region ODataApiGen StrucutredTypeConfig
 export const {{Name}} = {
   name: "{{EdmEntityName}}",{% if Base != null %}
   base: "{{Base.EntityType}}",{% endif %}{% if OpenType %}
