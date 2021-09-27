@@ -3,14 +3,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 //#region AngularOData Imports
-import { 
-  Model, 
-  ModelField, 
-  ODataModel, 
-  ODataCollection, 
-  HttpOptions, 
-  HttpQueryOptions, 
-  Duration, 
+import {
+  Model,
+  ModelField,
+  ODataModel,
+  ODataCollection,
+  ODataOptions,
+  ODataQueryArgumentsOptions,
+  Duration,
 } from 'angular-odata';//#endregion
 
 //#region ODataApi Imports

@@ -4,21 +4,20 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 //#region AngularOData Imports
-import { 
+import {
   ODataClient,
-  ODataSingletonService, 
-  ODataEntity, 
-  ODataEntities, 
-  ODataProperty, 
+  ODataSingletonService,
+  ODataEntity,
+  ODataEntities,
+  ODataProperty,
   EntityKey,
-  Duration,
   ODataEntityResource,
   ODataEntitySetResource,
   ODataNavigationPropertyResource,
   ODataActionResource,
   ODataFunctionResource,
-  HttpOptions,
-  HttpQueryOptions
+  ODataOptions,
+  ODataQueryArgumentsOptions
 } from 'angular-odata';//#endregion
 
 //#region ODataApi Imports
@@ -30,7 +29,7 @@ export class {{Name}} extends ODataSingletonService<{{EntityName}}> {
   constructor(protected client: ODataClient) {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }
-  
+
   //#region ODataApi Actions
   {% for action in Actions %}{{action}}
   {% endfor %}//#endregion

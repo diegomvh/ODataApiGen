@@ -1,6 +1,6 @@
 //#region AngularOData Imports
-import { 
-  Duration 
+import {
+  Duration
 } from 'angular-odata';//#endregion
 
 //#region ODataApi Imports

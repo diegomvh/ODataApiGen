@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 //#region AngularOData Imports
-import { 
+import {
   ODataClient,
-  ODataEntitySetService, 
-  ODataEntity, 
-  ODataEntities, 
-  ODataProperty, 
+  ODataEntitySetService,
+  ODataEntity,
+  ODataEntities,
+  ODataProperty,
   EntityKey,
   Duration,
   ODataEntityResource,
@@ -17,10 +17,8 @@ import {
   ODataNavigationPropertyResource,
   ODataActionResource,
   ODataFunctionResource,
-  Expand, 
-  Select,
-  HttpOptions,
-  HttpQueryOptions
+  ODataOptions,
+  ODataQueryArgumentsOptions
 } from 'angular-odata';//#endregion
 
 //#region ODataApi Imports
