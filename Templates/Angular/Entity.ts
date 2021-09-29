@@ -1,4 +1,4 @@
-//#region ODataApiGen Imports
+//#region ODataApiGen ODataImports
 import {
   Duration
 } from 'angular-odata';//#endregion

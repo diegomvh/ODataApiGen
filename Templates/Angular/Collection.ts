@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-//#region ODataApiGen Imports
+//#region ODataApiGen ODataImports
 import {
   ODataModel,
   ODataCollection,

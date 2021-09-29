@@ -1,4 +1,4 @@
-//#region ODataApiGen Imports
+//#region ODataApiGen ODataImports
 import {
   SchemaConfig
 } from 'angular-odata';//#endregion

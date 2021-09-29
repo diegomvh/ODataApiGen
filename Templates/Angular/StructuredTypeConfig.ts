@@ -1,4 +1,4 @@
-//#region ODataApiGen Imports
+//#region ODataApiGen ODataImports
 import {
   StructuredTypeConfig
 } from 'angular-odata';//#endregion

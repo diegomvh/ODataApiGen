@@ -1,4 +1,4 @@
-//#region ODataApiGen Imports
+//#region ODataApiGen ODataImports
 import {
   EntitySetConfig
 } from 'angular-odata';//#endregion
