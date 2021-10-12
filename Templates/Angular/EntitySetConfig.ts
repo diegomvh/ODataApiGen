@@ -9,8 +9,8 @@ import {
 
 //#region ODataApiGen EntitySetConfig
 export const {{Name}} = {
-  name: "{{EntitySetName}}",
-  entityType: "{{EntityType}}",{% if HasAnnotations %}
+  name: '{{EntitySetName}}',
+  entityType: '{{EntityType}}',{% if HasAnnotations %}
   annotations: {{Annotations}},{% endif %}
   service: {{Service.Name}}
 } as EntitySetConfig;

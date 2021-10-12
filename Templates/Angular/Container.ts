@@ -9,7 +9,7 @@ import {
 
 //#region ODataApiGen EntityContainerConfig
 export const {{Name}} = {
-  name: "{{ContainerName}}",{% if HasAnnotations %}
+  name: '{{ContainerName}}',{% if HasAnnotations %}
   annotations: {{Annotations}},{% endif %}
   entitySets: [
     {% for config in EntitySetConfigs %}{{config.Name}}{% unless forloop.last %},

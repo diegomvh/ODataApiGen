@@ -9,8 +9,8 @@ import {
 
 //#region ODataApiGen StrucutredTypeConfig
 export const {{Name}} = {
-  name: "{{EdmEntityName}}",{% if Base != null %}
-  base: "{{Base.EntityType}}",{% endif %}{% if OpenType %}
+  name: '{{EdmEntityName}}',{% if Base != null %}
+  base: '{{Base.EntityType}}',{% endif %}{% if OpenType %}
   open: true,{% endif %}{% if Model != null %}
   model: {{Model.Name}},{% endif %}{% if Collection != null %}
   collection: {{Collection.Name}},{% endif %}{% if HasAnnotations %}

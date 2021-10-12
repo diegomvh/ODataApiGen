@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
@@ -10,13 +9,13 @@ namespace ODataApiGen.Angular
     public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
-            
+
         public string _ToTypescriptName(string name, TypeScriptElement e) {
             return Utils.ToTypescriptName(name, e);
         }
         public string ToTypescriptType(string type)
         {
-            
+
             return Utils.ToTypescriptType(type, Options.GeoJson);
         }
         public IEnumerable<string> CallableNamespaces(Callable callable)
@@ -54,7 +53,7 @@ namespace ODataApiGen.Angular
                 .GroupBy(i => i.Item2.Uri).Select(group =>
             {
                 var uri = this.Uri.MakeRelativeUri(group.First().Item2.Uri);
-                var names = group.Select(d => { 
+                var names = group.Select(d => {
                     if (d.Item1 != d.Item2.Name) {
                         d.Item2.ImportedName = d.Item1;
                         return $"{d.Item2.Name} as {d.Item1}";

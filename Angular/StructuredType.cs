@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.IO;
-using DotLiquid;
 using ODataApiGen.Models;
-using Newtonsoft.Json;
 using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular

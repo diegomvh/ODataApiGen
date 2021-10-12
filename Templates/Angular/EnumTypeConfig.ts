@@ -9,7 +9,7 @@ import {
 
 //#region ODataApiGen EnumTypeConfig
 export const {{Name}} = {
-  name: "{{EdmEnumName}}",{% if Flags %}
+  name: '{{EdmEnumName}}',{% if Flags %}
   flags: true,{% endif %}
   members: {{EnumName}},{% if HasAnnotations %}
   annotations: {{Annotations}},{% endif %}
