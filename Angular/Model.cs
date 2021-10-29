@@ -21,9 +21,13 @@ namespace ODataApiGen.Angular
       get
       {
         var required = !(Value is NavigationProperty || Value.Nullable);
-        //return AngularRenderable.ToTypescriptName(Value.Name, TypeScriptElement.Method) + (!required? "?" : "");
         var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
         return name + (!required ? "?" : "!");
+        /*
+        var navigation = Value is NavigationProperty;
+        var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
+        return name + (navigation ? "?" : "!");
+        */
       }
     }
 
@@ -32,15 +36,17 @@ namespace ODataApiGen.Angular
       get
       {
         var pkg = Program.Package as Angular.Package;
+        var nullable = Value.Nullable;
+        var type = "any";
         if (this.Value.IsEnumType)
         {
           var e = pkg.FindEnum(this.Value.Type);
-          return e.ImportedName;
+          type = e.ImportedName;
         }
         else if (Value.IsEdmType)
         {
-          var type = this.Structured.ToTypescriptType(Value.Type);
-          return type + (Value.IsCollection ? "[]" : "");
+          type = this.Structured.ToTypescriptType(Value.Type);
+          type = type + (Value.IsCollection ? "[]" : "");
         }
         else if (this.Value.Type != null)
         {
@@ -49,13 +55,13 @@ namespace ODataApiGen.Angular
             var entity = pkg.FindEntity(this.Value.Type);
             var model = pkg.FindModel(this.Value.Type);
             var collection = pkg.FindCollection(this.Value.Type);
-            return $"{collection.ImportedName}<{entity.ImportedName}, {model.ImportedName}<{entity.ImportedName}>>";
+            type = $"{collection.ImportedName}<{entity.ImportedName}, {model.ImportedName}<{entity.ImportedName}>>";
           }
           else
           {
             var entity = pkg.FindEntity(this.Value.Type);
             var model = pkg.FindModel(this.Value.Type);
-            return $"{model.ImportedName}<{entity.ImportedName}>";
+            type = $"{model.ImportedName}<{entity.ImportedName}>";
           }
         }
         else if (this.Value is NavigationProperty)
@@ -66,16 +72,22 @@ namespace ODataApiGen.Angular
             var entity = pkg.FindEntity(nav.ToEntityType);
             var model = pkg.FindModel(nav.ToEntityType);
             var collection = pkg.FindCollection(nav.ToEntityType);
-            return $"{collection.ImportedName}<{entity.ImportedName}, {model.ImportedName}<{entity.ImportedName}>>";
+            type = $"{collection.ImportedName}<{entity.ImportedName}, {model.ImportedName}<{entity.ImportedName}>>";
           }
           else
           {
             var entity = pkg.FindEntity(nav.ToEntityType);
             var model = pkg.FindModel(nav.ToEntityType);
-            return $"{model.ImportedName}<{entity.ImportedName}>";
+            type = $"{model.ImportedName}<{entity.ImportedName}>";
           }
         }
-        return "any";
+        /*
+        if (nullable)
+        {
+          type = type + " | null";
+        }
+        */
+        return type;
       }
     }
     public string Resource()
