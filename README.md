@@ -54,3 +54,11 @@ If metadata are served by yourself on a localhost application. Thanks to [Norm-C
 ```
 
 The generated code will be located under `./trippin` in the current directory.
+
+## Tools
+
+Many thanks to JetBrains for the open source license.
+
+Now I can use one o the best IDE for the project!
+
+![Rider logo](https://resources.jetbrains.com/storage/products/company/brand/logos/Rider_icon.svg)
