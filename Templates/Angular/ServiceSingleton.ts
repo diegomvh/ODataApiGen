@@ -26,7 +26,7 @@ import {
 
 @Injectable()
 export class {{Name}} extends ODataSingletonService<{{EntityName}}> {
-  constructor(protected client: ODataClient) {
+  constructor(client: ODataClient) {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }
 

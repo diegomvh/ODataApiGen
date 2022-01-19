@@ -28,7 +28,7 @@ import {
 @Injectable()
 export class {{Name}} extends ODataBaseService {
 
-  constructor(protected client: ODataClient) {
+  constructor(client: ODataClient) {
     super(client, '{{EntitySetName}}', '{{ApiName}}');
   }
 

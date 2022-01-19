@@ -27,7 +27,7 @@ import {
 
 @Injectable()
 export class {{Name}} extends ODataEntitySetService<{{EntityName}}> {
-  constructor(protected client: ODataClient) {
+  constructor(client: ODataClient) {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }{% if HasModel %}
   //#region ODataApiGen Model
