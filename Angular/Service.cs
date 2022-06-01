@@ -148,6 +148,8 @@ namespace ODataApiGen.Angular
         var propertyEntity = binding.PropertyType;
 
         var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
+        var returnType = isCollection ? $"ODataEntities<{entity.ImportedName}>" : $"ODataEntity<{entity.ImportedName}>";
+        var responseType = isCollection ? $"entities" : $"entity";
         if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity))
         {
           var castName = $"as{propertyEntity.Name}";
@@ -160,22 +162,55 @@ namespace ODataApiGen.Angular
   }}";
             casts.Add(propertyEntity.FullName);
           }
-        }
-        else
-        {
-          //TODO collection and model name
-          var returnType = isCollection ? $"ODataEntities<{entity.ImportedName}>" : $"ODataEntity<{entity.ImportedName}>";
-          var responseType = isCollection ? $"entities" : $"entity";
-          var navMethodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
-          var fetchMethodName = "fetch" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
-          var createMethodName = isCollection ? $"add{entity.Name}To{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : $"set{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
-          var deleteMethodName = isCollection ? $"remove{entity.Name}From{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : $"unset{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
+          entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
 
-          var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
+          var navMethodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+          var fetchMethodName = castName + "Fetch" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+          var createMethodName = isCollection ? 
+            castName + $"Add{entity.Name}To{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : 
+            castName + $"Set{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
+          var deleteMethodName = isCollection ? 
+            castName + $"Remove{entity.Name}From{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : 
+            castName + $"Unset{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
 
           // Navigation
           yield return $"public {navMethodName}(key: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{ " +
-              $"\n    return this.entity(key).navigationProperty<{entity.ImportedName}>('{binding.Path}'); " +
+              $"\n    return this.{castName}().entity(key).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}'); " +
+              "\n  }";
+
+          // Fetch
+          yield return $"public {fetchMethodName}(key: EntityKey<{EntityName}>, options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{" +
+              $"\n    return this.fetchNavigationProperty<{entity.ImportedName}>(" +
+              $"\n      this.{navMethodName}(key), " +
+              $"\n      '{responseType}', options) as Observable<{returnType}>;" +
+               "\n  }";
+
+          // Link
+          yield return $"public {createMethodName}(key: EntityKey<{EntityName}>, target: ODataEntityResource<{returnType}>, {{etag}}: {{etag?: string}} = {{}}): Observable<any> {{" +
+              $"\n    return this.{navMethodName}(key).reference()" +
+              $"\n      .{(isCollection ? "add" : "set")}(target{(isCollection ? "" : ", {etag}")});" +
+               "\n  }";
+
+          // Unlink
+          yield return $@"public {deleteMethodName}(key: EntityKey<{EntityName}>, {{target, etag}}: {{target?: ODataEntityResource<{returnType}>, etag?: string}} = {{}}): Observable<any> {{" +
+          $"\n    return this.{navMethodName}(key).reference()" +
+          $"\n      .{(isCollection ? "remove(target)" : "unset({etag})")};" +
+           "\n  }";
+        }
+        else
+        {
+          var navMethodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+          var fetchMethodName = "fetch" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
+          var createMethodName = isCollection ? 
+            $"add{entity.Name}To{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : 
+            $"set{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
+          var deleteMethodName = isCollection ? 
+            $"remove{entity.Name}From{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}" : 
+            $"unset{entity.Name}As{nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1)}";
+
+          // Navigation
+          yield return $"public {navMethodName}(key: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{ " +
+              $"\n    return this.entity(key).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}'); " +
               "\n  }";
 
           // Fetch

@@ -20,7 +20,11 @@ namespace ODataApiGen.Models
         }
         public bool IsBaseOf(StructuredType structured)
         {
-            return this.IsTypeOf(structured.BaseType);
+            if (this.IsTypeOf(structured.BaseType)) return true;
+            var baseType = Program.Metadata.FindEntityType(structured.BaseType);
+            if (baseType != default)
+                return this.IsBaseOf(baseType);
+            return false;
         }
         public bool IsTypeOf(string type) {
             var names = new List<string>() {$"{this.Schema.Namespace}.{this.Name}"};
