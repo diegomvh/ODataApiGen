@@ -54,6 +54,9 @@ namespace ODataApiGen.Angular
         var callableFullName = $"{callable.Namespace}.{callable.Name}";
 
         var typescriptType = this.ToTypescriptType(callable.ReturnType);
+        if ((callable.IsEdmReturnType || callable.IsEnumReturnType) && callable.ReturnsCollection) 
+          typescriptType += "[]";
+
         var callableReturnType = String.IsNullOrEmpty(callable.ReturnType) ?
             "" :
         callable.IsEdmReturnType ?
@@ -97,7 +100,11 @@ namespace ODataApiGen.Angular
             (p.IsCollection ? "[]" : ""));
 
         args.AddRange(arguments);
-        args.Add($"options?: ODataQueryArgumentsOptions<{typescriptType}>");
+        if (callable.IsEdmReturnType || callable.IsEnumReturnType) {
+          args.Add($"options?: ODataOptions");
+        } else {
+          args.Add($"options?: ODataQueryArgumentsOptions<{typescriptType}>");
+        }
 
         var type = "null";
         if (parameters.Count() > 0)
