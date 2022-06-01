@@ -175,7 +175,7 @@ namespace ODataApiGen.Angular
 
           // Navigation
           yield return $"public {navMethodName}(key: EntityKey<{EntityName}>): ODataNavigationPropertyResource<{entity.ImportedName}> {{ " +
-              $"\n    return this.entity(key).navigationProperty<{entity.ImportedName}>('{binding.PropertyName}'); " +
+              $"\n    return this.entity(key).navigationProperty<{entity.ImportedName}>('{binding.Path}'); " +
               "\n  }";
 
           // Fetch
