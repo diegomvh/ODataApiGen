@@ -18,6 +18,8 @@ import {
   ODataFunctionResource,
   ODataOptions,
   ODataQueryArgumentsOptions,
+  ODataFunctionOptions,
+  ODataActionOptions,
   ODataBaseService
 } from 'angular-odata';//#endregion
 

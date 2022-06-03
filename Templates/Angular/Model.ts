@@ -10,6 +10,8 @@ import {
   ODataCollection,
   ODataOptions,
   ODataQueryArgumentsOptions,
+  ODataFunctionOptions,
+  ODataActionOptions,
   Duration,
 } from 'angular-odata';//#endregion
 

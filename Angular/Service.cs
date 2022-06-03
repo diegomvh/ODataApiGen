@@ -101,9 +101,11 @@ namespace ODataApiGen.Angular
 
         args.AddRange(arguments);
         if (callable.IsEdmReturnType || callable.IsEnumReturnType) {
-          args.Add($"options?: ODataOptions");
+          args.Add($"options?: ODataOptions & {{alias?: boolean}}");
+        } else if (callable.Type == "Function") {
+          args.Add($"options?: ODataFunctionOptions<{typescriptType}>");
         } else {
-          args.Add($"options?: ODataQueryArgumentsOptions<{typescriptType}>");
+          args.Add($"options?: ODataActionOptions<{typescriptType}>");
         }
 
         var type = "null";

@@ -7,7 +7,9 @@ import {
   ODataModel,
   ODataCollection,
   ODataOptions,
-  ODataQueryArgumentsOptions
+  ODataQueryArgumentsOptions,
+  ODataFunctionOptions,
+  ODataActionOptions
 } from 'angular-odata';//#endregion
 
 //#region ODataApiGen Imports
