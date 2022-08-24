@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /src
 COPY ["ODataApiGen.csproj", "."]
 RUN dotnet restore "ODataApiGen.csproj"
@@ -19,7 +19,7 @@ RUN dotnet build "ODataApiGen.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ODataApiGen.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-focal as base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine as base
 FROM base AS final
 WORKDIR /app
 COPY --from=publish ["/app/publish", "."]
