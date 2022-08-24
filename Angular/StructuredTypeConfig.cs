@@ -75,8 +75,12 @@ namespace ODataApiGen.Angular
           values.Add("srid", $"'{this.Value.SRID}'");
         if (!String.IsNullOrEmpty(this.Value.Precision))
           values.Add("precition", this.Value.Precision);
-        if (!String.IsNullOrEmpty(this.Value.Scale))
-          values.Add("scale", this.Value.Scale);
+        if (!String.IsNullOrEmpty(this.Value.Scale)) {
+          var value = this.Value.Scale.ToLower();
+          if (value == "variable")
+            value = $"'variable'";
+          values.Add("scale", value);
+        }
         if (this.Value.IsCollection || this.Value is NavigationProperty && (this.Value as NavigationProperty).Many)
           values.Add("collection", "true");
         if (this.Value is NavigationProperty)
