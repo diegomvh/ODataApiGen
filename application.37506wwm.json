@@ -1,8 +1,9 @@
 {
-    "Name": "37506wwm",
-    "Metadata": "https://opendata.cbs.nl/ODataApi/OData/37506wwm/$metadata",
-    "Output": "../AngularODataEntity/src/app",
-    "Purge": true,
-    "GeoJson": false,
-    "Models": true
+  "Name": "37506wwm",
+  "Type": "Angular",
+  "Metadata": "https://opendata.cbs.nl/ODataApi/OData/37506wwm/$metadata",
+  "Output": "../AngularODataEntity/src/app",
+  "Purge": true,
+  "GeoJson": false,
+  "Models": true
 }

@@ -24,9 +24,12 @@ namespace ODataApiGen.Abstracts
 
         // About File
         public abstract string FileName { get; }
+        public abstract string FileExtension { get; }
         public abstract string Directory { get; }
         public Uri Uri => !String.IsNullOrEmpty(Directory) ? new Uri($"r://{Directory}{Path.DirectorySeparatorChar}{FileName}", UriKind.Absolute) : new Uri($"r://{FileName}");
 
+        // About Template
+        public string TemplateFile => this.GetType().Name + this.FileExtension;
         // About References
         public string ImportedName {get;set;} = String.Empty;
         public void CleanImportedNames() {

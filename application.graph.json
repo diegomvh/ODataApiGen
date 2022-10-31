@@ -1,8 +1,9 @@
 {
-    "Name": "MsGraph",
-    "Metadata": "https://graph.microsoft.com/v1.0/$metadata",
-    "Output": "../AngularODataEntity/src/app",
-    "Purge": true,
-    "GeoJson": false,
-    "Models": true
+  "Name": "MsGraph",
+  "Type": "Angular",
+  "Metadata": "https://graph.microsoft.com/v1.0/$metadata",
+  "Output": "../AngularODataEntity/src/app",
+  "Purge": true,
+  "GeoJson": false,
+  "Models": true
 }

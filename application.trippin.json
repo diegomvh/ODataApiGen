@@ -1,8 +1,9 @@
 {
-    "Name": "TripPin",
-    "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
-    "Output": "../AngularODataEntity/src/app",
-    "Purge": true,
-    "GeoJson": true,
-    "Models": true
+  "Name": "TripPin",
+  "Type": "Angular",
+  "Metadata": "https://services.odata.org/V4/TripPinServiceRW/$metadata",
+  "Output": "../AngularODataEntity/src/app",
+  "Purge": true,
+  "GeoJson": true,
+  "Models": true
 }

@@ -4,20 +4,19 @@ using System.Linq;
 using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
-namespace ODataApiGen.Angular
+namespace ODataApiGen.Flutter
 {
-    public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
+    public abstract class FlutterRenderable : ODataApiGen.Abstracts.Renderable
     {
-        public AngularRenderable(ApiOptions options) : base(options) {}
-
-        public override string FileExtension => ".ts";
-        public string _ToTypescriptName(string name, TypeScriptElement e) {
-            return Utils.ToTypescriptName(name, e);
+        public FlutterRenderable(ApiOptions options) : base(options) {}
+        public override string FileExtension => ".dart";
+        public string _ToTypescriptName(string name, DartElement e) {
+            return Utils.ToDartName(name, e);
         }
         public string ToTypescriptType(string type)
         {
 
-            return Utils.ToTypescriptType(type, Options.GeoJson);
+            return Utils.ToDartType(type, Options.GeoJson);
         }
         public IEnumerable<string> CallableNamespaces(Callable callable)
         {

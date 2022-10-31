@@ -20,25 +20,26 @@ namespace ODataApiGen
     private ILogger Logger { get; } = Program.LoggerFactory.CreateLogger<Renderer>();
     public string StaticPath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}Static";
     public string TemplatesPath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}Templates";
+    public string Type { get; private set; }
     public string Output { get; private set; }
-    public Renderer(string output)
+    public Renderer(string type, string output)
     {
       //Template.FileSystem = new LocalFileSystem(TemplatesPath);
+      this.Type = type;
       this.Output = output;
       Template.RegisterFilter(typeof(Angular.Filters));
     }
 
     private void DoRender(Renderable entity)
     {
-      var templateName = entity.GetType().Name;
-      var template = Template.Parse(File.ReadAllText($"{TemplatesPath}{Path.DirectorySeparatorChar}Angular{Path.DirectorySeparatorChar}{templateName}.ts"));
+      var template = Template.Parse(File.ReadAllText($"{TemplatesPath}{Path.DirectorySeparatorChar}{this.Type}{Path.DirectorySeparatorChar}{entity.TemplateFile}"));
       var content = template.Render(Hash.FromAnonymousObject(entity, true));
       entity.CleanImportedNames();
 
       var path = $"{Output}{Path.DirectorySeparatorChar}";
       if (!String.IsNullOrWhiteSpace(entity.Directory))
         path += $"{entity.Directory}{Path.DirectorySeparatorChar}";
-      path += $"{entity.FileName}.ts";
+      path += $"{entity.FileName}{entity.FileExtension}";
       path = Path.GetFullPath(path);
 
       if (!File.Exists(path))

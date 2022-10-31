@@ -29,22 +29,23 @@ namespace ODataApiGen
 
       var builder = new ConfigurationBuilder()
           .SetBasePath(Directory.GetCurrentDirectory())
-          .AddJsonFile("application.json")
+          .AddJsonFile("application.northwind.json")
           .AddCommandLine(args, new Dictionary<string, string>() {
-                    {"-Name", "Name"},
-                    {"-Metadata", "Metadata"},
-                    {"-Purge", "Purge"},
-                    {"-GeoJson", "GeoJson"},
-                    {"-Output", "Output"},
-                    {"-Models", "Models"}
+            {"-Name", "Name"},
+            {"-Metadata", "Metadata"},
+            {"-Purge", "Purge"},
+            {"-GeoJson", "GeoJson"},
+            {"-Output", "Output"},
+            {"-Models", "Models"}
           });
       Configuration = builder.Build();
 
       var name = Configuration.GetValue<string>("Name");
       var output = Configuration.GetValue<string>("Output");
+      var type = Configuration.GetValue<string>("Type");
       output = $"{output}{Path.DirectorySeparatorChar}{name.ToLower()}";
       var directories = new DirectoryManager(output);
-      var renderer = new Renderer(output);
+      var renderer = new Renderer(type, output);
 
       var metadata = Configuration.GetValue<string>("Metadata");
       var serviceRootUrl = metadata.StartsWith("http") ? metadata.TrimEnd("$metadata".ToCharArray()) : "";
@@ -61,7 +62,7 @@ namespace ODataApiGen
         Models = Configuration.GetValue<bool>("Models"),
         GeoJson = Configuration.GetValue<bool>("GeoJson"),
       };
-      Package = new Angular.Package(options);
+      Package = type == "Angular" ? new Angular.Package(options) : new Flutter.Package(options);
       Package.Build();
       Package.ResolveDependencies();
 
@@ -69,7 +70,7 @@ namespace ODataApiGen
       directories.PrepareFolders(Package.GetAllDirectories());
 
       Logger.LogInformation("Copy static content");
-      directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}Angular", output, true);
+      directories.DirectoryCopy($"{renderer.StaticPath}{Path.DirectorySeparatorChar}{type}", output, true);
 
       Logger.LogInformation("Render");
       renderer.Render(Package);

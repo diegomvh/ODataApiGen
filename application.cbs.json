@@ -1,8 +1,9 @@
 {
-    "Name": "CBS",
-    "Metadata": "https://www.cbs.nl/odata/v1/$metadata",
-    "Output": "../AngularODataEntity/src/app",
-    "Purge": true,
-    "GeoJson": false,
-    "Models": true
+  "Name": "CBS",
+  "Type": "Angular",
+  "Metadata": "https://www.cbs.nl/odata/v1/$metadata",
+  "Output": "../AngularODataEntity/src/app",
+  "Purge": true,
+  "GeoJson": false,
+  "Models": true
 }
