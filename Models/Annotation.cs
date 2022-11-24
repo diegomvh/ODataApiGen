@@ -14,6 +14,7 @@ namespace ODataApiGen.Models
     Org.OData.Core.V1.OptimisticConcurrency
     Org.OData.Core.V1.DereferenceableIDs
     Org.OData.Core.V1.ConventionalIDs
+    Org.OData.Core.V1.OptionalParameter
     Org.OData.Measures.V1.ISOCurrency
     Org.OData.Measures.V1.Scale
     Org.OData.Capabilities.V1.NavigationRestrictions
@@ -50,6 +51,7 @@ namespace ODataApiGen.Models
                 case "Org.OData.Core.V1.ResourcePath": return new CoreResourcePathAnnotation(dyn);
                 case "Org.OData.Core.V1.DereferenceableIDs": return new CoreDereferenceableIDsAnnotation(dyn);
                 case "Org.OData.Core.V1.ConventionalIDs": return new CoreConventionalIDsAnnotation(dyn);
+                case "Org.OData.Core.V1.OptionalParameter": return new CoreOptionalParameterAnnotation(dyn);
                 case "Org.OData.Measures.V1.ISOCurrency": return new MeasuresISOCurrencyAnnotation(dyn);
                 case "Org.OData.Measures.V1.Scale": return new MeasuresScaleAnnotation(dyn);
                 case "Org.OData.Capabilities.V1.FilterFunctions": return new CapabilitiesFilterFunctionsAnnotation(dyn);
@@ -95,6 +97,10 @@ namespace ODataApiGen.Models
             return result;
         }
     }
+    public class CoreOptionalParameterAnnotation : Annotation {
+        public CoreOptionalParameterAnnotation(object value) : base(value) {}
+    }
+
     public class CoreDescriptionAnnotation : Annotation
     {
         public string String => this.Value.String;

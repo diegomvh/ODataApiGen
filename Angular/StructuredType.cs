@@ -84,11 +84,16 @@ namespace ODataApiGen.Angular
               parameters.Add(param);
             if (optionals.All(o => o != param.Name) && !callables.All(c => c.Parameters.Any(p => p.Name == param.Name)))
               optionals.Add(param.Name);
+            if (param.HasAnnotation("Org.OData.Core.V1.OptionalParameter")) 
+              optionals.Add(param.Name);
           }
         }
         parameters = parameters.Where(p => !p.IsBinding).GroupBy(p => p.Name).Select(g => g.First()).ToList();
 
-        var arguments = parameters.Select(p =>
+        var arguments = parameters
+          .Where(p => !optionals.Contains(p.Name))
+          .Union(parameters.Where(p => optionals.Contains(p.Name)))
+          .Select(p =>
             $"{p.Name}" +
             (optionals.Any(o => o == p.Name) ? "?" : "") +
             $": {this.ToTypescriptType(p.Type)}" +

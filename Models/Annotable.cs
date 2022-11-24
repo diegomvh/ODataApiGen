@@ -15,5 +15,9 @@ namespace ODataApiGen.Models
         public T FindAnnotation<T>(string term) where T: Annotation {
             return this.Annotations.Where(a => a.Term == term).FirstOrDefault() as T;
         }
+
+        public bool HasAnnotation(string term) {
+            return this.Annotations.Any(a => a.Term == term);
+        }
     }
 }
