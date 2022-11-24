@@ -3,9 +3,9 @@ using System.Xml.Linq;
 
 namespace ODataApiGen.Models
 {
-    public class Parameter
+    public class Parameter : Annotable
     {
-        public Parameter(XElement xElement, Callable callable)
+        public Parameter(XElement xElement, Callable callable) : base(xElement)
         {
             Name = xElement.Attribute("Name")?.Value;
             Nullable = !(xElement.Attribute("Nullable")?.Value == "false");

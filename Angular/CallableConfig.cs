@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using DotLiquid;
+using System.Text.Json;
 
 namespace ODataApiGen.Angular
 {
@@ -21,6 +22,12 @@ namespace ODataApiGen.Angular
                     values.Add("collection", "true");
                 if (!this.Value.Nullable)
                     values.Add("nullable", "false");
+                var annots = this.Value.Annotations;
+                if (annots.Count > 0)
+                {
+                    var json = JsonSerializer.Serialize(annots.Select(annot => annot.ToDictionary()));
+                    values.Add("annotations", $"{json}");
+                }
                 return $"{{{String.Join(", ", values.Select(p => $"{p.Key}: {p.Value}"))}}}";
             }
         } 
