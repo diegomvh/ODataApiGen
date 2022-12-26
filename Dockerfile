@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 WORKDIR /src
 COPY ["ODataApiGen.csproj", "."]
 RUN dotnet restore "ODataApiGen.csproj"
@@ -11,6 +11,7 @@ COPY ["Templates", "Templates/"]
 COPY ["Static", "Static/"]
 COPY ["Models", "Models/"]
 COPY ["Angular", "Angular/"]
+COPY ["Flutter", "Flutter/"]
 COPY ["Extensions", "Extensions/"]
 COPY ["Abstracts", "Abstracts/"]
 WORKDIR "/src"
@@ -19,7 +20,7 @@ RUN dotnet build "ODataApiGen.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ODataApiGen.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine as base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine as base
 FROM base AS final
 WORKDIR /app
 COPY --from=publish ["/app/publish", "."]

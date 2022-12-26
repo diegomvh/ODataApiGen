@@ -22,3 +22,14 @@ export const {{Name}} = {
   }
 } as StructuredTypeConfig<{{EntityName}}>;
 //#endregion
+
+class StructuredTypeConfig<T> {
+  final String name;
+  final String base;
+  final bool open;
+  final dynamic model;
+  final dynamic collection;
+  final dynamic annotations;
+  final List<dynamic> keys;
+  final dynamic fields;
+}

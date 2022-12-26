@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODataApiGen", "ODataApiGen.csproj", "{A46AE3F4-0ABB-4AFD-AAF0-E761375E0CF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODataApiGen", "ODataApiGen.csproj", "{7ECDF636-F94B-496D-AB2E-C6CF32EA9886}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A46AE3F4-0ABB-4AFD-AAF0-E761375E0CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A46AE3F4-0ABB-4AFD-AAF0-E761375E0CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A46AE3F4-0ABB-4AFD-AAF0-E761375E0CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A46AE3F4-0ABB-4AFD-AAF0-E761375E0CF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ECDF636-F94B-496D-AB2E-C6CF32EA9886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ECDF636-F94B-496D-AB2E-C6CF32EA9886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ECDF636-F94B-496D-AB2E-C6CF32EA9886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ECDF636-F94B-496D-AB2E-C6CF32EA9886}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

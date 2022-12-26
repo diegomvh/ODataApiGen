@@ -1,20 +1,17 @@
-﻿using System;
-using System.IO;
-using ODataApiGen.Models;
+﻿using ODataApiGen.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using ODataApiGen.Abstracts;
 
 namespace ODataApiGen
 {
   class Program
   {
-    public static ILoggerFactory LoggerFactory { get; private set; }
-    public static ILogger Logger { get; private set; }
-    public static IConfiguration Configuration { get; set; }
-    public static Metadata Metadata { get; set; }
-    public static Package Package { get; set; }
+    public static ILoggerFactory? LoggerFactory { get; private set; }
+    public static ILogger? Logger { get; private set; }
+    public static IConfiguration? Configuration { get; set; }
+    public static Metadata? Metadata { get; set; }
+    public static Package? Package { get; set; }
 
     static void Main(string[] args)
     {
@@ -29,7 +26,7 @@ namespace ODataApiGen
 
       var builder = new ConfigurationBuilder()
           .SetBasePath(Directory.GetCurrentDirectory())
-          .AddJsonFile("application.northwind.json")
+          .AddJsonFile("application.mele.json")
           .AddCommandLine(args, new Dictionary<string, string>() {
             {"-Name", "Name"},
             {"-Metadata", "Metadata"},
