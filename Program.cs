@@ -26,7 +26,7 @@ namespace ODataApiGen
 
       var builder = new ConfigurationBuilder()
           .SetBasePath(Directory.GetCurrentDirectory())
-          .AddJsonFile("application.mele.json")
+          .AddJsonFile("application.json")
           .AddCommandLine(args, new Dictionary<string, string>() {
             {"-Name", "Name"},
             {"-Metadata", "Metadata"},
