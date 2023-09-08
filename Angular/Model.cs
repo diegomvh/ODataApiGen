@@ -90,10 +90,11 @@ namespace ODataApiGen.Angular
         return type;
       }
     }
+
     public string Resource()
     {
       var pkg = Program.Package as Angular.Package;
-      var resourceName = $"${this.Value.Name}";
+      var resourceName = $"$${this.Value.Name}";
       if (this.Value is NavigationProperty)
       {
         var nav = this.Value as NavigationProperty;
@@ -107,10 +108,50 @@ namespace ODataApiGen.Angular
       }
       else
       {
-        var prop = this.Value;
         // resource
         return $@"public {resourceName}() {{
     return this.property<{this.Type}>('{this.Value.Name}');
+  }}";
+      }
+    }
+
+    public string GetAttribute()
+    {
+      var pkg = Program.Package as Angular.Package;
+      var getterName = $"${this.Value.Name}";
+      if (this.Value is NavigationProperty)
+      {
+        var nav = this.Value as NavigationProperty;
+        var entity = (this.Value.Type != null) ?
+          pkg.FindEntity(this.Value.Type) :
+            pkg.FindEntity(nav.ToEntityType);
+      return $@"public {getterName}() {{
+    return this.getAttribute<{entity.ImportedName}>('{this.Value.Name}') as {this.Type};
+  }}";
+      }
+      else
+      {
+        return $@"public {getterName}() {{
+    return this.getAttribute<{this.Type}>('{this.Value.Name}') as {this.Type};
+  }}";
+      }
+    }
+
+    public string FetchAttribute()
+    {
+      var pkg = Program.Package as Angular.Package;
+      var fetchName = $"{this.Value.Name}$";
+      if (this.Value is NavigationProperty) {
+        var nav = this.Value as NavigationProperty;
+        var entity = (this.Value.Type != null) ?
+            pkg.FindEntity(this.Value.Type) :
+            pkg.FindEntity(nav.ToEntityType);
+        return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{
+      return this.fetchAttribute<{entity.ImportedName}>('{this.Value.Name}', options) as Observable<{this.Type}>;
+    }}";
+      } else {
+      return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{this.Type}>) {{
+    return this.fetchAttribute<{this.Type}>('{this.Value.Name}', options) as Observable<{this.Type}>;
   }}";
       }
     }
@@ -118,39 +159,13 @@ namespace ODataApiGen.Angular
     {
       var pkg = Program.Package as Angular.Package;
       var nav = this.Value as NavigationProperty;
-      var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
-      var setterName = $"set{name}";
+      var setterName = $"{this.Value.Name}$$";
       var entity = (this.Value.Type != null) ?
           pkg.FindEntity(this.Value.Type) :
           pkg.FindEntity(nav.ToEntityType);
       // setter
       return $@"public {setterName}(model: {this.Type} | null, options?: ODataOptions) {{
     return this.setReference<{entity.ImportedName}>('{this.Value.Name}', model, options);
-  }}";
-    }
-    public string GetterReference()
-    {
-      var pkg = Program.Package as Angular.Package;
-      var nav = this.Value as NavigationProperty;
-      var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
-      var getterName = $"get{name}";
-      var entity = (this.Value.Type != null) ?
-          pkg.FindEntity(this.Value.Type) :
-          pkg.FindEntity(nav.ToEntityType);
-      // setter
-      return $@"public {getterName}() {{
-    return this.getReference<{entity.ImportedName}>('{this.Value.Name}') as {this.Type};
-  }}";
-    }
-    public string GetterValue()
-    {
-      var pkg = Program.Package as Angular.Package;
-      var prop = this.Value as Property;
-      var name = this.Value.Name.Substring(0, 1).ToUpper() + this.Value.Name.Substring(1);
-      var getterName = $"get{name}";
-      // getter
-      return $@"public {getterName}(options?: ODataOptions) {{
-    return this.getValue<{this.Type}>('{this.Value.Name}', options) as Observable<{this.Type}>;
   }}";
     }
     public object ToLiquid()
@@ -160,8 +175,9 @@ namespace ODataApiGen.Angular
         Name = this.Name,
         Type = this.Type,
         Resource = this.Resource(),
+        Getter = this.GetAttribute(),
         Setter = this.NeedReference ? this.SetterReference() : "",
-        Getter = this.NeedReference ? this.GetterReference() : this.GetterValue()
+        Fetch = this.FetchAttribute()
       };
     }
     public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");

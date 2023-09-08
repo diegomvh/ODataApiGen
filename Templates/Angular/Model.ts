@@ -28,6 +28,7 @@ export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{
   {{field.Resource}}
   {{field.Getter}}
   {{field.Setter}}
+  {{field.Fetch}}
   {% endfor %}//#endregion
   //#region ODataApiGen Actions
   {% for action in Actions %}{{action}}
