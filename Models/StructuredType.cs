@@ -32,6 +32,14 @@ namespace ODataApiGen.Models
                 names.Add($"{this.Schema.Alias}.{this.Name}");
             return names.Contains(type);
         }
+        public int HierarchyLevelOf(StructuredType structured, int level = 0)
+        {
+            if (this.IsTypeOf(structured.BaseType)) return level;
+            var baseType = Program.Metadata.FindEntityType(structured.BaseType);
+            if (baseType != default)
+                return this.HierarchyLevelOf(baseType, level + 1);
+            return level;
+        }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }
         public string BaseType { get; private set; }

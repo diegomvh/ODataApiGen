@@ -144,7 +144,7 @@ namespace ODataApiGen.Angular
         var propertyEntity = binding.PropertyType;
 
         var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
-        if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity))
+        if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity) && bindingEntity.HierarchyLevelOf(propertyEntity) == 1)
         {
           var castName = $"as{propertyEntity.Name}";
           if (!casts.Contains(propertyEntity.FullName))
@@ -162,7 +162,7 @@ namespace ODataApiGen.Angular
           //TODO collection and model name
           var returnType = isCollection ? $"ODataCollection<{entity.ImportedName}, ODataModel<{entity.ImportedName}>>" : $"ODataModel<{entity.ImportedName}>";
           var responseType = isCollection ? $"collection" : $"model";
-          var methodName = nav.Name.Substring(0, 1).ToLower() + nav.Name.Substring(1);
+          var methodName = $"as{propertyEntity.Name}" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
           var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
 
           // Navigation
