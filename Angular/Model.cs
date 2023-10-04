@@ -23,11 +23,6 @@ namespace ODataApiGen.Angular
         var required = !(Value is NavigationProperty || Value.Nullable);
         var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
         return name + (!required ? "?" : "!");
-        /*
-        var navigation = Value is NavigationProperty;
-        var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
-        return name + (navigation ? "?" : "!");
-        */
       }
     }
 
@@ -36,17 +31,18 @@ namespace ODataApiGen.Angular
       get
       {
         var pkg = Program.Package as Angular.Package;
-        var nullable = Value.Nullable;
         var type = "any";
         if (this.Value.IsEnumType)
         {
           var e = pkg.FindEnum(this.Value.Type);
           type = e.ImportedName;
+          //if (Value.Nullable) { type = type + " | null"; }
         }
         else if (Value.IsEdmType)
         {
           type = this.Structured.ToTypescriptType(Value.Type);
           type = type + (Value.IsCollection ? "[]" : "");
+          //if (type != "string" && Value.Nullable && !Value.IsCollection) { type = type + " | null"; }
         }
         else if (this.Value.Type != null)
         {
@@ -81,12 +77,6 @@ namespace ODataApiGen.Angular
             type = $"{model.ImportedName}<{entity.ImportedName}>";
           }
         }
-        /*
-        if (nullable)
-        {
-          type = type + " | null";
-        }
-        */
         return type;
       }
     }
@@ -125,7 +115,7 @@ namespace ODataApiGen.Angular
         var entity = (this.Value.Type != null) ?
           pkg.FindEntity(this.Value.Type) :
             pkg.FindEntity(nav.ToEntityType);
-      return $@"public {getterName}() {{
+        return $@"public {getterName}() {{
     return this.getAttribute<{entity.ImportedName}>('{this.Value.Name}') as {this.Type};
   }}";
       }
@@ -141,7 +131,8 @@ namespace ODataApiGen.Angular
     {
       var pkg = Program.Package as Angular.Package;
       var fetchName = $"{this.Value.Name}$";
-      if (this.Value is NavigationProperty) {
+      if (this.Value is NavigationProperty)
+      {
         var nav = this.Value as NavigationProperty;
         var entity = (this.Value.Type != null) ?
             pkg.FindEntity(this.Value.Type) :
@@ -149,8 +140,10 @@ namespace ODataApiGen.Angular
         return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{
       return this.fetchAttribute<{entity.ImportedName}>('{this.Value.Name}', options) as Observable<{this.Type}>;
     }}";
-      } else {
-      return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{this.Type}>) {{
+      }
+      else
+      {
+        return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{this.Type}>) {{
     return this.fetchAttribute<{this.Type}>('{this.Value.Name}', options) as Observable<{this.Type}>;
   }}";
       }

@@ -23,11 +23,6 @@ namespace ODataApiGen.Angular
         var required = !(Value is NavigationProperty || Value.Nullable);
         var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
         return name + (!required ? "?" : "");
-        /*
-        var navigation = Value is NavigationProperty;
-        var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
-        return name + (navigation ? "?" : "");
-        */
       }
     }
 
@@ -36,35 +31,31 @@ namespace ODataApiGen.Angular
       get
       {
         var pkg = Program.Package as Angular.Package;
-        var nullable = Value.Nullable;
         var type = "any";
         if (this.Value.IsEnumType)
         {
           var e = pkg.FindEnum(this.Value.Type);
           type = e.ImportedName;
+          //if (Value.Nullable) { type = type + " | null"; }
         }
-        else if (Value.IsEdmType)
+        else if (this.Value.IsEdmType)
         {
           type = this.Structured.ToTypescriptType(Value.Type);
           type = type + (Value.IsCollection ? "[]" : "");
+          //if (type != "string" && Value.Nullable && !Value.IsCollection) { type = type + " | null"; }
         }
-        else if (Value.IsEntityType || Value.IsComplexType)
+        else if (this.Value.IsEntityType || Value.IsComplexType)
         {
           var entity = pkg.FindEntity(this.Value.Type);
           type = $"{entity.ImportedName}" + (Value.IsCollection ? "[]" : "");
+          //if (Value.Nullable && !Value.IsCollection) { type = type + " | null"; }
         }
-        else if (Value is NavigationProperty)
+        else if (this.Value is NavigationProperty)
         {
           var nav = Value as NavigationProperty;
           var entity = pkg.FindEntity(nav.ToEntityType);
           type = $"{entity.ImportedName}" + (nav.Many ? "[]" : "");
         }
-        /*
-        if (nullable)
-        {
-          type = type + " | null";
-        }
-        */
         return type;
       }
     }
