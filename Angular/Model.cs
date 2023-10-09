@@ -36,6 +36,7 @@ namespace ODataApiGen.Angular
         {
           var e = pkg.FindEnum(this.Value.Type);
           type = e.ImportedName;
+          type = type + (Value.IsCollection ? "[]" : "");
           //if (Value.Nullable) { type = type + " | null"; }
         }
         else if (Value.IsEdmType)

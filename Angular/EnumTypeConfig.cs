@@ -23,8 +23,10 @@ namespace ODataApiGen.Angular
     {
       get
       {
-        var values = new Dictionary<string, string>();
-        values.Add("value", $"{this.Value.Value}");
+        var values = new Dictionary<string, string>
+        {
+            { "value", $"{this.Value.Value}" }
+        };
         if (this.Name != this.Value.Name)
           values.Add("name", $"'{this.Value.Name}'");
         var annots = this.Value.Annotations;
@@ -40,8 +42,8 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        Name = this.Name,
-        Type = this.Type
+        this.Name,
+        this.Type
       };
     }
   }

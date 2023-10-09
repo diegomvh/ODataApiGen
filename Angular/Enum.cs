@@ -5,10 +5,13 @@ using System.Linq;
 using DotLiquid;
 using ODataApiGen.Abstracts;
 
-namespace ODataApiGen.Angular {
-    public class Enum : AngularRenderable, ILiquidizable {
-        public Models.EnumType EdmEnumType {get; private set;}
-        public Enum(Models.EnumType type, ApiOptions options) : base(options) {
+namespace ODataApiGen.Angular
+{
+    public class Enum : AngularRenderable, ILiquidizable
+    {
+        public Models.EnumType EdmEnumType { get; private set; }
+        public Enum(Models.EnumType type, ApiOptions options) : base(options)
+        {
             EdmEnumType = type;
         }
         // Imports
@@ -24,9 +27,10 @@ namespace ODataApiGen.Angular {
         public bool Flags => this.EdmEnumType.Flags;
         public object ToLiquid()
         {
-            return new { 
+            return new
+            {
                 Name = this.ImportedName,
-                EnumType = this.EnumType
+                this.EnumType
             };
         }
     }
