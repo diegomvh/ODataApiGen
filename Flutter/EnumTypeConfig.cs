@@ -1,14 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using ODataApiGen.Abstracts;
 using DotLiquid;
-using System;
 using System.Text.Json;
 
 namespace ODataApiGen.Flutter
 {
-  public class EnumMemberConfig : ILiquidizable
+    public class EnumMemberConfig : ILiquidizable
   {
     protected Models.EnumMember Value { get; set; }
     protected Flutter.EnumTypeConfig Config { get; set; }

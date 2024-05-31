@@ -1,14 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using ODataApiGen.Abstracts;
 using DotLiquid;
-using System;
 using System.Text.Json;
 
 namespace ODataApiGen.Angular
 {
-  public class EnumMemberConfig : ILiquidizable
+    public class EnumMemberConfig : ILiquidizable
   {
     protected Models.EnumMember Value { get; set; }
     protected Angular.EnumTypeConfig Config { get; set; }

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using DotLiquid;
 using ODataApiGen.Abstracts;
 
-namespace ODataApiGen.Flutter {
+namespace ODataApiGen.Flutter
+{
     public class Enum : FlutterRenderable, ILiquidizable {
         public Models.EnumType EdmEnumType {get; private set;}
         public Enum(Models.EnumType type, ApiOptions options) : base(options) {

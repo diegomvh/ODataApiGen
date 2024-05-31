@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using ODataApiGen.Abstracts;
 using System.Text.Json;
 
 namespace ODataApiGen.Angular
 {
-  public class EntitySetConfig : AngularRenderable, DotLiquid.ILiquidizable
+    public class EntitySetConfig : AngularRenderable, DotLiquid.ILiquidizable
   {
     public Angular.Service Service { get; private set; }
     public EntitySetConfig(Angular.Service service, ApiOptions options) : base(options)

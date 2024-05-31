@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DotLiquid;
-using DotLiquid.FileSystems;
 using Microsoft.Extensions.Logging;
 using ODataApiGen.Abstracts;
 
 namespace ODataApiGen
 {
-  class FileChunk
+    class FileChunk
   {
     public string Name { get; set; }
     public string Content { get; set; }

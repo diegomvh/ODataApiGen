@@ -1,5 +1,3 @@
-using System;
-
 namespace ODataApiGen
 {
     //Docker Name Generator

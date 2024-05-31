@@ -1,5 +1,4 @@
 ﻿using System.Xml.Linq;
-using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Models
 {

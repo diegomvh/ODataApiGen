@@ -26,7 +26,7 @@ namespace ODataApiGen
 
       var builder = new ConfigurationBuilder()
           .SetBasePath(Directory.GetCurrentDirectory())
-          .AddJsonFile("application.json")
+          .AddJsonFile("application.northwind.json")
           .AddCommandLine(args, new Dictionary<string, string>() {
             {"-Name", "Name"},
             {"-Metadata", "Metadata"},

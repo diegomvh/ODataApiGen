@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using ODataApiGen.Abstracts;
 using System.Text.Json;
 
 namespace ODataApiGen.Flutter
 {
-  public class EntitySetConfig : FlutterRenderable, DotLiquid.ILiquidizable
+    public class EntitySetConfig : FlutterRenderable, DotLiquid.ILiquidizable
   {
     public Flutter.Service Service { get; private set; }
     public EntitySetConfig(Flutter.Service service, ApiOptions options) : base(options)

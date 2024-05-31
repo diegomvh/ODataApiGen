@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using DotLiquid;
 using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Flutter
 {
-  public abstract class Service : FlutterRenderable, ILiquidizable
+    public abstract class Service : FlutterRenderable, ILiquidizable
   {
     public Models.EntityType EdmEntityType => this.HasModel ? this.Model.EdmEntityType :
         this.HasEntity ? this.Entity.EdmEntityType :

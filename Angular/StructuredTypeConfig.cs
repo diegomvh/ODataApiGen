@@ -1,15 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using ODataApiGen.Models;
 using DotLiquid;
-using System.IO;
 using ODataApiGen.Abstracts;
 using System.Text.Json;
 
 namespace ODataApiGen.Angular
 {
-  public class EntityKeyConfig : ILiquidizable
+    public class EntityKeyConfig : ILiquidizable
   {
     protected Models.PropertyRef Value { get; set; }
     protected Angular.StructuredTypeConfig Config { get; set; }

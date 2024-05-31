@@ -1,13 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using ODataApiGen.Models;
 using DotLiquid;
 using ODataApiGen.Abstracts;
-using System;
 
 namespace ODataApiGen.Angular
 {
-  public class ModelField : ILiquidizable
+    public class ModelField : ILiquidizable
   {
     protected Models.Property Value { get; set; }
     protected Angular.StructuredType Structured { get; set; }

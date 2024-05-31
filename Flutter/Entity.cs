@@ -1,12 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using DotLiquid;
 using ODataApiGen.Models;
 using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Flutter
 {
-  public class EntityProperty : ILiquidizable
+    public class EntityProperty : ILiquidizable
   {
     protected Models.Property Value { get; set; }
     protected Flutter.StructuredType Structured { get; set; }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace ODataApiGen.Abstracts
 {
     public abstract class Package {

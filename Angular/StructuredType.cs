@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System;
-using System.IO;
 using ODataApiGen.Models;
 using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
-  public abstract class StructuredType : AngularRenderable, DotLiquid.ILiquidizable
+    public abstract class StructuredType : AngularRenderable, DotLiquid.ILiquidizable
   {
     public Models.EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType;
     public Models.StructuredType EdmStructuredType { get; private set; }

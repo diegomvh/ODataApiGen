@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using ODataApiGen.Abstracts;
 
-namespace ODataApiGen.Angular {
+namespace ODataApiGen.Angular
+{
     public class ApiConfig : AngularRenderable {
         public Angular.Package Package {get; private set;}
         public ApiConfig(Package package, ApiOptions options) : base(options){

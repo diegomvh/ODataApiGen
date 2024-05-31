@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using ODataApiGen.Abstracts;
-using ODataApiGen.Models;
 
 namespace ODataApiGen.Flutter
 {

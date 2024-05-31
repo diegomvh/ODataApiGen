@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace ODataApiGen.Models
 {
-  public class NavigationProperty : Property
+    public class NavigationProperty : Property
   {
     public NavigationProperty(XElement xElement, StructuredType structured) : base(xElement, structured)
     {

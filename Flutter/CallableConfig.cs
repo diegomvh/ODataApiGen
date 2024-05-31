@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using DotLiquid;
 
 namespace ODataApiGen.Flutter

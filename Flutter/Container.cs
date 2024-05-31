@@ -1,14 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using ODataApiGen.Models;
-using System.IO;
 using ODataApiGen.Abstracts;
-using System.Text.Json.Serialization;
 using System.Text.Json;
 
 namespace ODataApiGen.Flutter
 {
-  public class Container : FlutterRenderable, DotLiquid.ILiquidizable
+    public class Container : FlutterRenderable, DotLiquid.ILiquidizable
   {
     public Models.EntityContainer EdmEntityContainer { get; private set; }
     public Flutter.ServiceContainer Service { get; private set; }

@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
 using ODataApiGen.Abstracts;
 using ODataApiGen.Models;
 
 namespace ODataApiGen.Flutter
 {
-  public class ServiceSingleton : Service
+    public class ServiceSingleton : Service
   {
     public Models.Singleton EdmSingleton { get; private set; }
 

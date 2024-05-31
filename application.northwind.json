@@ -1,9 +1,9 @@
 {
   "Name": "Northwind",
-  "Type": "Flutter",
+  "Type": "Angular",
   "Metadata": "https://services.odata.org/V4/Northwind/Northwind.svc/$metadata",
-  "Output": "./src",
+  "Output": "../AngularODataEntity/src/app",
   "Purge": true,
   "GeoJson": false,
-  "Models": false
+  "Models": true
 }
