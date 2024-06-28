@@ -13,7 +13,7 @@ namespace ODataApiGen.Angular
       this.Value = member;
       this.Config = config;
     }
-    public string Name => Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
+    public string Name => Utils.IsValidTypescrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
 
     public string Type
     {

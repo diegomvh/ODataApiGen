@@ -19,7 +19,7 @@ namespace ODataApiGen.Angular
       get
       {
         var required = !(Value is NavigationProperty || Value.Nullable);
-        var name = Utils.IsValidTypeScrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
+        var name = Utils.IsValidTypescrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
         return name + (!required ? "?" : "");
       }
     }
