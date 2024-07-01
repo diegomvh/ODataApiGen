@@ -77,9 +77,9 @@ namespace ODataApiGen.Angular
     {
       return new
       {
+        this.EnumName,
         Name = this.ImportedName,
-        Type = this.Type,
-        EnumName = this.EnumName
+        this.Type
       };
     }
   }

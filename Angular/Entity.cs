@@ -62,8 +62,8 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        Name = this.Name,
-        Type = this.Type
+          this.Name,
+          this.Type
       };
     }
     public bool IsGeo => this.Value.Type.StartsWith("Edm.Geography") || this.Value.Type.StartsWith("Edm.Geometry");
@@ -94,7 +94,7 @@ namespace ODataApiGen.Angular
       return new
       {
         Name = this.ImportedName,
-        Type = this.Type,
+          this.Type,
         EntityType = this.EdmStructuredType.FullName
       };
     }

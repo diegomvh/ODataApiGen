@@ -2,21 +2,21 @@ using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Angular
 {
-    public class Schema : AngularRenderable, DotLiquid.ILiquidizable
+    public class SchemaConfig : AngularRenderable, DotLiquid.ILiquidizable
     {
         public Models.Schema EdmSchema { get; private set; }
-        public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema";
+        public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema.config";
         //TODO: Create nice schema names
-        public override string Name => Utils.ToTypescriptName(this.Namespace.Split('.').Last(), TypeScriptElement.Class) + "Schema";
+        public override string Name => Utils.ToTypescriptName(this.Namespace.Split('.').Last(), TypeScriptElement.Class) + "SchemaConfig";
         public ICollection<Angular.Enum> Enums { get; } = new List<Angular.Enum>();
-        public ICollection<Angular.EnumTypeConfig> EnumConfigs { get; } = new List<Angular.EnumTypeConfig>();
+        public ICollection<Angular.EnumTypeConfig> EnumTypeConfigs { get; } = new List<Angular.EnumTypeConfig>();
         public ICollection<Angular.Entity> Entities { get; } = new List<Angular.Entity>();
         public ICollection<Angular.Model> Models { get; } = new List<Angular.Model>();
         public ICollection<Angular.Collection> Collections { get; } = new List<Angular.Collection>();
-        public ICollection<Angular.StructuredTypeConfig> EntityConfigs { get; } = new List<Angular.StructuredTypeConfig>();
+        public ICollection<Angular.StructuredTypeConfig> StructuredTypeConfigs { get; } = new List<Angular.StructuredTypeConfig>();
         public ICollection<Angular.CallableConfig> CallablesConfigs { get; } = new List<Angular.CallableConfig>();
-        public ICollection<Angular.Container> Containers { get; } = new List<Angular.Container>();
-        public Schema(Models.Schema schema, ApiOptions options) : base(options)
+        public ICollection<Angular.EntityContainerConfig> Containers { get; } = new List<Angular.EntityContainerConfig>();
+        public SchemaConfig(Models.Schema schema, ApiOptions options) : base(options)
         {
             this.EdmSchema = schema;
             this.AddEnums(schema.EnumTypes);
@@ -26,7 +26,7 @@ namespace ODataApiGen.Angular
             this.AddCallables(schema.Actions);
             foreach (var container in schema.EntityContainers)
             {
-                this.Containers.Add(new Angular.Container(container, options));
+                this.Containers.Add(new Angular.EntityContainerConfig(container, options));
             }
         }
         public void AddEnums(IEnumerable<Models.EnumType> enums)
@@ -36,7 +36,7 @@ namespace ODataApiGen.Angular
                 var enu = new Angular.Enum(e, this.Options);
                 this.Enums.Add(enu);
                 var config = new Angular.EnumTypeConfig(enu, this.Options);
-                this.EnumConfigs.Add(config);
+                this.EnumTypeConfigs.Add(config);
             }
         }
         public void AddComplexes(IEnumerable<Models.ComplexType> complexes)
@@ -56,7 +56,7 @@ namespace ODataApiGen.Angular
                 } else {
                     config = new Angular.StructuredTypeConfig(entity, this.Options);
                 }
-                this.EntityConfigs.Add(config);
+                this.StructuredTypeConfigs.Add(config);
             }
         }
         public void AddEntities(IEnumerable<Models.EntityType> entities)
@@ -76,7 +76,7 @@ namespace ODataApiGen.Angular
                 } else {
                     config = new Angular.StructuredTypeConfig(entity, this.Options);
                 }
-                this.EntityConfigs.Add(config);
+                this.StructuredTypeConfigs.Add(config);
             }
         }
         public void AddCallables(IEnumerable<Models.Callable> callables)
@@ -95,8 +95,8 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {
-            this.AddDependencies(this.EnumConfigs);
-            this.AddDependencies(this.EntityConfigs);
+            this.AddDependencies(this.EnumTypeConfigs);
+            this.AddDependencies(this.StructuredTypeConfigs);
             this.AddDependencies(this.Containers);
         }
         public IEnumerable<string> GetAllDirectories()
@@ -104,8 +104,8 @@ namespace ODataApiGen.Angular
             return this.Enums.Select(e => e.Directory)
                 .Union(this.Entities.Select(m => m.Directory))
                 .Union(this.Models.Select(m => m.Directory))
-                .Union(this.EntityConfigs.Select(m => m.Directory))
-                .Union(this.EnumConfigs.Select(m => m.Directory))
+                .Union(this.StructuredTypeConfigs.Select(m => m.Directory))
+                .Union(this.EnumTypeConfigs.Select(m => m.Directory))
                 .Union(this.Collections.Select(m => m.Directory))
                 .Union(this.Containers.SelectMany(c => c.GetAllDirectories()));
         }
@@ -115,11 +115,11 @@ namespace ODataApiGen.Angular
             {
                 var renderables = new List<Renderable>();
                 renderables.AddRange(this.Enums);
-                renderables.AddRange(this.EnumConfigs);
+                renderables.AddRange(this.EnumTypeConfigs);
                 renderables.AddRange(this.Entities);
                 renderables.AddRange(this.Models);
                 renderables.AddRange(this.Collections);
-                renderables.AddRange(this.EntityConfigs);
+                renderables.AddRange(this.StructuredTypeConfigs);
                 renderables.AddRange(this.Containers);
                 renderables.AddRange(this.Containers.SelectMany(s => s.Renderables));
                 return renderables;

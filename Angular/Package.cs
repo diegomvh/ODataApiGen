@@ -5,10 +5,11 @@ namespace ODataApiGen.Angular
 {
     public class Package : ODataApiGen.Abstracts.Package, ILiquidizable
     {
+        public Angular.Api Api { get; private set; }
         public Angular.Module Module { get; private set; }
         public Angular.ApiConfig Config { get; private set; }
         public Angular.Index Index { get; private set; }
-        public ICollection<Angular.Schema> Schemas { get; private set; } = new List<Angular.Schema>();
+        public ICollection<Angular.SchemaConfig> Schemas { get; private set; } = new List<Angular.SchemaConfig>();
         public IEnumerable<Angular.Enum> Enums => this.Schemas.SelectMany(s => s.Enums);
         public Enum FindEnum(string type) {
             return this.Enums.FirstOrDefault(m => m.EdmEnumType.IsTypeOf(type));
@@ -28,15 +29,16 @@ namespace ODataApiGen.Angular
         public Package(ApiOptions options) : base(options)
         {
             this.Module = new Module(this, options);
-            Config = new Angular.ApiConfig(this, options);
-            Index = new Angular.Index(this, options);
+            this.Config = new Angular.ApiConfig(this, options);
+            this.Index = new Angular.Index(this, options);
+            this.Api = new Angular.Api(this, options);
         }
 
         public override void Build()
         {
             foreach (var schema in Program.Metadata.Schemas)
             {
-                this.Schemas.Add(new Angular.Schema(schema, this.Options));
+                this.Schemas.Add(new Angular.SchemaConfig(schema, this.Options));
             }
         }
         public override void ResolveDependencies()
@@ -119,18 +121,23 @@ namespace ODataApiGen.Angular
             // Module
             this.Module.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Module.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
+            // Api
+            this.Api.EnumTypeConfigs = this.Schemas.SelectMany(s => s.EnumTypeConfigs);
+            this.Api.StructuredTypeConfigs = this.Schemas.SelectMany(s => s.StructuredTypeConfigs);
+            this.Api.EntitySetConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs));
             // Config
             this.Config.AddDependencies(this.Schemas);
             // Index
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Enums));
-            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.EnumConfigs));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.EnumTypeConfigs));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Entities));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Models));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Collections));
-            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.EntityConfigs));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.StructuredTypeConfigs));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs)));
+            this.Index.AddDependency(this.Api);
             this.Index.AddDependency(this.Config);
             this.Index.AddDependency(this.Module);
         }
@@ -145,11 +152,11 @@ namespace ODataApiGen.Angular
         {
             return new
             {
-                Name = this.Name,
-                ServiceRootUrl = this.ServiceRootUrl,
-                Version = this.Version,
-                Creation = DateTime.Now,
-                Schemas = this.Schemas
+                this.Name,
+                this.ServiceRootUrl,
+                this.Version,
+                this.Schemas,
+                Creation = DateTime.Now
             };
         }
 
@@ -157,10 +164,13 @@ namespace ODataApiGen.Angular
         {
             get
             {
-                var renderables = new List<Renderable>();
-                renderables.Add(this.Module);
-                renderables.Add(this.Config);
-                renderables.Add(this.Index);
+                var renderables = new List<Renderable>
+                {
+                    this.Api,
+                    this.Module,
+                    this.Config,
+                    this.Index
+                };
                 renderables.AddRange(this.Schemas);
                 renderables.AddRange(this.Schemas.SelectMany(s => s.Renderables));
                 return renderables;

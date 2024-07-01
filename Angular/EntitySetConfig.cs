@@ -26,13 +26,13 @@ namespace ODataApiGen.Angular
     {
       return new
       {
+        this.Type,
+        this.EntitySetName,
+        this.EntityType,
         Name = this.ImportedName,
-        Type = this.Type,
-        EntitySetName = this.EntitySetName,
-        EntityType = this.EntityType,
         Service = new
         {
-          Name = this.Service.Name,
+            this.Service.Name,
         }
       };
     }

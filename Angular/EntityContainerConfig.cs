@@ -4,13 +4,13 @@ using System.Text.Json;
 
 namespace ODataApiGen.Angular
 {
-    public class Container : AngularRenderable, DotLiquid.ILiquidizable
+    public class EntityContainerConfig : AngularRenderable, DotLiquid.ILiquidizable
   {
     public Models.EntityContainer EdmEntityContainer { get; private set; }
     public Angular.ServiceContainer Service { get; private set; }
     public ICollection<Angular.Service> Services { get; } = new List<Angular.Service>();
     public ICollection<Angular.EntitySetConfig> EntitySetConfigs { get; } = new List<Angular.EntitySetConfig>();
-    public Container(EntityContainer container, ApiOptions options) : base(options)
+    public EntityContainerConfig(EntityContainer container, ApiOptions options) : base(options)
     {
       this.EdmEntityContainer = container;
       this.Service = new Angular.ServiceContainer(this, options);
@@ -31,8 +31,8 @@ namespace ODataApiGen.Angular
     }
     public bool HasAnnotations => this.EdmEntityContainer.Annotations.Count() > 0;
     public string Annotations => JsonSerializer.Serialize(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), new JsonSerializerOptions() { WriteIndented = true });
-    public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
-    public override string Name => Utils.ToTypescriptName(this.EdmEntityContainer.Name, TypeScriptElement.Class) + "Container";
+    public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".entitycontainer.config";
+    public override string Name => Utils.ToTypescriptName(this.EdmEntityContainer.Name, TypeScriptElement.Class) + "EntityContainerConfig";
     public string ContainerType => this.EdmEntityContainer.FullName;
     public string ContainerName => this.EdmEntityContainer.Name;
     public string ApiName => this.Options.Name;
@@ -78,8 +78,10 @@ namespace ODataApiGen.Angular
     {
       get
       {
-        var renderables = new List<Renderable>();
-        renderables.Add(this.Service);
+        var renderables = new List<Renderable>
+        {
+            this.Service
+        };
         renderables.AddRange(this.Services);
         renderables.AddRange(this.EntitySetConfigs);
         return renderables;
@@ -89,10 +91,10 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        Name = this.ImportedName,
-        Type = this.Type,
-        ContainerName = this.ContainerName,
-        ContainerType = this.ContainerType
+        this.Type,
+        this.ContainerName,
+        this.ContainerType,
+        Name = this.ImportedName
       };
     }
   }
