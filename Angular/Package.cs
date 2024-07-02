@@ -125,6 +125,7 @@ namespace ODataApiGen.Angular
             this.Api.EnumTypeConfigs = this.Schemas.SelectMany(s => s.EnumTypeConfigs);
             this.Api.StructuredTypeConfigs = this.Schemas.SelectMany(s => s.StructuredTypeConfigs);
             this.Api.EntitySetConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs));
+            this.Api.CallableConfigs = this.Schemas.SelectMany(s => s.CallablesConfigs);
             // Config
             this.Config.AddDependencies(this.Schemas);
             // Index

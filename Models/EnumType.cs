@@ -1,13 +1,14 @@
 ﻿using System.Xml.Linq;
+using DotLiquid;
 
 namespace ODataApiGen.Models
 {
-    public class EnumType : Annotable
+    public class EnumType : Annotable, ILiquidizable
     {
         public Schema Schema {get; private set;}
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }
-        public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
+        public string FullName => $"{this.Namespace}.{this.Name}";
         public bool Flags { get; private set; }
         public IEnumerable<EnumMember> Members { get; private set; }
         public EnumType(XElement element, Schema schema) : base(element)
@@ -23,6 +24,15 @@ namespace ODataApiGen.Models
             if (!String.IsNullOrEmpty(this.Schema.Alias))
                 names.Add($"{this.Schema.Alias}.{this.Name}");
             return names.Contains(type);
+        }
+
+        public object ToLiquid()
+        {
+            return new
+            {
+                this.Name,
+                this.FullName
+            };
         }
     }
 }

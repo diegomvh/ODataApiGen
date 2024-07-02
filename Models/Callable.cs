@@ -1,8 +1,9 @@
 ﻿using System.Xml.Linq;
+using DotLiquid;
 
 namespace ODataApiGen.Models
 {
-    public abstract class Callable
+    public abstract class Callable : ILiquidizable
     {
         public Schema Schema {get; private set;}
         public Callable(XElement xElement, Schema schema)
@@ -53,5 +54,13 @@ namespace ODataApiGen.Models
         public bool IsBound { get; }
         public bool IsComposable { get; }
         public bool ReturnsCollection { get; }
+        public object ToLiquid()
+        {
+            return new
+            {
+                this.Name,
+                this.FullName
+            };
+        }
     }
 }

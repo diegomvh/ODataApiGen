@@ -1,8 +1,9 @@
 ﻿using System.Xml.Linq;
+using DotLiquid;
 
 namespace ODataApiGen.Models
 {
-    public class Singleton : Annotable
+    public class Singleton : Annotable, ILiquidizable
     {
         public EntityContainer EntityContainer {get; private set;}
         public Singleton(XElement xElement, EntityContainer container) : base(xElement)
@@ -34,5 +35,13 @@ namespace ODataApiGen.Models
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
         public IEnumerable<NavigationPropertyBinding> NavigationPropertyBindings { get; set; }
+        public object ToLiquid()
+        {
+            return new
+            {
+                this.Name,
+                this.FullName
+            };
+        }
     }
 }

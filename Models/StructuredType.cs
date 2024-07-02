@@ -1,8 +1,9 @@
 ﻿using System.Xml.Linq;
+using DotLiquid;
 
 namespace ODataApiGen.Models
 {
-    public abstract class StructuredType : Annotable
+    public abstract class StructuredType : Annotable, ILiquidizable
     {
         public Schema Schema {get; private set;}
         public StructuredType(XElement element, Schema schema) : base(element)
@@ -41,7 +42,15 @@ namespace ODataApiGen.Models
         public string Name { get; private set; }
         public string BaseType { get; private set; }
         public bool OpenType { get; private set; }
-        public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
+        public string FullName => $"{this.Namespace}.{this.Name}";
         public List<Property> Properties { get; private set; }
+        public object ToLiquid()
+        {
+            return new
+            {
+                this.Name,
+                this.FullName
+            };
+        }
     }
 }

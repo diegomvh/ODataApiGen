@@ -6,26 +6,26 @@ namespace ODataApiGen.Angular
 {
     public class EntityContainerConfig : AngularRenderable, DotLiquid.ILiquidizable
   {
-    public Models.EntityContainer EdmEntityContainer { get; private set; }
-    public Angular.ServiceContainer Service { get; private set; }
-    public ICollection<Angular.Service> Services { get; } = new List<Angular.Service>();
-    public ICollection<Angular.EntitySetConfig> EntitySetConfigs { get; } = new List<Angular.EntitySetConfig>();
+    public EntityContainer EdmEntityContainer { get; private set; }
+    public ServiceContainer Service { get; private set; }
+    public ICollection<Service> Services { get; } = new List<Angular.Service>();
+    public ICollection<EntitySetConfig> EntitySetConfigs { get; } = new List<Angular.EntitySetConfig>();
     public EntityContainerConfig(EntityContainer container, ApiOptions options) : base(options)
     {
       this.EdmEntityContainer = container;
-      this.Service = new Angular.ServiceContainer(this, options);
+      this.Service = new ServiceContainer(this, options);
       foreach (var eset in container.EntitySets)
       {
-        Service service = new Angular.ServiceEntitySet(eset, options);
+        Service service = new ServiceEntitySet(eset, options);
         this.Services.Add(service);
-        var config = new Angular.EntitySetConfig(service, options);
+        var config = new EntitySetConfig(service, options);
         this.EntitySetConfigs.Add(config);
       }
       foreach (var s in container.Singletons)
       {
-        var service = new Angular.ServiceSingleton(s, options);
+        var service = new ServiceSingleton(s, options);
         this.Services.Add(service);
-        var config = new Angular.EntitySetConfig(service, options);
+        var config = new EntitySetConfig(service, options);
         this.EntitySetConfigs.Add(config);
       }
     }
