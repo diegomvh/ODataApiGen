@@ -13,7 +13,7 @@ namespace ODataApiGen.Angular
 
     public static class Utils {
         public static char[] TypeScriptInvalidNameChars = new char[] {'-', '(', ')'};
-        public static bool IsValidTypescrtiptName(string name) {
+        public static bool IsValidTypescriptName(string name) {
             return !name.Any(c => TypeScriptInvalidNameChars.Contains(c));
         }
         public static string ToTypescriptName(string name, TypeScriptElement type) {

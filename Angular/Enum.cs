@@ -15,7 +15,6 @@ namespace ODataApiGen.Angular
         // Exports
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => Utils.ToTypescriptName(this.EdmEnumType.Name, TypeScriptElement.Enum);
-        public string EnumType => this.EdmEnumType.FullName;
         public override string Namespace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
@@ -26,7 +25,7 @@ namespace ODataApiGen.Angular
             return new
             {
                 Name = this.ImportedName,
-                this.EnumType
+                this.FullName
             };
         }
     }

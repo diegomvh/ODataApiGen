@@ -13,7 +13,7 @@ namespace ODataApiGen.Angular
       this.Value = member;
       this.Config = config;
     }
-    public string Name => Utils.IsValidTypescrtiptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
+    public string Name => Utils.IsValidTypescriptName(Value.Name) ? Value.Name : $"\"{Value.Name}\"";
 
     public string Type
     {
@@ -45,7 +45,7 @@ namespace ODataApiGen.Angular
   }
   public class EnumTypeConfig : AngularRenderable, DotLiquid.ILiquidizable
   {
-    public Angular.Enum Enum { get; private set; }
+    public Enum Enum { get; private set; }
     public EnumTypeConfig(Angular.Enum enu, ApiOptions options) : base(options)
     {
       this.Enum = enu;
