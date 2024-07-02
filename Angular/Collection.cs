@@ -45,7 +45,7 @@ namespace ODataApiGen.Angular
         {
             return new {
                 Name = this.ImportedName,
-                Type = this.Type
+                FullName = this.FullName
             };
         }
 

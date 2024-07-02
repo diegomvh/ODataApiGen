@@ -5,9 +5,9 @@ namespace ODataApiGen.Angular
 {
     public class ServiceSingleton : Service
   {
-    public Models.Singleton EdmSingleton { get; private set; }
+    public Singleton EdmSingleton { get; private set; }
 
-    public ServiceSingleton(Models.Singleton type, ApiOptions options) : base(options)
+    public ServiceSingleton(Singleton type, ApiOptions options) : base(options)
     {
       EdmSingleton = type;
     }
@@ -48,10 +48,11 @@ namespace ODataApiGen.Angular
       }
     }
 
-    public override string EntitySetName => this.EdmSingleton.Name;
+    public string SingletonName => this.EdmSingleton.Name;
+    public string SingletonType => this.EdmSingleton.Type;
     public override string EntityType => this.EdmSingleton.Type;
-    public override IEnumerable<Models.Annotation> Annotations => this.EdmSingleton.Annotations;
-    public string ServiceType => this.EdmSingleton.FullName;
+    public override IEnumerable<Annotation> Annotations => this.EdmSingleton.Annotations;
+    public override string ServiceType => this.EdmSingleton.FullName;
     public IEnumerable<string> Actions => this.RenderCallables(this.EdmSingleton.Actions);
     public IEnumerable<string> Functions => this.RenderCallables(this.EdmSingleton.Functions);
   }

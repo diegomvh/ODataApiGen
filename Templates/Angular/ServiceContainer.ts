@@ -31,7 +31,7 @@ import {
 export class {{Name}} extends ODataBaseService {
 
   constructor(client: ODataClient) {
-    super(client, '{{EntitySetName}}', '{{ApiName}}');
+    super(client, '{{ContainerName}}', '{{ApiName}}');
   }
 
   //#region ODataApiGen Actions

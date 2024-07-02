@@ -30,8 +30,8 @@ namespace ODataApiGen.Angular
         } 
         public object ToLiquid() {
             return new {
-                Name = this.Name,
-                Type = this.Type
+                this.Name,
+                this.Type
             };
         }
     }
@@ -52,15 +52,15 @@ namespace ODataApiGen.Angular
     public object ToLiquid()
     {
         return new {
-            Name = this.Name,
+            this.Name,
             HasPath = !String.IsNullOrWhiteSpace(this.Callable.EntitySetPath),
-            EntitySetPath = this.Callable.EntitySetPath,
+            this.Callable.EntitySetPath,
             HasParameters = this.Parameters.Count() > 0,
-            Parameters = this.Parameters,
+            this.Parameters,
             Bound = this.Callable.IsBound,
             Composable = this.Callable.IsComposable,
-            ReturnType = this.Callable.ReturnType,
-            ReturnsCollection = this.Callable.ReturnsCollection
+            this.Callable.ReturnType,
+            this.Callable.ReturnsCollection
         };
     }
   }

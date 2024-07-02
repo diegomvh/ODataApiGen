@@ -5,8 +5,8 @@ namespace ODataApiGen.Angular
 {
     public class EntitySetConfig : AngularRenderable, DotLiquid.ILiquidizable
   {
-    public Angular.Service Service { get; private set; }
-    public EntitySetConfig(Angular.Service service, ApiOptions options) : base(options)
+    public ServiceEntitySet Service { get; private set; }
+    public EntitySetConfig(ServiceEntitySet service, ApiOptions options) : base(options)
     {
       Service = service;
       this.AddDependency(service);
@@ -26,7 +26,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.Type,
+        this.FullName,
         this.EntitySetName,
         this.EntityType,
         Name = this.ImportedName,

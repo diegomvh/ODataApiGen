@@ -8,14 +8,14 @@ namespace ODataApiGen.Angular
         public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema.config";
         //TODO: Create nice schema names
         public override string Name => Utils.ToTypescriptName(this.Namespace.Split('.').Last(), TypeScriptElement.Class) + "SchemaConfig";
-        public ICollection<Angular.Enum> Enums { get; } = new List<Angular.Enum>();
-        public ICollection<Angular.EnumTypeConfig> EnumTypeConfigs { get; } = new List<Angular.EnumTypeConfig>();
-        public ICollection<Angular.Entity> Entities { get; } = new List<Angular.Entity>();
-        public ICollection<Angular.Model> Models { get; } = new List<Angular.Model>();
-        public ICollection<Angular.Collection> Collections { get; } = new List<Angular.Collection>();
-        public ICollection<Angular.StructuredTypeConfig> StructuredTypeConfigs { get; } = new List<Angular.StructuredTypeConfig>();
-        public ICollection<Angular.CallableConfig> CallablesConfigs { get; } = new List<Angular.CallableConfig>();
-        public ICollection<Angular.EntityContainerConfig> Containers { get; } = new List<Angular.EntityContainerConfig>();
+        public ICollection<Enum> Enums { get; } = new List<Enum>();
+        public ICollection<EnumTypeConfig> EnumTypeConfigs { get; } = new List<EnumTypeConfig>();
+        public ICollection<Entity> Entities { get; } = new List<Entity>();
+        public ICollection<Model> Models { get; } = new List<Model>();
+        public ICollection<Collection> Collections { get; } = new List<Collection>();
+        public ICollection<StructuredTypeConfig> StructuredTypeConfigs { get; } = new List<StructuredTypeConfig>();
+        public ICollection<CallableConfig> CallablesConfigs { get; } = new List<CallableConfig>();
+        public ICollection<EntityContainerConfig> Containers { get; } = new List<EntityContainerConfig>();
         public SchemaConfig(Models.Schema schema, ApiOptions options) : base(options)
         {
             this.EdmSchema = schema;
@@ -26,16 +26,16 @@ namespace ODataApiGen.Angular
             this.AddCallables(schema.Actions);
             foreach (var container in schema.EntityContainers)
             {
-                this.Containers.Add(new Angular.EntityContainerConfig(container, options));
+                this.Containers.Add(new EntityContainerConfig(container, options));
             }
         }
         public void AddEnums(IEnumerable<Models.EnumType> enums)
         {
             foreach (var e in enums)
             {
-                var enu = new Angular.Enum(e, this.Options);
+                var enu = new Enum(e, this.Options);
                 this.Enums.Add(enu);
-                var config = new Angular.EnumTypeConfig(enu, this.Options);
+                var config = new EnumTypeConfig(enu, this.Options);
                 this.EnumTypeConfigs.Add(config);
             }
         }
@@ -43,18 +43,18 @@ namespace ODataApiGen.Angular
         {
             foreach (var cmplx in complexes)
             {
-                Angular.StructuredTypeConfig config;
-                var entity = new Angular.Entity(cmplx, this.Options);
+                StructuredTypeConfig config;
+                var entity = new Entity(cmplx, this.Options);
                 this.Entities.Add(entity);
                 if (this.Options.Models)
                 {
-                    var model = new Angular.Model(cmplx, entity, this.Options);
+                    var model = new Model(cmplx, entity, this.Options);
                     this.Models.Add(model);
-                    var collection = new Angular.Collection(cmplx, model, this.Options);
+                    var collection = new Collection(cmplx, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Angular.StructuredTypeConfig(entity, model, collection, this.Options);
+                    config = new StructuredTypeConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Angular.StructuredTypeConfig(entity, this.Options);
+                    config = new StructuredTypeConfig(entity, this.Options);
                 }
                 this.StructuredTypeConfigs.Add(config);
             }
@@ -63,18 +63,18 @@ namespace ODataApiGen.Angular
         {
             foreach (var enty in entities)
             {
-                Angular.StructuredTypeConfig config;
-                var entity = new Angular.Entity(enty, this.Options);
+                StructuredTypeConfig config;
+                var entity = new Entity(enty, this.Options);
                 this.Entities.Add(entity);
                 if (this.Options.Models)
                 {
-                    var model = new Angular.Model(enty, entity, this.Options);
+                    var model = new Model(enty, entity, this.Options);
                     this.Models.Add(model);
-                    var collection = new Angular.Collection(enty, model, this.Options);
+                    var collection = new Collection(enty, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Angular.StructuredTypeConfig(entity, model, collection, this.Options);
+                    config = new StructuredTypeConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Angular.StructuredTypeConfig(entity, this.Options);
+                    config = new StructuredTypeConfig(entity, this.Options);
                 }
                 this.StructuredTypeConfigs.Add(config);
             }
@@ -83,7 +83,7 @@ namespace ODataApiGen.Angular
         {
             foreach (var callable in callables)
             {
-                this.CallablesConfigs.Add(new Angular.CallableConfig(callable));
+                this.CallablesConfigs.Add(new CallableConfig(callable));
             }
         }
         // Imports
@@ -130,8 +130,8 @@ namespace ODataApiGen.Angular
             return new
             {
                 Name = this.ImportedName,
-                Namespace = this.Namespace,
-                Type = this.Type
+                this.Namespace,
+                this.FullName
             };
         }
     }

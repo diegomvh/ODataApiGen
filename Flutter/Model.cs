@@ -272,7 +272,7 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        Type = this.Type,
+        this.FullName,
         Entity = new
         {
           Name = this.Entity.ImportedName

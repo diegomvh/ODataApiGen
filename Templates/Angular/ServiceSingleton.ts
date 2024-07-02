@@ -29,7 +29,7 @@ import {
 @Injectable()
 export class {{Name}} extends ODataSingletonService<{{EntityName}}> {
   constructor(client: ODataClient) {
-    super(client, '{{EntitySetName}}', '{{EntityType}}');
+    super(client, '{{SingletonName}}', '{{SingletonType}}');
   }
 
   //#region ODataApiGen Actions

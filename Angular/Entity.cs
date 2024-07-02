@@ -94,7 +94,7 @@ namespace ODataApiGen.Angular
       return new
       {
         Name = this.ImportedName,
-          this.Type,
+          this.FullName,
         EntityType = this.EdmStructuredType.FullName
       };
     }

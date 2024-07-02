@@ -165,7 +165,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.Type,
+        this.FullName,
         this.EntityName,
         Name = this.ImportedName
       };

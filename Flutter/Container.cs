@@ -90,7 +90,7 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        Type = this.Type,
+        this.FullName,
         ContainerName = this.ContainerName,
         ContainerType = this.ContainerType
       };

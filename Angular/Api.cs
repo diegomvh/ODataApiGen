@@ -19,12 +19,13 @@ namespace ODataApiGen.Angular
         public IEnumerable<EnumTypeConfig> EnumTypeConfigs { get; set; }
         public IEnumerable<StructuredTypeConfig> StructuredTypeConfigs { get; set; }
         public IEnumerable<EntitySetConfig> EntitySetConfigs { get; set; }
+        public IEnumerable<SingletonConfig> SingletonConfigs { get; set; }
         public IEnumerable<CallableConfig> CallableConfigs { get; set; }
         public IEnumerable<Models.EnumType> EnumTypes => this.EnumTypeConfigs.Select(e => e.Enum.EdmEnumType);
         public IEnumerable<Models.ComplexType> ComplexTypes => this.StructuredTypeConfigs.Select(e => e.Entity.EdmStructuredType).OfType<Models.ComplexType>();
         public IEnumerable<Models.EntityType> EntityTypes => this.StructuredTypeConfigs.Select(e => e.Entity.EdmStructuredType).OfType<Models.EntityType>();
-        public IEnumerable<Models.EntitySet> EntitySets => this.EntitySetConfigs.Select(e => e.Service).OfType<ServiceEntitySet>().Select(s => s.EdmEntitySet);
-        public IEnumerable<Models.Singleton> Singletons => this.EntitySetConfigs.Select(e => e.Service).OfType<ServiceSingleton>().Select(s => s.EdmSingleton);
+        public IEnumerable<Models.EntitySet> EntitySets => this.EntitySetConfigs.Select(s => s.Service.EdmEntitySet);
+        public IEnumerable<Models.Singleton> Singletons => this.SingletonConfigs.Select(s => s.Service.EdmSingleton);
         public IEnumerable<Models.Function> Functions => this.CallableConfigs.Select(e => e.Callable).OfType<Models.Function>();
         public IEnumerable<Models.Action> Actions => this.CallableConfigs.Select(e => e.Callable).OfType<Models.Action>();
     }

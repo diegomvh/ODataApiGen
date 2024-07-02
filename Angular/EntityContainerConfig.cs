@@ -8,15 +8,16 @@ namespace ODataApiGen.Angular
   {
     public EntityContainer EdmEntityContainer { get; private set; }
     public ServiceContainer Service { get; private set; }
-    public ICollection<Service> Services { get; } = new List<Angular.Service>();
-    public ICollection<EntitySetConfig> EntitySetConfigs { get; } = new List<Angular.EntitySetConfig>();
+    public ICollection<Service> Services { get; } = new List<Service>();
+    public ICollection<EntitySetConfig> EntitySetConfigs { get; } = new List<EntitySetConfig>();
+    public ICollection<SingletonConfig> SingletonConfigs { get; } = new List<SingletonConfig>();
     public EntityContainerConfig(EntityContainer container, ApiOptions options) : base(options)
     {
       this.EdmEntityContainer = container;
       this.Service = new ServiceContainer(this, options);
       foreach (var eset in container.EntitySets)
       {
-        Service service = new ServiceEntitySet(eset, options);
+        var service = new ServiceEntitySet(eset, options);
         this.Services.Add(service);
         var config = new EntitySetConfig(service, options);
         this.EntitySetConfigs.Add(config);
@@ -25,8 +26,8 @@ namespace ODataApiGen.Angular
       {
         var service = new ServiceSingleton(s, options);
         this.Services.Add(service);
-        var config = new EntitySetConfig(service, options);
-        this.EntitySetConfigs.Add(config);
+        var config = new SingletonConfig(service, options);
+        this.SingletonConfigs.Add(config);
       }
     }
     public bool HasAnnotations => this.EdmEntityContainer.Annotations.Count() > 0;
@@ -67,12 +68,14 @@ namespace ODataApiGen.Angular
       }
 
       this.AddDependencies(this.EntitySetConfigs);
+      this.AddDependencies(this.SingletonConfigs);
     }
     public IEnumerable<string> GetAllDirectories()
     {
       return new string[] { this.Service.Directory }
           .Union(this.Services.Select(s => s.Directory))
-          .Union(this.EntitySetConfigs.Select(s => s.Directory));
+          .Union(this.EntitySetConfigs.Select(s => s.Directory))
+          .Union(this.SingletonConfigs.Select(s => s.Directory));
     }
     public IEnumerable<Renderable> Renderables
     {
@@ -84,6 +87,7 @@ namespace ODataApiGen.Angular
         };
         renderables.AddRange(this.Services);
         renderables.AddRange(this.EntitySetConfigs);
+        renderables.AddRange(this.SingletonConfigs);
         return renderables;
       }
     }
@@ -91,7 +95,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.Type,
+        this.FullName,
         this.ContainerName,
         this.ContainerType,
         Name = this.ImportedName

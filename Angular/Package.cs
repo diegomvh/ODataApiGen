@@ -125,6 +125,7 @@ namespace ODataApiGen.Angular
             this.Api.EnumTypeConfigs = this.Schemas.SelectMany(s => s.EnumTypeConfigs);
             this.Api.StructuredTypeConfigs = this.Schemas.SelectMany(s => s.StructuredTypeConfigs);
             this.Api.EntitySetConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs));
+            this.Api.SingletonConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.SingletonConfigs));
             this.Api.CallableConfigs = this.Schemas.SelectMany(s => s.CallablesConfigs);
             // Config
             this.Config.AddDependencies(this.Schemas);
@@ -138,6 +139,7 @@ namespace ODataApiGen.Angular
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs)));
+            this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.SingletonConfigs)));
             this.Index.AddDependency(this.Api);
             this.Index.AddDependency(this.Config);
             this.Index.AddDependency(this.Module);

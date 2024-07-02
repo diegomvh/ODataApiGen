@@ -11,9 +11,9 @@ import {
 export const {{Name}} = {
   namespace: '{{Namespace}}',{% if HasAlias %}
   alias: '{{Alias}}',{% endif %}
-  enums: [{% for config in EnumConfigs %}{{config.Name}}{% unless forloop.last %},
+  enums: [{% for config in EnumTypeConfigs %}{{config.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}],
-  entities: [{% for config in EntityConfigs %}{{config.Name}}{% unless forloop.last %},
+  entities: [{% for config in StructuredTypeConfigs %}{{config.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}],
   callables: [{% for config in CallablesConfigs %}{
     name: '{{config.Name}}',{% if config.HasPath %}

@@ -14,6 +14,10 @@ export const {{Name}} = {
   entitySets: [
     {% for config in EntitySetConfigs %}{{config.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
+  ],
+  singletons: [
+    {% for config in SingletonConfigs %}{{config.Name}}{% unless forloop.last %},
+    {% endunless %}{% endfor %}
   ]
 } as EntityContainerConfig;
 //#endregion

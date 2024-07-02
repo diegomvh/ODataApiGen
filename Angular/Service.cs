@@ -6,7 +6,7 @@ namespace ODataApiGen.Angular
 {
     public abstract class Service : AngularRenderable, ILiquidizable
   {
-    public Models.EntityType EdmEntityType => this.HasModel ? this.Model.EdmEntityType :
+    public EntityType EdmEntityType => this.HasModel ? this.Model.EdmEntityType :
         this.HasEntity ? this.Entity.EdmEntityType :
         null;
     public Service(ApiOptions options) : base(options) { }
@@ -18,23 +18,23 @@ namespace ODataApiGen.Angular
     }
     public bool HasEntity => this.Entity != null;
     public string EntityName => this.HasEntity ? this.Entity.ImportedName : String.Empty;
-    public Angular.Model Model { get; private set; }
-    public void SetModel(Angular.Model model)
+    public Model Model { get; private set; }
+    public void SetModel(Model model)
     {
       this.Model = model;
     }
     public bool HasModel => this.Model != null;
     public string ModelName => this.HasModel ? this.Model.ImportedName : String.Empty;
-    public Angular.Collection Collection { get; private set; }
-    public void SetCollection(Angular.Collection collection)
+    public Collection Collection { get; private set; }
+    public void SetCollection(Collection collection)
     {
       this.Collection = collection;
     }
     public bool HasCollection => this.Collection != null;
     public string CollectionName => this.HasCollection ? this.Collection.ImportedName : String.Empty;
-    public abstract string EntitySetName { get; }
-    public abstract string EntityType { get; }
-    public abstract IEnumerable<Models.Annotation> Annotations { get; }
+    public abstract string EntityType {get;} 
+    public abstract string ServiceType {get;} 
+    public abstract IEnumerable<Annotation> Annotations { get; }
     public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
     protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
     {

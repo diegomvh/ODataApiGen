@@ -5,10 +5,10 @@ namespace ODataApiGen.Angular
 {
     public class ServiceEntitySet : Service
   {
-    public Models.EntitySet EdmEntitySet { get; private set; }
-    public ServiceEntitySet(EntitySet type, ApiOptions options) : base(options)
+    public EntitySet EdmEntitySet { get; private set; }
+    public ServiceEntitySet(EntitySet entitySet, ApiOptions options) : base(options)
     {
-      EdmEntitySet = type;
+      EdmEntitySet = entitySet;
     }
     public override IEnumerable<string> ImportTypes
     {
@@ -46,9 +46,9 @@ namespace ODataApiGen.Angular
     }
 
     public override IEnumerable<Import> Imports => GetImportRecords();
-    public override string EntitySetName => this.EdmEntitySet.Name;
+    public string EntitySetName => this.EdmEntitySet.Name;
     public override string EntityType => this.EdmEntitySet.EntityType;
-    public string ServiceType => this.EdmEntitySet.FullName;
+    public override string ServiceType => this.EdmEntitySet.FullName;
     public override string Name => Utils.ToTypescriptName(this.EdmEntitySet.Name, TypeScriptElement.Class) + "Service";
     public override string Namespace => this.EdmEntitySet.Namespace;
     public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";

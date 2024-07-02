@@ -3,7 +3,7 @@ using ODataApiGen.Models;
 
 namespace ODataApiGen.Angular
 {
-    public abstract class AngularRenderable : ODataApiGen.Abstracts.Renderable
+    public abstract class AngularRenderable : Renderable
     {
         public AngularRenderable(ApiOptions options) : base(options) {}
 

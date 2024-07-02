@@ -1,22 +1,22 @@
 using ODataApiGen.Abstracts;
 using System.Text.Json;
 
-namespace ODataApiGen.Flutter
+namespace ODataApiGen.Angular
 {
-    public class EntitySetConfig : FlutterRenderable, DotLiquid.ILiquidizable
+    public class SingletonConfig : AngularRenderable, DotLiquid.ILiquidizable
   {
-    public Flutter.Service Service { get; private set; }
-    public EntitySetConfig(Flutter.Service service, ApiOptions options) : base(options)
+    public ServiceSingleton Service { get; private set; }
+    public SingletonConfig(ServiceSingleton service, ApiOptions options) : base(options)
     {
       Service = service;
       this.AddDependency(service);
     }
     public override string FileName => this.Service.FileName + ".config";
-    public override string Name => this.Service.Name + "EntitySetConfig";
+    public override string Name => this.Service.Name + "SingletonConfig";
     public bool HasAnnotations => this.Service.Annotations.Count() > 0;
     public string Annotations => JsonSerializer.Serialize(this.Service.Annotations.Select(annot => annot.ToDictionary()), new JsonSerializerOptions() { WriteIndented = true });
-    public string EntitySetName => this.Service.EntitySetName;
-    public string EntityType => this.Service.EntityType;
+    public string SingletonName => this.Service.SingletonName;
+    public string SingletonType => this.Service.SingletonType;
     // Imports
     public override IEnumerable<string> ImportTypes => new List<string> { };
     public override IEnumerable<Import> Imports => GetImportRecords();
@@ -26,13 +26,13 @@ namespace ODataApiGen.Flutter
     {
       return new
       {
-        Name = this.ImportedName,
         this.FullName,
-        EntitySetName = this.EntitySetName,
-        EntityType = this.EntityType,
+        this.SingletonName,
+        this.SingletonType,
+        Name = this.ImportedName,
         Service = new
         {
-          Name = this.Service.Name,
+            this.Service.Name,
         }
       };
     }
