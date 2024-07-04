@@ -34,8 +34,9 @@ namespace ODataApiGen.Angular
     public string CollectionName => this.HasCollection ? this.Collection.ImportedName : String.Empty;
     public abstract string EntityType {get;} 
     public abstract string ServiceType {get;} 
+    public abstract string EdmNamespace {get;} 
     public abstract IEnumerable<Annotation> Annotations { get; }
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.EdmNamespace.Replace('.', Path.DirectorySeparatorChar);
     protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
     {
       var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);

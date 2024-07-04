@@ -41,8 +41,7 @@ namespace ODataApiGen.Flutter
         return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
       }
     }
-    public override string Namespace => this.EdmStructuredType.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.EdmStructuredType.Namespace.Replace('.', Path.DirectorySeparatorChar);
     public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.NamespaceQualifiedName)?.Name;
     public bool OpenType => this.EdmStructuredType.OpenType;
     public override IEnumerable<Import> Imports => GetImportRecords();

@@ -6,9 +6,9 @@ namespace ODataApiGen.Angular
 {
     public class EntityProperty : ILiquidizable
   {
-    protected Models.Property Value { get; set; }
-    protected Angular.StructuredType Structured { get; set; }
-    public EntityProperty(ODataApiGen.Models.Property prop, Angular.StructuredType structured)
+    protected Property Value { get; set; }
+    protected StructuredType Structured { get; set; }
+    public EntityProperty(Property prop, StructuredType structured)
     {
       this.Structured = structured;
       this.Value = prop;
@@ -77,24 +77,23 @@ namespace ODataApiGen.Angular
     public override string Name => Utils.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class);
     // Exports
 
-    public IEnumerable<Angular.EntityProperty> Properties
+    public IEnumerable<EntityProperty> Properties
     {
       get
       {
         var props = this.EdmStructuredType.Properties.ToList();
         if (this.EdmStructuredType is EntityType)
           props.AddRange((this.EdmStructuredType as EntityType).NavigationProperties);
-        return props.Select(prop => new Angular.EntityProperty(prop, this));
+        return props.Select(prop => new EntityProperty(prop, this));
       }
     }
-    public IEnumerable<Angular.EntityProperty> GeoProperties => this.Properties.Where(p => p.IsGeo);
+    public IEnumerable<EntityProperty> GeoProperties => this.Properties.Where(p => p.IsGeo);
     public bool HasGeoFields => this.Options.GeoJson && this.GeoProperties.Count() > 0;
     public override object ToLiquid()
     {
       return new
       {
         Name = this.ImportedName,
-          this.NamespaceQualifiedName,
         EntityType = this.EdmStructuredType.NamespaceQualifiedName
       };
     }

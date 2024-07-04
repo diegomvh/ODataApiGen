@@ -5,9 +5,9 @@ namespace ODataApiGen.Angular
     public class SchemaConfig : AngularRenderable, DotLiquid.ILiquidizable
     {
         public Models.Schema EdmSchema { get; private set; }
-        public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema.config";
+        public override string FileName => this.EdmSchema.Namespace.Split('.').Last().ToLower() + ".schema.config";
         //TODO: Create nice schema names
-        public override string Name => Utils.ToTypescriptName(this.Namespace.Split('.').Last(), TypeScriptElement.Class) + "SchemaConfig";
+        public override string Name => Utils.ToTypescriptName(this.EdmSchema.Namespace.Split('.').Last(), TypeScriptElement.Class) + "SchemaConfig";
         public ICollection<Enum> Enums { get; } = new List<Enum>();
         public ICollection<EnumTypeConfig> EnumTypeConfigs { get; } = new List<EnumTypeConfig>();
         public ICollection<Entity> Entities { get; } = new List<Entity>();
@@ -89,10 +89,9 @@ namespace ODataApiGen.Angular
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string Namespace => this.EdmSchema.Namespace;
         public bool HasAlias => !String.IsNullOrWhiteSpace(this.EdmSchema.Alias);
         public string Alias => this.EdmSchema.Alias;
-        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.EdmSchema.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {
             this.AddDependencies(this.EnumTypeConfigs);
@@ -130,8 +129,6 @@ namespace ODataApiGen.Angular
             return new
             {
                 Name = this.ImportedName,
-                this.Namespace,
-                this.NamespaceQualifiedName
             };
         }
     }

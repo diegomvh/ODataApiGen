@@ -5,9 +5,9 @@ namespace ODataApiGen.Flutter
     public class Schema : FlutterRenderable, DotLiquid.ILiquidizable
     {
         public Models.Schema EdmSchema { get; private set; }
-        public override string FileName => this.Namespace.Split('.').Last().ToLower() + ".schema";
+        public override string FileName => this.EdmSchema.Namespace.Split('.').Last().ToLower() + ".schema";
         //TODO: Create nice schema names
-        public override string Name => Utils.ToDartName(this.Namespace.Split('.').Last(), DartElement.Class) + "Schema";
+        public override string Name => Utils.ToDartName(this.EdmSchema.Namespace.Split('.').Last(), DartElement.Class) + "Schema";
         public ICollection<Flutter.Enum> Enums { get; } = new List<Flutter.Enum>();
         public ICollection<Flutter.EnumTypeConfig> EnumConfigs { get; } = new List<Flutter.EnumTypeConfig>();
         public ICollection<Flutter.Entity> Entities { get; } = new List<Flutter.Entity>();
@@ -89,10 +89,9 @@ namespace ODataApiGen.Flutter
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<Import> Imports => GetImportRecords();
-        public override string Namespace => this.EdmSchema.Namespace;
         public bool HasAlias => !String.IsNullOrWhiteSpace(this.EdmSchema.Alias);
         public string Alias => this.EdmSchema.Alias;
-        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.EdmSchema.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {
             this.AddDependencies(this.EnumConfigs);
@@ -129,9 +128,7 @@ namespace ODataApiGen.Flutter
         {
             return new
             {
-                Name = this.ImportedName,
-                Namespace = this.Namespace,
-                this.NamespaceQualifiedName
+                Name = this.ImportedName
             };
         }
     }

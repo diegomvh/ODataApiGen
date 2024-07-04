@@ -12,7 +12,7 @@ namespace ODataApiGen.Flutter
       EdmSingleton = type;
     }
     public override string Name => Utils.ToDartName(this.EdmSingleton.Name, DartElement.Class) + "Service";
-    public override string Namespace => this.EdmSingleton.Namespace;
+    public override string EdmNamespace => this.EdmSingleton.Namespace;
     public override string FileName => this.EdmSingleton.Name.ToLower() + ".service";
     // Imports
     public override IEnumerable<Import> Imports => GetImportRecords();

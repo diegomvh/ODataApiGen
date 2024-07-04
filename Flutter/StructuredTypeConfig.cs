@@ -156,8 +156,7 @@ namespace ODataApiGen.Flutter
 
     // Imports
     public override IEnumerable<string> ImportTypes => new List<string> { this.EntityType };
-    public override string Namespace => this.Entity.EdmStructuredType.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.Entity.EdmStructuredType.Namespace.Replace('.', Path.DirectorySeparatorChar);
     public override IEnumerable<Import> Imports => GetImportRecords();
 
     public Flutter.StructuredType Base => this.Entity.Base;
@@ -166,7 +165,6 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        this.NamespaceQualifiedName,
         EntityName = this.EntityName
       };
     }

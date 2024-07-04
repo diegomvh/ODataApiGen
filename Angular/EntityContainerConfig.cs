@@ -40,8 +40,7 @@ namespace ODataApiGen.Angular
     // Imports
     public override IEnumerable<string> ImportTypes => new List<string> { this.ContainerType };
     public override IEnumerable<Import> Imports => GetImportRecords();
-    public override string Namespace => this.EdmEntityContainer.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.EdmEntityContainer.Namespace.Replace('.', Path.DirectorySeparatorChar);
     public void ResolveDependencies(IEnumerable<Angular.Enum> enums, IEnumerable<Angular.Entity> entities, IEnumerable<Angular.Model> models, IEnumerable<Angular.Collection> collections)
     {
       // Services
@@ -95,7 +94,6 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.NamespaceQualifiedName,
         this.ContainerName,
         this.ContainerType,
         Name = this.ImportedName

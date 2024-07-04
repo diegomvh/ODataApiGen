@@ -34,8 +34,9 @@ namespace ODataApiGen.Flutter
     public string CollectionName => this.HasCollection ? this.Collection.ImportedName : String.Empty;
     public abstract string EntitySetName { get; }
     public abstract string EntityType { get; }
-    public abstract IEnumerable<Models.Annotation> Annotations { get; }
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public abstract string EdmNamespace { get; }
+    public abstract IEnumerable<Annotation> Annotations { get; }
+    public override string Directory => this.EdmNamespace.Replace('.', Path.DirectorySeparatorChar);
     protected IEnumerable<string> RenderCallables(IEnumerable<Callable> allCallables)
     {
       var names = allCallables.GroupBy(c => c.Name).Select(c => c.Key);

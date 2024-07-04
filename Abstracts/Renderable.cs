@@ -14,9 +14,6 @@ namespace ODataApiGen.Abstracts
         }
         // About Identity
         public abstract string Name { get; }
-        public abstract string Namespace { get; }
-        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
-
         // About File
         public abstract string FileName { get; }
         public abstract string FileExtension { get; }

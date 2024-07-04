@@ -10,13 +10,12 @@ namespace ODataApiGen.Angular
             Package = package;
         }
         public override string Name => this.Package.Name + "Module";
-        public override string Namespace => "";
         public override string FileName => this.Package.Name.ToLower() + ".module";
-        public override string Directory => this.Namespace;
+        public override string Directory => "";
         public IEnumerable<Service> Services => this.Package.Schemas.SelectMany(s => s.Containers.Select(c => c.Service))
         .Union(this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
         // Imports and Exports
-        public override IEnumerable<string> ImportTypes => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)).Select(a => a.NamespaceQualifiedName);
+        public override IEnumerable<string> ImportTypes => this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)).Select(a => a.ServiceType);
         public override IEnumerable<Import> Imports => GetImportRecords();
     }
 }

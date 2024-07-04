@@ -5,14 +5,14 @@ namespace ODataApiGen.Angular
 {
     public abstract class StructuredType : AngularRenderable, DotLiquid.ILiquidizable
   {
-    public Models.EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType;
+    public EntityType EdmEntityType => this.EdmStructuredType as Models.EntityType;
     public Models.StructuredType EdmStructuredType { get; private set; }
     public StructuredType(Models.StructuredType type, ApiOptions options) : base(options)
     {
       EdmStructuredType = type;
     }
 
-    public Angular.StructuredType Base { get; private set; }
+    public StructuredType Base { get; private set; }
     public void SetBase(StructuredType b)
     {
       this.Base = b;
@@ -41,9 +41,9 @@ namespace ODataApiGen.Angular
         return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
       }
     }
-    public override string Namespace => this.EdmStructuredType.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.EdmStructuredType.Namespace.Replace('.', Path.DirectorySeparatorChar);
     public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.NamespaceQualifiedName)?.Name;
+    public string FullName => this.EdmStructuredType.NamespaceQualifiedName; 
     public bool OpenType => this.EdmStructuredType.OpenType;
     public override IEnumerable<Import> Imports => GetImportRecords();
 

@@ -50,7 +50,7 @@ namespace ODataApiGen.Angular
     public override string EntityType => this.EdmEntitySet.EntityType;
     public override string ServiceType => this.EdmEntitySet.NamespaceQualifiedName;
     public override string Name => Utils.ToTypescriptName(this.EdmEntitySet.Name, TypeScriptElement.Class) + "Service";
-    public override string Namespace => this.EdmEntitySet.Namespace;
+    public override string EdmNamespace => this.EdmEntitySet.Namespace;
     public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";
     public IEnumerable<string> Actions => this.RenderCallables(this.EdmEntitySet.Actions.Union(this.EdmEntityType.Actions));
     public IEnumerable<string> Functions => this.RenderCallables(this.EdmEntitySet.Functions.Union(this.EdmEntityType.Functions));

@@ -39,8 +39,7 @@ namespace ODataApiGen.Flutter
     // Imports
     public override IEnumerable<string> ImportTypes => new List<string> { this.ContainerType };
     public override IEnumerable<Import> Imports => GetImportRecords();
-    public override string Namespace => this.EdmEntityContainer.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.EdmEntityContainer.Namespace.Replace('.', Path.DirectorySeparatorChar);
     public void ResolveDependencies(IEnumerable<Flutter.Enum> enums, IEnumerable<Flutter.Entity> entities, IEnumerable<Flutter.Model> models, IEnumerable<Flutter.Collection> collections)
     {
       // Services
@@ -90,7 +89,6 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        this.NamespaceQualifiedName,
         ContainerName = this.ContainerName,
         ContainerType = this.ContainerType
       };

@@ -20,19 +20,17 @@ namespace ODataApiGen.Flutter
     // Imports
     public override IEnumerable<string> ImportTypes => new List<string> { };
     public override IEnumerable<Import> Imports => GetImportRecords();
-    public override string Namespace => this.Service.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.Service.EdmNamespace.Replace('.', Path.DirectorySeparatorChar);
     public object ToLiquid()
     {
       return new
       {
         Name = this.ImportedName,
-        this.NamespaceQualifiedName,
-        EntitySetName = this.EntitySetName,
-        EntityType = this.EntityType,
+        this.EntitySetName,
+        this.EntityType,
         Service = new
         {
-          Name = this.Service.Name,
+            this.Service.Name,
         }
       };
     }

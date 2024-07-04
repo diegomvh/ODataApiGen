@@ -14,9 +14,8 @@ namespace ODataApiGen.Flutter
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => Utils.ToDartName(this.EdmEnumType.Name, DartElement.Enum);
         public string EnumType => this.EdmEnumType.NamespaceQualifiedName;
-        public override string Namespace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
-        public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+        public override string Directory => this.EdmEnumType.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public IEnumerable<string> Members => this.EdmEnumType.Members.Select(m => $"{m.Name} = {m.Value}");
         public bool Flags => this.EdmEnumType.Flags;
         public object ToLiquid()

@@ -69,8 +69,7 @@ namespace ODataApiGen.Angular
     // Imports
     public override IEnumerable<string> ImportTypes => new List<string> { this.EnumType };
     public override IEnumerable<Import> Imports => GetImportRecords();
-    public override string Namespace => this.Enum.EdmEnumType.Namespace;
-    public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
+    public override string Directory => this.Enum.EdmEnumType.Namespace.Replace('.', Path.DirectorySeparatorChar);
     public bool Flags => this.Enum.EdmEnumType.Flags;
 
     public object ToLiquid()
@@ -79,7 +78,6 @@ namespace ODataApiGen.Angular
       {
         this.EnumName,
         Name = this.ImportedName,
-        this.NamespaceQualifiedName
       };
     }
   }
