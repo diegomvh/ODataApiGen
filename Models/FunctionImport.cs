@@ -16,7 +16,7 @@ namespace ODataApiGen.Models
 
         public string Name { get; private set; }
         public string Namespace => this.EntityContainer.Namespace; 
-        public string FullName => $"{this.Namespace}.{this.Name}";
+        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
         public string Function { get; private set; }
         public string EntitySet { get; private set; }
         public bool IncludeInServiceDocument { get; private set; }

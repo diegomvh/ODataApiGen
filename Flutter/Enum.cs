@@ -13,7 +13,7 @@ namespace ODataApiGen.Flutter
         // Exports
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => Utils.ToDartName(this.EdmEnumType.Name, DartElement.Enum);
-        public string EnumType => this.EdmEnumType.FullName;
+        public string EnumType => this.EdmEnumType.NamespaceQualifiedName;
         public override string Namespace => this.EdmEnumType.Namespace;
         public override string FileName => this.EdmEnumType.Name.ToLower() + ".enum";
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);

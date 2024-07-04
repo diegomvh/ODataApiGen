@@ -131,7 +131,7 @@ namespace ODataApiGen.Flutter
             {
                 Name = this.ImportedName,
                 Namespace = this.Namespace,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
     }

@@ -33,7 +33,7 @@ namespace ODataApiGen.Flutter
     public string Annotations => JsonSerializer.Serialize(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), new JsonSerializerOptions() { WriteIndented = true });
     public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
     public override string Name => Utils.ToDartName(this.EdmEntityContainer.Name, DartElement.Class) + "Container";
-    public string ContainerType => this.EdmEntityContainer.FullName;
+    public string ContainerType => this.EdmEntityContainer.NamespaceQualifiedName;
     public string ContainerName => this.EdmEntityContainer.Name;
     public string ApiName => this.Options.Name;
     // Imports
@@ -52,13 +52,13 @@ namespace ODataApiGen.Flutter
           service.SetEntity(inter);
           //service.AddDependency(inter);
         }
-        var model = models.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
+        var model = models.FirstOrDefault(m => m.EdmStructuredType.NamespaceQualifiedName == service.EntityType);
         if (model != null)
         {
           service.SetModel(model);
           //service.AddDependency(model);
         }
-        var collection = collections.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
+        var collection = collections.FirstOrDefault(m => m.EdmStructuredType.NamespaceQualifiedName == service.EntityType);
         if (collection != null)
         {
           service.SetCollection(collection);
@@ -90,7 +90,7 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        this.FullName,
+        this.NamespaceQualifiedName,
         ContainerName = this.ContainerName,
         ContainerType = this.ContainerType
       };

@@ -39,17 +39,20 @@ namespace ODataApiGen.Models
             return level;
         }
         public string Namespace => this.Schema.Namespace;
+        public string Alias => this.Schema.Alias;
         public string Name { get; private set; }
         public string BaseType { get; private set; }
         public bool OpenType { get; private set; }
-        public string FullName => $"{this.Namespace}.{this.Name}";
+        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
+        public string AliasQualifiedName => $"{this.Alias}.{this.Name}";
         public List<Property> Properties { get; private set; }
         public object ToLiquid()
         {
             return new
             {
                 this.Name,
-                this.FullName
+                this.NamespaceQualifiedName,
+                this.AliasQualifiedName,
             };
         }
     }

@@ -195,7 +195,7 @@ namespace ODataApiGen.Angular
       get
       {
         var list = new List<string> {
-                    this.EdmStructuredType.FullName
+                    this.EdmStructuredType.NamespaceQualifiedName
                 };
         list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
         if (this.EdmEntityType != null)
@@ -210,7 +210,7 @@ namespace ODataApiGen.Angular
         if (service != null)
         {
           list.AddRange(service.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
-          list.AddRange(service.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
+          list.AddRange(service.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.NamespaceQualifiedName));
         }
 
         return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
@@ -282,7 +282,7 @@ namespace ODataApiGen.Angular
       return new
       {
         Name = this.ImportedName,
-        this.FullName,
+        this.NamespaceQualifiedName,
         Entity = new
         {
           Name = this.Entity.ImportedName

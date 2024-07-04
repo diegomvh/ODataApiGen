@@ -36,8 +36,10 @@ namespace ODataApiGen.Models
             */
         }
         public string Name { get; }
+        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
+        public string AliasQualifiedName => $"{this.Alias}.{this.Name}";
         public string Namespace => this.Schema.Namespace; 
-        public string FullName => $"{this.Namespace}.{this.Name}";
+        public string Alias => this.Schema.Alias; 
         public string Type { get; protected set; }
         public string ReturnType { get; }
         public bool IsEdmReturnType => !System.String.IsNullOrWhiteSpace(ReturnType) && ReturnType.StartsWith("Edm.");
@@ -59,7 +61,7 @@ namespace ODataApiGen.Models
             return new
             {
                 this.Name,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
     }

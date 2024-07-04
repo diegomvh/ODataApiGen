@@ -17,7 +17,7 @@ namespace ODataApiGen.Angular
             {
                 var parameters = new List<Models.Parameter>();
                 var list = new List<string> {
-                    this.Model.Entity.EdmStructuredType.FullName
+                    this.Model.Entity.EdmStructuredType.NamespaceQualifiedName
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 if (this.EdmEntityType != null) {
@@ -45,7 +45,7 @@ namespace ODataApiGen.Angular
         {
             return new {
                 Name = this.ImportedName,
-                FullName = this.FullName
+                this.NamespaceQualifiedName
             };
         }
 

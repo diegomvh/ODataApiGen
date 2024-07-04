@@ -96,8 +96,8 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        this.FullName,
-        EntityType = this.EdmStructuredType.FullName
+        this.NamespaceQualifiedName,
+        EntityType = this.EdmStructuredType.NamespaceQualifiedName
       };
     }
   }

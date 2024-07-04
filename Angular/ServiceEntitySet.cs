@@ -27,7 +27,7 @@ namespace ODataApiGen.Angular
         list.AddRange(this.EdmEntitySet.Actions.SelectMany(a => this.CallableNamespaces(a)));
         list.AddRange(this.EdmEntitySet.Functions.SelectMany(a => this.CallableNamespaces(a)));
         list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.NavigationProperty.Type));
-        list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.FullName));
+        list.AddRange(this.EdmEntitySet.NavigationPropertyBindings.Select(b => b.PropertyType).Where(t => t != null).Select(t => t.NamespaceQualifiedName));
         if (this.EdmEntityType != null)
         {
           list.AddRange(this.EdmEntityType.Actions.SelectMany(a => this.CallableNamespaces(a)));
@@ -48,7 +48,7 @@ namespace ODataApiGen.Angular
     public override IEnumerable<Import> Imports => GetImportRecords();
     public string EntitySetName => this.EdmEntitySet.Name;
     public override string EntityType => this.EdmEntitySet.EntityType;
-    public override string ServiceType => this.EdmEntitySet.FullName;
+    public override string ServiceType => this.EdmEntitySet.NamespaceQualifiedName;
     public override string Name => Utils.ToTypescriptName(this.EdmEntitySet.Name, TypeScriptElement.Class) + "Service";
     public override string Namespace => this.EdmEntitySet.Namespace;
     public override string FileName => this.EdmEntitySet.Name.ToLower() + ".service";

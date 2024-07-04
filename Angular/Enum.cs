@@ -25,7 +25,7 @@ namespace ODataApiGen.Angular
             return new
             {
                 Name = this.ImportedName,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
     }

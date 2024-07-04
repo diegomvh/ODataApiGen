@@ -131,7 +131,7 @@ namespace ODataApiGen.Angular
             {
                 Name = this.ImportedName,
                 this.Namespace,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
     }

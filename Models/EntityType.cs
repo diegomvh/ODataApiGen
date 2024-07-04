@@ -44,7 +44,7 @@ namespace ODataApiGen.Models
         }
         public void AddAssociations(IEnumerable<Association> associations) {
             foreach (var nav in this.NavigationProperties) {
-                nav.Association = associations.FirstOrDefault(a => a.FullName == nav.Relationship);
+                nav.Association = associations.FirstOrDefault(a => a.NamespaceQualifiedName == nav.Relationship);
             }
         }
         public IEnumerable<Action> Actions { get; set; } = Enumerable.Empty<Action>();

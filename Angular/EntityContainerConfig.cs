@@ -34,7 +34,7 @@ namespace ODataApiGen.Angular
     public string Annotations => JsonSerializer.Serialize(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), new JsonSerializerOptions() { WriteIndented = true });
     public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".entitycontainer.config";
     public override string Name => Utils.ToTypescriptName(this.EdmEntityContainer.Name, TypeScriptElement.Class) + "EntityContainerConfig";
-    public string ContainerType => this.EdmEntityContainer.FullName;
+    public string ContainerType => this.EdmEntityContainer.NamespaceQualifiedName;
     public string ContainerName => this.EdmEntityContainer.Name;
     public string ApiName => this.Options.Name;
     // Imports
@@ -53,13 +53,13 @@ namespace ODataApiGen.Angular
           service.SetEntity(inter);
           //service.AddDependency(inter);
         }
-        var model = models.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
+        var model = models.FirstOrDefault(m => m.EdmStructuredType.NamespaceQualifiedName == service.EntityType);
         if (model != null)
         {
           service.SetModel(model);
           //service.AddDependency(model);
         }
-        var collection = collections.FirstOrDefault(m => m.EdmStructuredType.FullName == service.EntityType);
+        var collection = collections.FirstOrDefault(m => m.EdmStructuredType.NamespaceQualifiedName == service.EntityType);
         if (collection != null)
         {
           service.SetCollection(collection);
@@ -95,7 +95,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.FullName,
+        this.NamespaceQualifiedName,
         this.ContainerName,
         this.ContainerType,
         Name = this.ImportedName

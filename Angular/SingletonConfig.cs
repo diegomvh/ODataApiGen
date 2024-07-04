@@ -26,7 +26,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.FullName,
+        this.NamespaceQualifiedName,
         this.SingletonName,
         this.SingletonType,
         Name = this.ImportedName,

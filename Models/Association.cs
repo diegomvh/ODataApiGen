@@ -15,6 +15,6 @@ namespace ODataApiGen.Models
         public List<AssociationEnd> Ends { get; private set; }
         public string Namespace => this.Schema.Namespace;
         public string Name { get; private set; }
-        public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
+        public string NamespaceQualifiedName { get { return $"{this.Namespace}.{this.Name}"; } }
     }
 }

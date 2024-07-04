@@ -37,13 +37,13 @@ namespace ODataApiGen.Angular
             .Where(a => !a.IsEdmType)
             .Select(a => a.Type));
         if (this.Base != null)
-          list.Add(this.Base.EdmStructuredType.FullName);
+          list.Add(this.Base.EdmStructuredType.NamespaceQualifiedName);
         return list.Where(t => !String.IsNullOrWhiteSpace(t) && !t.StartsWith("Edm.")).Distinct();
       }
     }
     public override string Namespace => this.EdmStructuredType.Namespace;
     public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
-    public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.FullName)?.Name;
+    public string EntitySetName => Program.Metadata.Schemas.SelectMany(s => s.EntityContainers).SelectMany(c => c.EntitySets).FirstOrDefault(s => s.EntityType == this.EdmStructuredType.NamespaceQualifiedName)?.Name;
     public bool OpenType => this.EdmStructuredType.OpenType;
     public override IEnumerable<Import> Imports => GetImportRecords();
 
@@ -57,7 +57,7 @@ namespace ODataApiGen.Angular
         var callable = callables.FirstOrDefault();
         var methodName = name.Substring(0, 1).ToLower() + name.Substring(1);
 
-        var callableFullName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
+        var callableNamespaceQualifiedName = callable.IsBound ? $"{callable.Namespace}.{callable.Name}" : callable.Name;
 
         var typescriptType = this.ToTypescriptType(callable.ReturnType);
         var callableReturnType = String.IsNullOrEmpty(callable.ReturnType) ?
@@ -124,7 +124,7 @@ namespace ODataApiGen.Angular
             $"collection" :
             $"model";
         yield return $"public {methodName}({String.Join(", ", args)}) {{" +
-            $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableFullName}', {values}, '{responseType}', options){callableReturnType};" +
+            $"\n    return this.call{callable.Type}<{types}, {typescriptType}>('{callableNamespaceQualifiedName}', {values}, '{responseType}', options){callableReturnType};" +
             "\n  }";
       }
     }
@@ -139,18 +139,18 @@ namespace ODataApiGen.Angular
         var bindingEntity = binding.EntityType;
         var propertyEntity = binding.PropertyType;
 
-        var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
+        var entity = (Program.Package as Angular.Package).FindEntity(navEntity.NamespaceQualifiedName);
         if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity) && bindingEntity.HierarchyLevelOf(propertyEntity) == 1)
         {
           var castName = $"as{propertyEntity.Name}";
-          if (!casts.Contains(propertyEntity.FullName))
+          if (!casts.Contains(propertyEntity.NamespaceQualifiedName))
           {
             // Cast
-            entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
+            entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.NamespaceQualifiedName);
             yield return $@"public {castName}() {{
-    return this.cast<{entity.ImportedName}>('{propertyEntity.FullName}') as {entity.Name}Model<{entity.ImportedName}>;
+    return this.cast<{entity.ImportedName}>('{propertyEntity.NamespaceQualifiedName}') as {entity.Name}Model<{entity.ImportedName}>;
   }}";
-            casts.Add(propertyEntity.FullName);
+            casts.Add(propertyEntity.NamespaceQualifiedName);
           }
         }
         else
@@ -159,7 +159,7 @@ namespace ODataApiGen.Angular
           var returnType = isCollection ? $"ODataCollection<{entity.ImportedName}, ODataModel<{entity.ImportedName}>>" : $"ODataModel<{entity.ImportedName}>";
           var responseType = isCollection ? $"collection" : $"model";
           var methodName = $"as{propertyEntity.Name}" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
-          var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
+          var castEntity = (Program.Package as Angular.Package).FindEntity(propertyEntity.NamespaceQualifiedName);
 
           // Navigation
           yield return $@"public {methodName}(options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{

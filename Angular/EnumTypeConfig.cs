@@ -52,7 +52,7 @@ namespace ODataApiGen.Angular
     }
     public override string FileName => this.Enum.FileName + ".config";
     public override string Name => this.Enum.Name + "Config";
-    public string EnumType => this.Enum.EdmEnumType.FullName;
+    public string EnumType => this.Enum.EdmEnumType.NamespaceQualifiedName;
     public string EdmEnumName => this.Enum.EdmEnumType.Name;
     public string EnumName => this.Enum.Name;
 
@@ -79,7 +79,7 @@ namespace ODataApiGen.Angular
       {
         this.EnumName,
         Name = this.ImportedName,
-        this.FullName
+        this.NamespaceQualifiedName
       };
     }
   }

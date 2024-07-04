@@ -51,7 +51,7 @@ namespace ODataApiGen.Flutter
     public override string EntitySetName => this.EdmSingleton.Name;
     public override string EntityType => this.EdmSingleton.Type;
     public override IEnumerable<Models.Annotation> Annotations => this.EdmSingleton.Annotations;
-    public string ServiceType => this.EdmSingleton.FullName;
+    public string ServiceType => this.EdmSingleton.NamespaceQualifiedName;
     public IEnumerable<string> Actions => this.RenderCallables(this.EdmSingleton.Actions);
     public IEnumerable<string> Functions => this.RenderCallables(this.EdmSingleton.Functions);
   }

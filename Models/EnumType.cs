@@ -7,8 +7,10 @@ namespace ODataApiGen.Models
     {
         public Schema Schema {get; private set;}
         public string Namespace => this.Schema.Namespace;
+        public string Alias => this.Schema.Alias;
         public string Name { get; private set; }
-        public string FullName => $"{this.Namespace}.{this.Name}";
+        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
+        public string AliasQualifiedName => $"{this.Alias}.{this.Name}";
         public bool Flags { get; private set; }
         public IEnumerable<EnumMember> Members { get; private set; }
         public EnumType(XElement element, Schema schema) : base(element)
@@ -31,7 +33,7 @@ namespace ODataApiGen.Models
             return new
             {
                 this.Name,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
     }

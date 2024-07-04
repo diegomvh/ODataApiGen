@@ -9,7 +9,9 @@ namespace ODataApiGen.Models
         public Schema Schema { get; private set; }
         public string Name { get; private set; }
         public string Namespace => this.Schema.Namespace; 
-        public string FullName { get { return $"{this.Namespace}.{this.Name}"; } }
+        public string Alias => this.Schema.Alias; 
+        public string NamespaceQualifiedName { get { return $"{this.Namespace}.{this.Name}"; } }
+        public string AliasQualifiedName { get { return $"{this.Alias}.{this.Name}"; } }
         public IEnumerable<EntitySet> EntitySets { get; private set; }
         public IEnumerable<AssociationSet> AssociationSets { get; private set; }
         public IEnumerable<Singleton> Singletons { get; private set; }

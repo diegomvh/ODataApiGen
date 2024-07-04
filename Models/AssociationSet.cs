@@ -17,7 +17,7 @@ namespace ODataApiGen.Models
 
         public string Name { get; private set; }
         public string Namespace => this.EntityContainer.Namespace; 
-        public string FullName => $"{this.Namespace}.{this.Name}";
+        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
         public string Association { get; private set; }
         public IEnumerable<AssociationSetEnd> AssociationSetEnds { get; set; }
     }

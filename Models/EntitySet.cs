@@ -19,18 +19,20 @@ namespace ODataApiGen.Models
         public void ImportActions(IEnumerable<ActionImport> actionImports, IEnumerable<Action> actions) {
             Actions = actionImports
                 .Where(a => a.EntitySet == Name)
-                .Select(ai => actions.FirstOrDefault(a => a.FullName == ai.Action))
+                .Select(ai => actions.FirstOrDefault(a => a.NamespaceQualifiedName == ai.Action))
                 .Where(a => a != null);
         }
         public void ImportFunctions(IEnumerable<FunctionImport> functionImports, IEnumerable<Function> functions) {
             Functions = functionImports
                 .Where(f => f.EntitySet == Name)
-                .Select(fi => functions.FirstOrDefault(f => f.FullName == fi.Function))
+                .Select(fi => functions.FirstOrDefault(f => f.NamespaceQualifiedName == fi.Function))
                 .Where(f => f != null);
         }
         public string Name { get; private set; }
         public string Namespace => this.EntityContainer.Namespace; 
-        public string FullName => $"{this.Namespace}.{this.Name}";
+        public string Alias => this.EntityContainer.Alias; 
+        public string NamespaceQualifiedName => $"{this.Namespace}.{this.Name}";
+        public string AliasQualifiedName => $"{this.Alias}.{this.Name}";
         public string EntityType { get; private set; }
         public IEnumerable<Action> Actions { get; set; }
         public IEnumerable<Function> Functions { get; set; }
@@ -40,7 +42,7 @@ namespace ODataApiGen.Models
             return new
             {
                 this.Name,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
     }

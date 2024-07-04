@@ -127,7 +127,7 @@ namespace ODataApiGen.Angular
     public override string FileName => this.Entity.FileName + ".config";
     public override string Name => this.Entity.Name +
     ((this.Entity.EdmStructuredType is ComplexType) ? "ComplexConfig" : "EntityConfig");
-    public string EntityType => this.Entity.EdmStructuredType.FullName;
+    public string EntityType => this.Entity.EdmStructuredType.NamespaceQualifiedName;
     public string EdmEntityName => this.Entity.EdmStructuredType.Name;
     public string EntityName => this.Entity.Name;
     public bool OpenType => this.Entity.OpenType;
@@ -165,7 +165,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
-        this.FullName,
+        this.NamespaceQualifiedName,
         this.EntityName,
         Name = this.ImportedName
       };

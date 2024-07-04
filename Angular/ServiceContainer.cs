@@ -37,7 +37,7 @@ namespace ODataApiGen.Angular
         public override string Directory => this.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public override IEnumerable<Models.Annotation> Annotations => Enumerable.Empty<Models.Annotation>(); 
         public override string EntityType => "";
-        public override string ServiceType => this.Container.FullName;
+        public override string ServiceType => this.Container.NamespaceQualifiedName;
         public string ContainerName => this.Container.Name;
         public string ApiName => this.Options.Name;
     }

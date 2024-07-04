@@ -47,7 +47,7 @@ namespace ODataApiGen.Angular
         var methodName = name[0].ToString().ToLower() + name.Substring(1);
         var callMethodName = "call" + name[0].ToString().ToUpper() + name.Substring(1);
 
-        var callableFullName = $"{callable.Namespace}.{callable.Name}";
+        var callableNamespaceQualifiedName = $"{callable.Namespace}.{callable.Name}";
 
         var typescriptType = this.ToTypescriptType(callable.ReturnType);
         if ((callable.IsEdmReturnType || callable.IsEnumReturnType) && callable.ReturnsCollection) 
@@ -133,7 +133,7 @@ namespace ODataApiGen.Angular
 
         // Function
         yield return $"public {methodName}({String.Join(", ", boundArgs)}): OData{callable.Type}Resource<{type}, {typescriptType}> {{ " +
-            $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableFullName}'{(!callable.IsBound ? ", this.apiNameOrEntityType" : "")});" +
+            $"\n    return this.{baseMethodName}<{type}, {typescriptType}>('{callableNamespaceQualifiedName}'{(!callable.IsBound ? ", this.apiNameOrEntityType" : "")});" +
             "\n  }";
 
         // Call
@@ -157,22 +157,22 @@ namespace ODataApiGen.Angular
         var bindingEntity = binding.EntityType;
         var propertyEntity = binding.PropertyType;
 
-        var entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
+        var entity = (Program.Package as Angular.Package).FindEntity(navEntity.NamespaceQualifiedName);
         var returnType = isCollection ? $"ODataEntities<{entity.ImportedName}>" : $"ODataEntity<{entity.ImportedName}>";
         var responseType = isCollection ? $"entities" : $"entity";
         if (propertyEntity != null && bindingEntity.IsBaseOf(propertyEntity))
         {
           var castName = $"as{propertyEntity.Name}";
-          if (!casts.Contains(propertyEntity.FullName))
+          if (!casts.Contains(propertyEntity.NamespaceQualifiedName))
           {
             // Cast
-            entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.FullName);
+            entity = (Program.Package as Angular.Package).FindEntity(propertyEntity.NamespaceQualifiedName);
             yield return $@"public {castName}(): ODataEntitySetResource<{entity.ImportedName}> {{
-    return this.entities().cast<{entity.ImportedName}>('{propertyEntity.FullName}');
+    return this.entities().cast<{entity.ImportedName}>('{propertyEntity.NamespaceQualifiedName}');
   }}";
-            casts.Add(propertyEntity.FullName);
+            casts.Add(propertyEntity.NamespaceQualifiedName);
           }
-          entity = (Program.Package as Angular.Package).FindEntity(navEntity.FullName);
+          entity = (Program.Package as Angular.Package).FindEntity(navEntity.NamespaceQualifiedName);
 
           var navMethodName = castName + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);
           var fetchMethodName = castName + "Fetch" + nav.Name.Substring(0, 1).ToUpper() + nav.Name.Substring(1);

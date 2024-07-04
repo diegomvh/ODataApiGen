@@ -52,7 +52,7 @@ namespace ODataApiGen.Angular
     public string SingletonType => this.EdmSingleton.Type;
     public override string EntityType => this.EdmSingleton.Type;
     public override IEnumerable<Annotation> Annotations => this.EdmSingleton.Annotations;
-    public override string ServiceType => this.EdmSingleton.FullName;
+    public override string ServiceType => this.EdmSingleton.NamespaceQualifiedName;
     public IEnumerable<string> Actions => this.RenderCallables(this.EdmSingleton.Actions);
     public IEnumerable<string> Functions => this.RenderCallables(this.EdmSingleton.Functions);
   }

@@ -7,9 +7,9 @@ namespace ODataApiGen.Flutter
 {
     public class EntityKeyConfig : ILiquidizable
   {
-    protected Models.PropertyRef Value { get; set; }
-    protected Flutter.StructuredTypeConfig Config { get; set; }
-    public EntityKeyConfig(Models.PropertyRef property, Flutter.StructuredTypeConfig config)
+    protected PropertyRef Value { get; set; }
+    protected StructuredTypeConfig Config { get; set; }
+    public EntityKeyConfig(PropertyRef property, StructuredTypeConfig config)
     {
       this.Value = property;
       this.Config = config;
@@ -127,7 +127,7 @@ namespace ODataApiGen.Flutter
     public override string FileName => this.Entity.FileName + ".config";
     public override string Name => this.Entity.Name +
     ((this.Entity.EdmStructuredType is ComplexType) ? "ComplexConfig" : "EntityConfig");
-    public string EntityType => this.Entity.EdmStructuredType.FullName;
+    public string EntityType => this.Entity.EdmStructuredType.NamespaceQualifiedName;
     public string EdmEntityName => this.Entity.EdmStructuredType.Name;
     public string EntityName => this.Entity.Name;
     public bool OpenType => this.Entity.OpenType;
@@ -166,7 +166,7 @@ namespace ODataApiGen.Flutter
       return new
       {
         Name = this.ImportedName,
-        this.FullName,
+        this.NamespaceQualifiedName,
         EntityName = this.EntityName
       };
     }

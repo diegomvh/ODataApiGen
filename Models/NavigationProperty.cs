@@ -7,7 +7,7 @@ namespace ODataApiGen.Models
     public NavigationProperty(XElement xElement, StructuredType structured) : base(xElement, structured)
     {
       Name = xElement.Attribute("Name")?.Value.Split(".").Last();
-      FullName = xElement.Attribute("Name")?.Value;
+      NamespaceQualifiedName = xElement.Attribute("Name")?.Value;
       MaxLength = null;
       ContainsTarget = xElement.Attribute("ContainsTarget")?.Value == "true";
       Partner = xElement.Attribute("Partner")?.Value;
@@ -29,7 +29,7 @@ namespace ODataApiGen.Models
       ToRole = xElement.Attribute("ToRole")?.Value;
       FromRole = xElement.Attribute("FromRole")?.Value;
     }
-    public string FullName { get; set; }
+    public string NamespaceQualifiedName { get; set; }
     public string Partner { get; set; }
     public bool ContainsTarget { get; set; }
     public IEnumerable<ReferentialConstraint> Referentials { get; set; }

@@ -17,7 +17,7 @@ namespace ODataApiGen.Flutter
             {
                 var parameters = new List<Models.Parameter>();
                 var list = new List<string> {
-                    this.Model.Entity.EdmStructuredType.FullName
+                    this.Model.Entity.EdmStructuredType.NamespaceQualifiedName
                 };
                 list.AddRange(this.EdmStructuredType.Properties.Select(a => a.Type));
                 if (this.EdmEntityType != null) {
@@ -45,7 +45,7 @@ namespace ODataApiGen.Flutter
         {
             return new {
                 Name = this.ImportedName,
-                this.FullName
+                this.NamespaceQualifiedName
             };
         }
 
