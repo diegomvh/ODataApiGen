@@ -17,7 +17,7 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.Package.Name + "Api";
         // About File
-        public override string FileName => this.Package.Name.ToLower() + ".api";
+        public override string FileName => this.Package.Name.Dasherize() + ".api";
         public override string Directory => "";
         public IEnumerable<EnumTypeConfig> EnumTypeConfigs { get; set; }
         public IEnumerable<StructuredTypeConfig> StructuredTypeConfigs { get; set; }

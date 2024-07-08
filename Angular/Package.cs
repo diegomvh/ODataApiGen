@@ -5,7 +5,7 @@ namespace ODataApiGen.Angular
 {
     public class Package : ODataApiGen.Abstracts.Package, ILiquidizable
     {
-        public Angular.Api Api { get; private set; }
+        //public Angular.Api Api { get; private set; }
         public Angular.Module Module { get; private set; }
         public Angular.ApiConfig Config { get; private set; }
         public Angular.Index Index { get; private set; }
@@ -31,7 +31,7 @@ namespace ODataApiGen.Angular
             this.Module = new Module(this, options);
             this.Config = new Angular.ApiConfig(this, options);
             this.Index = new Angular.Index(this, options);
-            this.Api = new Angular.Api(this, options);
+            //this.Api = new Angular.Api(this, options);
         }
 
         public override void Build()
@@ -122,11 +122,11 @@ namespace ODataApiGen.Angular
             this.Module.AddDependencies(this.Schemas.SelectMany(s => s.Containers.Select(c => c.Service)));
             this.Module.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             // Api
-            this.Api.EnumTypeConfigs = this.Schemas.SelectMany(s => s.EnumTypeConfigs);
-            this.Api.StructuredTypeConfigs = this.Schemas.SelectMany(s => s.StructuredTypeConfigs);
-            this.Api.EntitySetConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs));
-            this.Api.SingletonConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.SingletonConfigs));
-            this.Api.CallableConfigs = this.Schemas.SelectMany(s => s.CallablesConfigs);
+            //this.Api.EnumTypeConfigs = this.Schemas.SelectMany(s => s.EnumTypeConfigs);
+            //this.Api.StructuredTypeConfigs = this.Schemas.SelectMany(s => s.StructuredTypeConfigs);
+            //this.Api.EntitySetConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs));
+            //this.Api.SingletonConfigs = this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.SingletonConfigs));
+            //this.Api.CallableConfigs = this.Schemas.SelectMany(s => s.CallablesConfigs);
             // Config
             this.Config.AddDependencies(this.Schemas);
             // Index
@@ -140,7 +140,7 @@ namespace ODataApiGen.Angular
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.EntitySetConfigs)));
             this.Index.AddDependencies(this.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.SingletonConfigs)));
-            this.Index.AddDependency(this.Api);
+            //this.Index.AddDependency(this.Api);
             this.Index.AddDependency(this.Config);
             this.Index.AddDependency(this.Module);
         }
@@ -169,7 +169,7 @@ namespace ODataApiGen.Angular
             {
                 var renderables = new List<Renderable>
                 {
-                    this.Api,
+                    //this.Api,
                     this.Module,
                     this.Config,
                     this.Index

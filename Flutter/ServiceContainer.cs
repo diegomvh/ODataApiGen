@@ -31,7 +31,7 @@ namespace ODataApiGen.Flutter
 
         public override string Name => Utils.ToDartName(this.Container.EdmEntityContainer.Name, DartElement.Class) + "Service";
         public override string EdmNamespace => this.Container.EdmEntityContainer.Namespace;
-        public override string FileName => this.Container.EdmEntityContainer.Name.ToLower() + ".service";
+        public override string FileName => this.Container.EdmEntityContainer.Name.Dasherize() + ".service";
         public IEnumerable<string> Actions =>  this.RenderCallables(this.Container.EdmEntityContainer.UnboundActions);
         public IEnumerable<string> Functions => this.RenderCallables(this.Container.EdmEntityContainer.UnboundFunctions);
         public override string Directory => this.EdmNamespace.Replace('.', Path.DirectorySeparatorChar);

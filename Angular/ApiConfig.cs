@@ -13,7 +13,7 @@ namespace ODataApiGen.Angular
         public override IEnumerable<Import> Imports => GetImportRecords();
         public override string Name => this.Package.Name + "Config";
         // About File
-        public override string FileName => this.Package.Name.ToLower() + ".config";
+        public override string FileName => this.Package.Name.Dasherize() + ".config";
         public override string Directory => "";
     }
 }

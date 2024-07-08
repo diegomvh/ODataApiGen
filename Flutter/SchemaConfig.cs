@@ -2,21 +2,21 @@ using ODataApiGen.Abstracts;
 
 namespace ODataApiGen.Flutter
 {
-    public class Schema : FlutterRenderable, DotLiquid.ILiquidizable
+    public class SchemaConfig : FlutterRenderable, DotLiquid.ILiquidizable
     {
         public Models.Schema EdmSchema { get; private set; }
-        public override string FileName => this.EdmSchema.Namespace.Split('.').Last().ToLower() + ".schema";
+        public override string FileName => this.EdmSchema.Namespace.Split('.').Last().Dasherize() + ".schema";
         //TODO: Create nice schema names
         public override string Name => Utils.ToDartName(this.EdmSchema.Namespace.Split('.').Last(), DartElement.Class) + "Schema";
-        public ICollection<Flutter.Enum> Enums { get; } = new List<Flutter.Enum>();
-        public ICollection<Flutter.EnumTypeConfig> EnumConfigs { get; } = new List<Flutter.EnumTypeConfig>();
-        public ICollection<Flutter.Entity> Entities { get; } = new List<Flutter.Entity>();
-        public ICollection<Flutter.Model> Models { get; } = new List<Flutter.Model>();
-        public ICollection<Flutter.Collection> Collections { get; } = new List<Flutter.Collection>();
-        public ICollection<Flutter.StructuredTypeConfig> EntityConfigs { get; } = new List<Flutter.StructuredTypeConfig>();
-        public ICollection<Flutter.CallableConfig> CallablesConfigs { get; } = new List<Flutter.CallableConfig>();
-        public ICollection<Flutter.Container> Containers { get; } = new List<Flutter.Container>();
-        public Schema(Models.Schema schema, ApiOptions options) : base(options)
+        public ICollection<Enum> Enums { get; } = new List<Enum>();
+        public ICollection<EnumTypeConfig> EnumConfigs { get; } = new List<EnumTypeConfig>();
+        public ICollection<Entity> Entities { get; } = new List<Entity>();
+        public ICollection<Model> Models { get; } = new List<Model>();
+        public ICollection<Collection> Collections { get; } = new List<Collection>();
+        public ICollection<StructuredTypeConfig> EntityConfigs { get; } = new List<StructuredTypeConfig>();
+        public ICollection<CallableConfig> CallablesConfigs { get; } = new List<CallableConfig>();
+        public ICollection<Container> Containers { get; } = new List<Container>();
+        public SchemaConfig(Models.Schema schema, ApiOptions options) : base(options)
         {
             this.EdmSchema = schema;
             this.AddEnums(schema.EnumTypes);
@@ -26,16 +26,16 @@ namespace ODataApiGen.Flutter
             this.AddCallables(schema.Actions);
             foreach (var container in schema.EntityContainers)
             {
-                this.Containers.Add(new Flutter.Container(container, options));
+                this.Containers.Add(new Container(container, options));
             }
         }
         public void AddEnums(IEnumerable<Models.EnumType> enums)
         {
             foreach (var e in enums)
             {
-                var enu = new Flutter.Enum(e, this.Options);
+                var enu = new Enum(e, this.Options);
                 this.Enums.Add(enu);
-                var config = new Flutter.EnumTypeConfig(enu, this.Options);
+                var config = new EnumTypeConfig(enu, this.Options);
                 this.EnumConfigs.Add(config);
             }
         }
@@ -43,18 +43,18 @@ namespace ODataApiGen.Flutter
         {
             foreach (var cmplx in complexes)
             {
-                Flutter.StructuredTypeConfig config;
-                var entity = new Flutter.Entity(cmplx, this.Options);
+                StructuredTypeConfig config;
+                var entity = new Entity(cmplx, this.Options);
                 this.Entities.Add(entity);
                 if (this.Options.Models)
                 {
-                    var model = new Flutter.Model(cmplx, entity, this.Options);
+                    var model = new Model(cmplx, entity, this.Options);
                     this.Models.Add(model);
-                    var collection = new Flutter.Collection(cmplx, model, this.Options);
+                    var collection = new Collection(cmplx, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Flutter.StructuredTypeConfig(entity, model, collection, this.Options);
+                    config = new StructuredTypeConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Flutter.StructuredTypeConfig(entity, this.Options);
+                    config = new StructuredTypeConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
             }
@@ -63,18 +63,18 @@ namespace ODataApiGen.Flutter
         {
             foreach (var enty in entities)
             {
-                Flutter.StructuredTypeConfig config;
-                var entity = new Flutter.Entity(enty, this.Options);
+                StructuredTypeConfig config;
+                var entity = new Entity(enty, this.Options);
                 this.Entities.Add(entity);
                 if (this.Options.Models)
                 {
-                    var model = new Flutter.Model(enty, entity, this.Options);
+                    var model = new Model(enty, entity, this.Options);
                     this.Models.Add(model);
-                    var collection = new Flutter.Collection(enty, model, this.Options);
+                    var collection = new Collection(enty, model, this.Options);
                     this.Collections.Add(collection);
-                    config = new Flutter.StructuredTypeConfig(entity, model, collection, this.Options);
+                    config = new StructuredTypeConfig(entity, model, collection, this.Options);
                 } else {
-                    config = new Flutter.StructuredTypeConfig(entity, this.Options);
+                    config = new StructuredTypeConfig(entity, this.Options);
                 }
                 this.EntityConfigs.Add(config);
             }
@@ -83,7 +83,7 @@ namespace ODataApiGen.Flutter
         {
             foreach (var callable in callables)
             {
-                this.CallablesConfigs.Add(new Flutter.CallableConfig(callable));
+                this.CallablesConfigs.Add(new CallableConfig(callable));
             }
         }
         // Imports
@@ -91,6 +91,7 @@ namespace ODataApiGen.Flutter
         public override IEnumerable<Import> Imports => GetImportRecords();
         public bool HasAlias => !String.IsNullOrWhiteSpace(this.EdmSchema.Alias);
         public string Alias => this.EdmSchema.Alias;
+        public string Namespace => this.EdmSchema.Namespace;
         public override string Directory => this.EdmSchema.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public void ResolveDependencies()
         {

@@ -10,7 +10,7 @@ namespace ODataApiGen.Angular
             Package = package;
         }
         public override string Name => this.Package.Name + "Module";
-        public override string FileName => this.Package.Name.ToLower() + ".module";
+        public override string FileName => this.Package.Name.Dasherize() + ".module";
         public override string Directory => "";
         public IEnumerable<Service> Services => this.Package.Schemas.SelectMany(s => s.Containers.Select(c => c.Service))
         .Union(this.Package.Schemas.SelectMany(s => s.Containers.SelectMany(c => c.Services)));

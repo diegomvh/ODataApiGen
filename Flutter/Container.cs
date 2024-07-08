@@ -31,7 +31,7 @@ namespace ODataApiGen.Flutter
     }
     public bool HasAnnotations => this.EdmEntityContainer.Annotations.Count() > 0;
     public string Annotations => JsonSerializer.Serialize(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), new JsonSerializerOptions() { WriteIndented = true });
-    public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".container";
+    public override string FileName => this.EdmEntityContainer.Name.Dasherize() + ".container";
     public override string Name => Utils.ToDartName(this.EdmEntityContainer.Name, DartElement.Class) + "Container";
     public string ContainerType => this.EdmEntityContainer.NamespaceQualifiedName;
     public string ContainerName => this.EdmEntityContainer.Name;

@@ -33,12 +33,12 @@ export class {{Name}} extends ODataEntitySetService<{{EntityName}}> {
     super(client, '{{EntitySetName}}', '{{EntityType}}');
   }{% if HasModel %}
   //#region ODataApiGen Model
-  {{ModelName | methodcase}}(attrs?: Partial<{{EntityName}}>): {{ModelName}}<{{EntityName}}> {
-    return this.entity().asModel<{{ModelName}}<{{EntityName}}>>(attrs || {});
+  {{ModelName | methodcase}}(entity?: Partial<{{EntityName}}>): {{ModelName}}<{{EntityName}}> {
+    return this.entity().asModel<{{ModelName}}<{{EntityName}}>>(entity);
   }//#endregion{% endif %}{% if HasCollection %}
   //#region ODataApiGen Collection
-  {{CollectionName | methodcase}}(models?: Partial<{{EntityName}}>[]): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
-    return this.entities().asCollection<{{ModelName}}<{{EntityName}}>, {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>>(models || []);
+  {{CollectionName | methodcase}}(entities?: Partial<{{EntityName}}>[]): {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>> {
+    return this.entities().asCollection<{{ModelName}}<{{EntityName}}>, {{CollectionName}}<{{EntityName}}, {{ModelName}}<{{EntityName}}>>>(entities);
   }//#endregion{% endif %}
   //#region ODataApiGen Actions
   {% for action in Actions %}{{action}}

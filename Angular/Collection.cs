@@ -36,7 +36,7 @@ namespace ODataApiGen.Angular
             }
         }
         // Exports
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
+        public override string FileName => this.EdmStructuredType.Name.Dasherize() + ".collection";
         public override string Name => Utils.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class) + "Collection";
         public string ModelName => this.Model.ImportedName;
         public override IEnumerable<Import> Imports => GetImportRecords();

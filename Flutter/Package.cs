@@ -8,7 +8,7 @@ namespace ODataApiGen.Flutter
         public Flutter.Module Module { get; private set; }
         public Flutter.ApiConfig Config { get; private set; }
         public Flutter.Index Index { get; private set; }
-        public ICollection<Flutter.Schema> Schemas { get; private set; } = new List<Flutter.Schema>();
+        public ICollection<Flutter.SchemaConfig> Schemas { get; private set; } = new List<Flutter.SchemaConfig>();
         public IEnumerable<Flutter.Enum> Enums => this.Schemas.SelectMany(s => s.Enums);
         public Enum FindEnum(string type) {
             return this.Enums.FirstOrDefault(m => m.EdmEnumType.IsTypeOf(type));
@@ -36,7 +36,7 @@ namespace ODataApiGen.Flutter
         {
             foreach (var schema in Program.Metadata.Schemas)
             {
-                this.Schemas.Add(new Flutter.Schema(schema, this.Options));
+                this.Schemas.Add(new Flutter.SchemaConfig(schema, this.Options));
             }
         }
         public override void ResolveDependencies()

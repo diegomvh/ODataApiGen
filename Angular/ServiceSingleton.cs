@@ -13,7 +13,7 @@ namespace ODataApiGen.Angular
     }
     public override string Name => Utils.ToTypescriptName(this.EdmSingleton.Name, TypeScriptElement.Class) + "Service";
     public override string EdmNamespace => this.EdmSingleton.Namespace;
-    public override string FileName => this.EdmSingleton.Name.ToLower() + ".service";
+    public override string FileName => this.EdmSingleton.Name.Dasherize() + ".service";
     // Imports
     public override IEnumerable<Import> Imports => GetImportRecords();
     public override IEnumerable<string> ImportTypes

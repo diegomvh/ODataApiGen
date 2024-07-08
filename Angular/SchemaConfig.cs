@@ -5,8 +5,7 @@ namespace ODataApiGen.Angular
     public class SchemaConfig : AngularRenderable, DotLiquid.ILiquidizable
     {
         public Models.Schema EdmSchema { get; private set; }
-        public override string FileName => this.EdmSchema.Namespace.Split('.').Last().ToLower() + ".schema.config";
-        //TODO: Create nice schema names
+        public override string FileName => this.EdmSchema.Namespace.Split('.').Last().Dasherize() + ".schema.config";
         public override string Name => Utils.ToTypescriptName(this.EdmSchema.Namespace.Split('.').Last(), TypeScriptElement.Class) + "SchemaConfig";
         public ICollection<Enum> Enums { get; } = new List<Enum>();
         public ICollection<EnumTypeConfig> EnumTypeConfigs { get; } = new List<EnumTypeConfig>();
@@ -89,6 +88,7 @@ namespace ODataApiGen.Angular
         // Imports
         public override IEnumerable<string> ImportTypes => new List<string> { };
         public override IEnumerable<Import> Imports => GetImportRecords();
+        public string Namespace => this.EdmSchema.Namespace;
         public bool HasAlias => !String.IsNullOrWhiteSpace(this.EdmSchema.Alias);
         public string Alias => this.EdmSchema.Alias;
         public override string Directory => this.EdmSchema.Namespace.Replace('.', Path.DirectorySeparatorChar);

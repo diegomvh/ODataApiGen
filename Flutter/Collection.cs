@@ -36,7 +36,7 @@ namespace ODataApiGen.Flutter
             }
         }
         // Exports
-        public override string FileName => this.EdmStructuredType.Name.ToLower() + ".collection";
+        public override string FileName => this.EdmStructuredType.Name.Dasherize() + ".collection";
         public override string Name => Utils.ToDartName(this.EdmStructuredType.Name, DartElement.Class) + "Collection";
         public string ModelName => this.Model.ImportedName;
         public override IEnumerable<Import> Imports => GetImportRecords();

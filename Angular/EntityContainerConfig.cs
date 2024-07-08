@@ -32,7 +32,7 @@ namespace ODataApiGen.Angular
     }
     public bool HasAnnotations => this.EdmEntityContainer.Annotations.Count() > 0;
     public string Annotations => JsonSerializer.Serialize(this.EdmEntityContainer.Annotations.Select(annot => annot.ToDictionary()), new JsonSerializerOptions() { WriteIndented = true });
-    public override string FileName => this.EdmEntityContainer.Name.ToLower() + ".entitycontainer.config";
+    public override string FileName => this.EdmEntityContainer.Name.Dasherize() + ".entitycontainer.config";
     public override string Name => Utils.ToTypescriptName(this.EdmEntityContainer.Name, TypeScriptElement.Class) + "EntityContainerConfig";
     public string ContainerType => this.EdmEntityContainer.NamespaceQualifiedName;
     public string ContainerName => this.EdmEntityContainer.Name;

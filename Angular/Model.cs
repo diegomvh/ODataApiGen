@@ -188,7 +188,7 @@ namespace ODataApiGen.Angular
     {
       this.Collection = collection;
     }
-    public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
+    public override string FileName => this.EdmStructuredType.Name.Dasherize() + ".model";
     public override string Name => Utils.ToTypescriptName(this.EdmStructuredType.Name, TypeScriptElement.Class) + "Model";
     public override IEnumerable<string> ImportTypes
     {

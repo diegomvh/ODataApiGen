@@ -178,7 +178,7 @@ namespace ODataApiGen.Flutter
     {
       this.Collection = collection;
     }
-    public override string FileName => this.EdmStructuredType.Name.ToLower() + ".model";
+    public override string FileName => this.EdmStructuredType.Name.Dasherize() + ".model";
     public override string Name => Utils.ToDartName(this.EdmStructuredType.Name, DartElement.Class) + "Model";
     public override IEnumerable<string> ImportTypes
     {
