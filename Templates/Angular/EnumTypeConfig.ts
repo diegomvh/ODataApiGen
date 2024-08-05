@@ -17,5 +17,5 @@ export const {{Name}} = {
     {% for member in Members %}{{member.Name}}: {{member.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as EnumTypeConfig<{{EnumName}}>;
+} as EnumTypeConfig;
 //#endregion

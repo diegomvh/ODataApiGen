@@ -20,5 +20,5 @@ export const {{Name}} = {
     {% for property in Properties %}{{property.Name}}: {{property.Type}}{% unless forloop.last %},
     {% endunless %}{% endfor %}
   }
-} as StructuredTypeConfig<{{EntityName}}>;
+} as StructuredTypeConfig;
 //#endregion

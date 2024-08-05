@@ -147,7 +147,7 @@ namespace ODataApiGen.Flutter
             // Cast
             entity = (Program.Package as Flutter.Package).FindEntity(propertyEntity.NamespaceQualifiedName);
             yield return $@"public {castName}() {{
-    return this.cast<{entity.ImportedName}>('{propertyEntity.NamespaceQualifiedName}') as {entity.Name}Model<{entity.ImportedName}>;
+    return this.cast<{entity.ImportedName}, {entity.Name}Model<{entity.ImportedName}>>('{propertyEntity.NamespaceQualifiedName}');
   }}";
             casts.Add(propertyEntity.NamespaceQualifiedName);
           }
