@@ -9,7 +9,7 @@ import {
 {% endfor %}//#endregion
 
 //#region ODataApiGen Type
-export const {{Name}}Type = '{{FullName}}';//#endregion
+export const {{Type}} = '{{FullName}}';//#endregion
 export interface {{Name}}{% if Base != null %} extends {{Base.Name}}{% endif %} {
   //#region ODataApiGen Properties
   {% for property in Properties %}{{property.Name}}: {{property.Type}};

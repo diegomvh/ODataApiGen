@@ -23,6 +23,7 @@ namespace ODataApiGen.Angular
         {
             return new
             {
+                Type = this.Name + "EnumType",
                 Name = this.ImportedName,
             };
         }

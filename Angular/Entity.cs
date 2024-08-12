@@ -1,6 +1,7 @@
 using DotLiquid;
 using ODataApiGen.Models;
 using ODataApiGen.Abstracts;
+using System.Numerics;
 
 namespace ODataApiGen.Angular
 {
@@ -93,6 +94,7 @@ namespace ODataApiGen.Angular
     {
       return new
       {
+        Type = this.Name + ((this.EdmStructuredType is ComplexType) ? "ComplexType" : "EntityType"),
         Name = this.ImportedName,
         EntityType = this.EdmStructuredType.NamespaceQualifiedName
       };

@@ -40,7 +40,7 @@ namespace ODataApiGen
       var name = Configuration.GetValue<string>("Name");
       var output = Configuration.GetValue<string>("Output");
       var type = Configuration.GetValue<string>("Type");
-      output = $"{output}{Path.DirectorySeparatorChar}{name.ToLower()}";
+      output = $"{output}{Path.DirectorySeparatorChar}{name.Dasherize()}";
       var directories = new DirectoryManager(output);
       var renderer = new Renderer(type, output);
 
