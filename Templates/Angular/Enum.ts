@@ -3,7 +3,7 @@
 {% endfor %}//#endregion
 
 //#region ODataApiGen Type
-export const {{Type}} = '{{FullName}}';//#endregion
+export const {{TypeName}} = '{{FullName}}';//#endregion
 export enum {{Name}} {
   //#region ODataApiGen Members
   {% for member in Members %}{{member}},

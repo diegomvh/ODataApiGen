@@ -90,11 +90,11 @@ namespace ODataApiGen.Angular
     }
     public IEnumerable<EntityProperty> GeoProperties => this.Properties.Where(p => p.IsGeo);
     public bool HasGeoFields => this.Options.GeoJson && this.GeoProperties.Count() > 0;
+    public string TypeName => this.Name + ((this.EdmStructuredType is ComplexType) ? "ComplexType" : "EntityType");
     public override object ToLiquid()
     {
       return new
       {
-        Type = this.Name + ((this.EdmStructuredType is ComplexType) ? "ComplexType" : "EntityType"),
         Name = this.ImportedName,
         EntityType = this.EdmStructuredType.NamespaceQualifiedName
       };

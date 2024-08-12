@@ -17,13 +17,13 @@ namespace ODataApiGen.Angular
         public override string FileName => this.EdmEnumType.Name.Dasherize() + ".enum";
         public override string Directory => this.EdmEnumType.Namespace.Replace('.', Path.DirectorySeparatorChar);
         public string FullName => this.EdmEnumType.NamespaceQualifiedName;
+        public string TypeName => this.Name + "EnumType";
         public IEnumerable<string> Members => this.EdmEnumType.Members.Select(m => $"{m.Name} = {m.Value}");
         public bool Flags => this.EdmEnumType.Flags;
         public object ToLiquid()
         {
             return new
             {
-                Type = this.Name + "EnumType",
                 Name = this.ImportedName,
             };
         }
