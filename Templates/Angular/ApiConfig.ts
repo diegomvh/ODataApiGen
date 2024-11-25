@@ -1,6 +1,5 @@
 //#region ODataApiGen ODataImports
 import {
-  ApiConfig,
   EDM_PARSERS
 } from 'angular-odata';//#endregion
 
@@ -8,7 +7,7 @@ import {
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApiGen ApiConfig
+//#region ODataApiGen ODataApiConfig
 export const {{Name}} = {
   serviceRootUrl: '{{Package.ServiceRootUrl}}',
   name: '{{Package.Name}}',
@@ -19,5 +18,5 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}
   ],
   parsers: EDM_PARSERS
-} as ApiConfig;
+};
 //#endregion

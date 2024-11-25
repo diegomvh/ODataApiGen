@@ -1,13 +1,8 @@
-//#region ODataApiGen ODataImports
-import {
-  SchemaConfig
-} from 'angular-odata';//#endregion
-
 //#region ODataApiGen Imports
 {% for import in Imports %}import { {{import.Names | join: ", "}} } from '{{import.Path}}';
 {% endfor %}//#endregion
 
-//#region ODataApiGen SchemaConfig
+//#region ODataApiGen ODataSchemaConfig
 export const {{Name}} = {
   namespace: '{{Namespace}}',{% if HasAlias %}
   alias: '{{Alias}}',{% endif %}
@@ -25,5 +20,5 @@ export const {{Name}} = {
   }{% unless forloop.last %}, {% endunless %}{% endfor %}],
   containers: [{% for container in Containers %}{{container.Name}}{% unless forloop.last %},
     {% endunless %}{% endfor %}]
-} as SchemaConfig;
+};
 //#endregion
