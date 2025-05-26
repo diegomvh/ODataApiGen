@@ -1,4 +1,4 @@
-﻿using ODataApiGen.Models;
+using ODataApiGen.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ODataApiGen.Abstracts;
@@ -26,7 +26,7 @@ namespace ODataApiGen
 
       var builder = new ConfigurationBuilder()
           .SetBasePath(Directory.GetCurrentDirectory())
-          .AddJsonFile("application.json")
+          .AddJsonFile("application.siuelements.json")
           .AddCommandLine(args, new Dictionary<string, string>() {
             {"-Name", "Name"},
             {"-Metadata", "Metadata"},

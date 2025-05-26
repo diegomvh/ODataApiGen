@@ -1,6 +1,6 @@
 //#region ODataApiGen ODataImports
 import {
-  ApiConfig,
+  ODataApiConfig,
   EDM_PARSERS
 } from 'angular-odata';//#endregion
 
@@ -19,5 +19,5 @@ export const {{Name}} = {
     {% endunless %}{% endfor %}
   ],
   parsers: EDM_PARSERS
-} as ApiConfig;
+} as ODataApiConfig;
 //#endregion
