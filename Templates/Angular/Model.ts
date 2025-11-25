@@ -24,7 +24,7 @@ import {
 export class {{Name}}<E extends {{Entity.Name}}> extends {% if Base != null %}{{Base.Name}}<E>{% else %}ODataModel<E>{% endif %} {
   //#region ODataApiGen Properties
   {% for field in Fields %}@ModelField()
-  {{field.Name}}: {{field.Type}};
+  declare {{field.Name}}: {{field.Type}};
   {{field.Resource}}
   {{field.Getter}}
   {{field.Setter}}
