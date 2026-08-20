@@ -135,13 +135,13 @@ namespace ODataApiGen.Angular
         var entity = (this.Value.Type != null) ?
             pkg.FindEntity(this.Value.Type) :
             pkg.FindEntity(nav.ToEntityType);
-        return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{
+        return $@"public {fetchName}(options?: ODataQueryableOptions<{entity.ImportedName}>) {{
       return this.fetchAttribute<{entity.ImportedName}>('{this.Value.Name}', options) as Observable<{this.Type}>;
     }}";
       }
       else
       {
-        return $@"public {fetchName}(options?: ODataQueryArgumentsOptions<{this.Type}>) {{
+        return $@"public {fetchName}(options?: ODataQueryableOptions<{this.Type}>) {{
     return this.fetchAttribute<{this.Type}>('{this.Value.Name}', options) as Observable<{this.Type}>;
   }}";
       }

@@ -17,7 +17,7 @@ import {
   ODataActionResource,
   ODataFunctionResource,
   ODataOptions,
-  ODataQueryArgumentsOptions,
+  ODataQueryableOptions,
   ODataFunctionOptions,
   ODataActionOptions,
   ODataBaseService

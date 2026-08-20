@@ -190,7 +190,7 @@ namespace ODataApiGen.Flutter
               "\n  }";
 
           // Fetch
-          yield return $"public {fetchMethodName}(key: EntityKey<{EntityName}>, options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{" +
+          yield return $"public {fetchMethodName}(key: EntityKey<{EntityName}>, options?: ODataQueryableOptions<{entity.ImportedName}>) {{" +
               $"\n    return this.fetchNavigationProperty<{entity.ImportedName}>(" +
               $"\n      this.{navMethodName}(key), " +
               $"\n      '{responseType}', options) as Observable<{returnType}>;" +
@@ -225,7 +225,7 @@ namespace ODataApiGen.Flutter
               "\n  }";
 
           // Fetch
-          yield return $"public {fetchMethodName}(key: EntityKey<{EntityName}>, options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{" +
+          yield return $"public {fetchMethodName}(key: EntityKey<{EntityName}>, options?: ODataQueryableOptions<{entity.ImportedName}>) {{" +
               $"\n    return this.fetchNavigationProperty<{entity.ImportedName}>(" +
               $"\n      this.{navMethodName}(key), " +
               $"\n      '{responseType}', options) as Observable<{returnType}>;" +

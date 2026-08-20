@@ -161,7 +161,7 @@ namespace ODataApiGen.Flutter
           var castEntity = (Program.Package as Flutter.Package).FindEntity(propertyEntity.NamespaceQualifiedName);
 
           // Navigation
-          yield return $@"public {methodName}(options?: ODataQueryArgumentsOptions<{entity.ImportedName}>) {{
+          yield return $@"public {methodName}(options?: ODataQueryableOptions<{entity.ImportedName}>) {{
     return this.fetchNavigationProperty<{entity.ImportedName}>('{binding.Path}', '{responseType}', options) as Observable<{returnType}>;
   }}";
         }
